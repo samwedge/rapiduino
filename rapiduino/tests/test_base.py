@@ -8,6 +8,7 @@ class TestPin(unittest.TestCase):
 
     def test_init(self):
         self.assertIsInstance(self.pin, Pin)
+        self.assertTrue(issubclass(Pin, object))
         self.assertEqual(self.pin.pin_mode, 'INPUT')
 
     def test_pin_mode_setget(self):

@@ -12,6 +12,7 @@ class TestPin(unittest.TestCase):
 
     def test_defaults(self):
         self.assertEqual(self.pin.pin_mode, 'INPUT')
+        self.assertEqual(self.pin.pwm_enabled, False)
 
     def test_pin_mode_setget(self):
         self.pin.pin_mode = 'OUTPUT'

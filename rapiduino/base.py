@@ -4,6 +4,7 @@ from rapiduino.globals import *
 class Pin(object):
     def __init__(self):
         self._pin_mode = INPUT
+        self.pwm_enabled = False
 
     @property
     def pin_mode(self):

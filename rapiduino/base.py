@@ -3,11 +3,16 @@ from rapiduino.globals import *
 
 class Pin(object):
 
-    def __init__(self, is_pwm=False, is_analog=False):
+    def __init__(self, id, is_pwm=False, is_analog=False):
         self._pin_mode = INPUT
         self._is_pwm = is_pwm
         self._is_analog = is_analog
         self._pin_state = LOW
+        self._id = id
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def pin_mode(self):

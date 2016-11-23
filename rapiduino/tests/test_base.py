@@ -5,7 +5,7 @@ from rapiduino.base import Pin
 class TestPin(unittest.TestCase):
 
     def setUp(self):
-        self.pin = Pin()
+        self.pin = Pin(5)
 
     def test_init(self):
         self.assertIsInstance(self.pin, Pin)
@@ -16,6 +16,7 @@ class TestPin(unittest.TestCase):
         self.assertEqual(self.pin.pin_state, 'LOW')
         self.assertEqual(self.pin.is_pwm, False)
         self.assertEqual(self.pin.is_analog, False)
+        self.assertEqual(self.pin.id, 5)
 
     def test_pin_mode_setget(self):
         self.pin.pin_mode = 'OUTPUT'
@@ -43,8 +44,12 @@ class TestPin(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.pin.is_analog = True
 
+    def test_id_is_readonly(self):
+        with self.assertRaises(AttributeError):
+            self.pin.id = 0
+
     def test_pin_preset_overrides(self):
-        analog_pwm_pin = Pin(is_pwm=True, is_analog=True)
+        analog_pwm_pin = Pin(0, is_pwm=True, is_analog=True)
         self.assertEqual(analog_pwm_pin.is_analog, True)
         self.assertEqual(analog_pwm_pin.is_pwm, True)
 

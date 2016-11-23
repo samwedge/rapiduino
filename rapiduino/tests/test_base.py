@@ -13,6 +13,7 @@ class TestPin(unittest.TestCase):
     def test_defaults(self):
         self.assertEqual(self.pin.pin_mode, 'INPUT')
         self.assertEqual(self.pin.pwm_enabled, False)
+        self.assertEqual(self.pin.is_analog, False)
 
     def test_pin_mode_setget(self):
         self.pin.pin_mode = 'OUTPUT'
@@ -27,6 +28,10 @@ class TestPin(unittest.TestCase):
     def test_pwm_enabled_is_readonly(self):
         with self.assertRaises(AttributeError):
             self.pin.pwm_enabled = True
+
+    def test_is_analog_is_readonly(self):
+        with self.assertRaises(AttributeError):
+            self.pin.is_analog = True
 
 if __name__ == '__main__':
     unittest.main()

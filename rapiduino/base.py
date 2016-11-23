@@ -7,6 +7,7 @@ class Pin(object):
         self._pin_mode = INPUT
         self._is_pwm = False
         self._is_analog = False
+        self._pin_state = LOW
 
     @property
     def pin_mode(self):
@@ -19,6 +20,19 @@ class Pin(object):
         else:
             raise ValueError(
                 'pin_mode must be INPUT, OUTPUT or INPUT_PULLUP but {} was found'.format(value)
+            )
+
+    @property
+    def pin_state(self):
+        return self._pin_state
+
+    @pin_state.setter
+    def pin_state(self, value):
+        if value in [HIGH, LOW]:
+            self._pin_state = value
+        else:
+            raise ValueError(
+                'pin_state must be INPUT, OUTPUT or INPUT_PULLUP but {} was found'.format(value)
             )
 
     @property

@@ -24,6 +24,9 @@ class TestPin(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.pin.pin_mode = 'some_incorrect_value'
 
+    def test_pwm_enabled_is_readonly(self):
+        with self.assertRaises(AttributeError):
+            self.pin.pwm_enabled = True
 
 if __name__ == '__main__':
     unittest.main()

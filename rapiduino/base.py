@@ -4,7 +4,7 @@ from rapiduino.globals import *
 class Pin(object):
     def __init__(self):
         self._pin_mode = INPUT
-        self.pwm_enabled = False
+        self._pwm_enabled = False
 
     @property
     def pin_mode(self):
@@ -18,3 +18,7 @@ class Pin(object):
             raise ValueError(
                 'pin_mode must be INPUT, OUTPUT or INPUT_PULLUP but {} was found'.format(value)
             )
+
+    @property
+    def pwm_enabled(self):
+        return self._pwm_enabled

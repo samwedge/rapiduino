@@ -43,6 +43,11 @@ class TestPin(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.pin.is_analog = True
 
+    def test_pin_preset_overrides(self):
+        analog_pwm_pin = Pin(is_pwm=True, is_analog=True)
+        self.assertEqual(analog_pwm_pin.is_analog, True)
+        self.assertEqual(analog_pwm_pin.is_pwm, True)
+
 
 if __name__ == '__main__':
     unittest.main()

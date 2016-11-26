@@ -19,6 +19,13 @@ class TestPin(unittest.TestCase):
         self.assertEqual(self.digital_pin.is_analog, False)
         self.assertEqual(self.digital_pin.id, 5)
 
+    def test_pin_default_overrides(self):
+        self.assertEqual(self.analog_pwm_pin.pin_mode, 'INPUT')
+        self.assertEqual(self.analog_pwm_pin.pin_state, 'LOW')
+        self.assertEqual(self.analog_pwm_pin.is_analog, True)
+        self.assertEqual(self.analog_pwm_pin.is_pwm, True)
+        self.assertEqual(self.analog_pwm_pin.id, 0)
+
     def test_pin_mode_setget(self):
         self.digital_pin.pin_mode = 'OUTPUT'
         self.assertEqual(self.digital_pin.pin_mode, 'OUTPUT')
@@ -49,9 +56,6 @@ class TestPin(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.digital_pin.id = 0
 
-    def test_pin_preset_overrides(self):
-        self.assertEqual(self.analog_pwm_pin.is_analog, True)
-        self.assertEqual(self.analog_pwm_pin.is_pwm, True)
 
 
 if __name__ == '__main__':

@@ -27,8 +27,7 @@ class TestArduinoUno(unittest.TestCase):
     def test_pins_are_readonly(self):
         with self.assertRaises(AttributeError):
             self.device.pins = []
-        self.device.pins[0] = ''
-        self.assertNotEqual(self.device.pins[0], '')
+        self.assertIsInstance(self.device.pins, tuple)
 
 
 if __name__ == '__main__':

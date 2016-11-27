@@ -11,7 +11,7 @@ class ArduinoBase():
 class ArduinoUno(ArduinoBase):
 
     def __init__(self):
-        self._pins = [
+        self._pins = (
             Pin(0),
             Pin(1),
             Pin(2),
@@ -32,8 +32,8 @@ class ArduinoUno(ArduinoBase):
             Pin(17, analog=True),
             Pin(18, analog=True),
             Pin(19, analog=True),
-        ]
+        )
 
     @property
     def pins(self):
-        return self._pins[:]
+        return self._pins

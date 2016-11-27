@@ -5,7 +5,7 @@ from rapiduino.base import Pin
 class TestPin(unittest.TestCase):
 
     def setUp(self):
-        self.analog_pwm_pin = Pin(0, is_pwm=True, is_analog=True)
+        self.analog_pwm_pin = Pin(0, pwm=True, analog=True)
         self.digital_pin = Pin(5)
 
     def test_init(self):

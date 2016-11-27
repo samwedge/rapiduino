@@ -5,7 +5,18 @@ from abc import abstractmethod, ABCMeta
 
 @six.add_metaclass(ABCMeta)
 class ArduinoBase():
-    pass
+
+    def digital_read(self, pin):
+        raise NotImplementedError
+
+    def digital_write(self, pin, value):
+        raise NotImplementedError
+
+    def analog_read(self, pin):
+        raise NotImplementedError
+
+    def analog_write(self, pin, value):
+        raise NotImplementedError
 
 
 class ArduinoUno(ArduinoBase):

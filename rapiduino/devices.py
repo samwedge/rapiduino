@@ -1,7 +1,10 @@
 from rapiduino.base import Pin
+import six
+from abc import abstractmethod, ABCMeta
 
 
-class ArduinoBase(object):
+@six.add_metaclass(ABCMeta)
+class ArduinoBase():
     pass
 
 

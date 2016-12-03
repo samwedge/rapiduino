@@ -1,3 +1,16 @@
+import serial
+from rapiduino.exceptions import SerialConnectionError
+
+class SerialConnection(object):
+
+    def __init__(self):
+        pass
+
+    def connect(self, port=None):
+        if port is None:
+            raise SerialConnectionError('port cannot be None')
+        else:
+            raise NotImplementedError
 
 
 class Commands(object):

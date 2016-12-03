@@ -1,5 +1,18 @@
 import unittest
-from rapiduino.communication import Commands
+from rapiduino.communication import Commands, SerialConnection
+from rapiduino.exceptions import SerialConnectionError
+
+class TestSerialConnection(unittest.TestCase):
+
+    def setUp(self):
+        self.conn = SerialConnection()
+
+    def test_init(self):
+        self.assertIsInstance(self.conn, SerialConnection)
+
+    def test_connection_fails_with_no_port(self):
+        with self.assertRaises(SerialConnectionError):
+            self.conn.connect()
 
 
 class TestCommands(unittest.TestCase):

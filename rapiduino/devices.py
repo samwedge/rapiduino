@@ -1,22 +1,26 @@
 from rapiduino.base import Pin
-import six
-from abc import abstractmethod, ABCMeta
 
 
-@six.add_metaclass(ABCMeta)
-class ArduinoBase():
+class ArduinoBase(object):
+
+    def __init__(self):
+        raise NotImplementedError()
 
     def digital_read(self, pin):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def digital_write(self, pin, value):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def analog_read(self, pin):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def analog_write(self, pin, value):
-        raise NotImplementedError
+        raise NotImplementedError()
+
+    @property
+    def pins(self):
+        return self._pins
 
 
 class ArduinoUno(ArduinoBase):
@@ -44,7 +48,3 @@ class ArduinoUno(ArduinoBase):
             Pin(18, analog=True),
             Pin(19, analog=True),
         )
-
-    @property
-    def pins(self):
-        return self._pins

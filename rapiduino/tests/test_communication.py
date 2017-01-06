@@ -2,6 +2,7 @@ import unittest
 from rapiduino.communication import Commands, SerialConnection
 from rapiduino.exceptions import SerialConnectionError
 
+
 class TestSerialConnection(unittest.TestCase):
 
     def setUp(self):
@@ -24,9 +25,6 @@ class TestCommands(unittest.TestCase):
         self.commands.add_command((3, 0, 3, 7, 8))
         self.commands.add_command((4,))
         self.commands.add_command((5, 6, 2))
-
-    def test_subclass(self):
-        self.assertTrue(issubclass(Commands, object))
 
     def test_commands_have_been_added(self):
         expected_commands = (

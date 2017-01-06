@@ -10,7 +10,6 @@ class TestPin(unittest.TestCase):
 
     def test_init(self):
         self.assertIsInstance(self.digital_pin, Pin)
-        self.assertTrue(issubclass(Pin, object))
 
     def test_defaults(self):
         self.assertEqual(self.digital_pin.pin_mode, 'INPUT')
@@ -55,7 +54,6 @@ class TestPin(unittest.TestCase):
     def test_id_is_readonly(self):
         with self.assertRaises(AttributeError):
             self.digital_pin.id = 0
-
 
 
 if __name__ == '__main__':

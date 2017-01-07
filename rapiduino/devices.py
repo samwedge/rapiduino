@@ -1,10 +1,11 @@
 from rapiduino.base import Pin
+from rapiduino.communication import Commands
 
 
 class ArduinoBase(object):
 
     def __init__(self):
-        raise NotImplementedError()
+        self.commands = Commands()
 
     def digital_read(self, pin):
         return self.pins[pin].pin_state
@@ -29,6 +30,7 @@ class ArduinoBase(object):
 class ArduinoUno(ArduinoBase):
 
     def __init__(self):
+        super(ArduinoUno, self).__init__()
         self._pins = (
             Pin(0),
             Pin(1),

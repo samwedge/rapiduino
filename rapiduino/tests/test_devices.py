@@ -1,5 +1,6 @@
 import unittest
 
+from rapiduino.communication import Commands
 from rapiduino.devices import ArduinoBase, ArduinoUno
 
 
@@ -7,6 +8,10 @@ class TestArduinoUno(unittest.TestCase):
 
     def setUp(self):
         self.device = ArduinoUno()
+
+    def test_init(self):
+        self.assertIsInstance(self.device._pins, tuple)
+        self.assertIsInstance(self.device.commands, Commands)
 
     def test_subclass(self):
         self.assertIsInstance(self.device, ArduinoBase)

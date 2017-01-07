@@ -18,6 +18,9 @@ class ArduinoBase(object):
     def analog_write(self, pin, value):
         raise NotImplementedError()
 
+    def pin_mode(self, pin_no, mode):
+        self.pins[pin_no].pin_mode = mode
+
     @property
     def pins(self):
         return self._pins

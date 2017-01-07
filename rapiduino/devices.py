@@ -7,10 +7,10 @@ class ArduinoBase(object):
         raise NotImplementedError()
 
     def digital_read(self, pin):
-        raise NotImplementedError()
+        return self.pins[pin].pin_state
 
     def digital_write(self, pin, value):
-        raise NotImplementedError()
+        self.pins[pin].pin_state = value
 
     def analog_read(self, pin):
         raise NotImplementedError()

@@ -36,6 +36,18 @@ class TestArduinoUno(unittest.TestCase):
         with self.assertRaises(IndexError):
             self.device.pin_mode(500, 'OUTPUT')
 
+    def test_digital_read_gets_state(self):
+        self.assertEqual(self.device.digital_read(0), 'LOW')
+
+    def test_digital_write_sets_state(self):
+        self.assertEqual(self.device.pins[0].pin_state, 'LOW')
+        self.device.digital_write(0, 'HIGH')
+        self.assertEqual(self.device.pins[0].pin_state, 'HIGH')
+
+    def test_digital_write_with_incorrect_mode(self):
+        with self.assertRaises(ValueError):
+            self.device.digital_write(0, 'INVALID_MODE')
+
 
 if __name__ == '__main__':
     unittest.main()

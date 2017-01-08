@@ -42,13 +42,37 @@ class Commands(object):
 
     @staticmethod
     def _get_command_spec():
-        return (
-            CommandSpec(0, 0, 'poll'),
-            CommandSpec(1, 1, 'parrot'),
-            CommandSpec(2, 0, 'version'),
-            CommandSpec(10, 2, 'pinMode'),
-            CommandSpec(20, 1, 'digitalRead'),
-            CommandSpec(21, 2, 'digitalWrite'),
-            CommandSpec(30, 1, 'analogRead'),
-            CommandSpec(31, 2, 'analogWrite')
-        )
+        return {
+            'poll': {
+                'cmd': 0,
+                'nargs': 0
+            },
+            'parrot': {
+                'cmd': 1,
+                'nargs': 1
+            },
+            'version': {
+                'cmd': 2,
+                'nargs': 0
+            },
+            'pinMode': {
+                'cmd': 10,
+                'nargs': 2
+            },
+            'digitalRead': {
+                'cmd': 20,
+                'nargs': 1
+            },
+            'digitalWrite': {
+                'cmd': 21,
+                'nargs': 2
+            },
+            'analogRead': {
+                'cmd': 30,
+                'nargs': 1
+            },
+            'analogWrite': {
+                'cmd': 31,
+                'nargs': 2
+            },
+        }

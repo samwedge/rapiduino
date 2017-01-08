@@ -57,9 +57,13 @@ class TestCommands(unittest.TestCase):
             self.commands.add_command(0)
 
     def test_command_spec(self):
-        self.assertIsInstance(self.commands.command_spec, tuple)
-        for command in self.commands.command_spec:
-            self.assertEqual(type(command), CommandSpec)
+        self.assertIsInstance(self.commands.command_spec, dict)
+        for key in self.commands.command_spec.keys():
+            self.assertIn('cmd', self.commands.command_spec[key])
+            self.assertIn('nargs', self.commands.command_spec[key])
+            self.assertEqual(len(self.commands.command_spec[key]), 2)
+            self.assertIsInstance(self.commands.command_spec[key]['cmd'], int)
+            self.assertIsInstance(self.commands.command_spec[key]['nargs'], int)
 
     def test_command_spec_readonly(self):
         with self.assertRaises(AttributeError):

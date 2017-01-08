@@ -2,6 +2,7 @@ import unittest
 
 from rapiduino.communication import Commands
 from rapiduino.devices import ArduinoBase, ArduinoUno
+from rapiduino.globals import *
 
 
 class TestArduinoUno(unittest.TestCase):
@@ -29,29 +30,29 @@ class TestArduinoUno(unittest.TestCase):
         self.assertIsInstance(self.device.pins, tuple)
 
     def test_pin_mode_sets_mode(self):
-        self.assertEqual(self.device.pins[0].pin_mode, 'INPUT')
-        self.device.pin_mode(0, 'OUTPUT')
-        self.assertEqual(self.device.pins[0].pin_mode, 'OUTPUT')
+        self.assertEqual(self.device.pins[0].pin_mode, INPUT)
+        self.device.pin_mode(0, OUTPUT)
+        self.assertEqual(self.device.pins[0].pin_mode, OUTPUT)
 
     def test_pin_mode_with_incorrect_mode(self):
         with self.assertRaises(ValueError):
-            self.device.pin_mode(0, 'INVALID_MODE')
+            self.device.pin_mode(0, 400)
 
     def test_pin_mode_with_pin_no_out_of_range(self):
         with self.assertRaises(IndexError):
-            self.device.pin_mode(500, 'OUTPUT')
+            self.device.pin_mode(500, OUTPUT)
 
     def test_digital_read_gets_state(self):
-        self.assertEqual(self.device.digital_read(0), 'LOW')
+        self.assertEqual(self.device.digital_read(0), LOW)
 
     def test_digital_write_sets_state(self):
-        self.assertEqual(self.device.pins[0].pin_state, 'LOW')
-        self.device.digital_write(0, 'HIGH')
-        self.assertEqual(self.device.pins[0].pin_state, 'HIGH')
+        self.assertEqual(self.device.pins[0].pin_state, LOW)
+        self.device.digital_write(0, HIGH)
+        self.assertEqual(self.device.pins[0].pin_state, HIGH)
 
     def test_digital_write_with_incorrect_mode(self):
         with self.assertRaises(ValueError):
-            self.device.digital_write(0, 'INVALID_MODE')
+            self.device.digital_write(0, 400)
 
 
 if __name__ == '__main__':

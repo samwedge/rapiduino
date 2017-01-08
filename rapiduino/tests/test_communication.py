@@ -1,5 +1,5 @@
 import unittest
-from rapiduino.communication import Commands, SerialConnection
+from rapiduino.communication import Commands, SerialConnection, CommandSpec
 from rapiduino.exceptions import SerialConnectionError
 
 
@@ -55,6 +55,15 @@ class TestCommands(unittest.TestCase):
     def test_add_command_rejects_non_tuple(self):
         with self.assertRaises(TypeError):
             self.commands.add_command(0)
+
+    def test_command_spec(self):
+        self.assertIsInstance(self.commands.command_spec, tuple)
+        for command in self.commands.command_spec:
+            self.assertEqual(type(command), CommandSpec)
+
+    def test_command_spec_readonly(self):
+        with self.assertRaises(AttributeError):
+            self.commands.command_spec = 5
 
 
 if __name__ == '__main__':

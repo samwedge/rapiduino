@@ -28,10 +28,26 @@ class Commands(object):
     def command_list(self):
         return tuple(self._command_list)
 
-    def add_command(self, command):
-        if type(command) != tuple:
-            raise TypeError('Expected tuple, but received {}'.format(type(command)))
-        self._command_list.append(command)
+    def add_command(self, command, *args):
+        command_spec = self._get_command_spec()
+        if type(command) != str:
+            raise TypeError('Expected command to be str, but received {}'.format(type(command)))
+        if command not in command_spec.keys():
+            raise KeyError('{} not in command specification'.format(command))
+        for arg in args:
+            if type(arg) != int:
+                raise TypeError('Expected arguments to be int, but received {}'.format(type(arg)))
+        if len(args) != command_spec[command]['nargs']:
+            raise ValueError('Expected args to be length {}, but received length {}'.format(command_spec[command]['nargs'], len(args)))
+
+        command_sequence = [
+            self._get_command_spec()[command]['cmd']
+        ]
+        for arg in args:
+            command_sequence.append(arg)
+        command_sequence = tuple(command_sequence)
+
+        self._command_list.append(command_sequence)
 
     def next_command(self):
         return self._command_list.pop(0)

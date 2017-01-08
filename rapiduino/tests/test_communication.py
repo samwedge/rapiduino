@@ -20,33 +20,45 @@ class TestCommands(unittest.TestCase):
 
     def setUp(self):
         self.commands = Commands()
-        self.commands.add_command((1, 0, 9))
-        self.commands.add_command((0,))
-        self.commands.add_command((3, 0, 3, 7, 8))
-        self.commands.add_command((4,))
-        self.commands.add_command((5, 6, 2))
+        self.commands.add_command('poll')
+        self.commands.add_command('parrot', 7)
+        self.commands.add_command('pinMode', 3, 1)
+        self.commands.add_command('analogRead', 5)
+        self.commands.add_command('analogWrite', 17, 1)
 
     def test_commands_have_been_added(self):
         expected_commands = (
-            (1, 0, 9),
             (0,),
-            (3, 0, 3, 7, 8),
-            (4,),
-            (5, 6, 2),
+            (1, 7),
+            (10, 3, 1),
+            (30, 5),
+            (31, 17, 1)
         )
         self.assertEqual(self.commands.command_list, expected_commands)
+
+    def test_invalid_command_raises_error(self):
+        with self.assertRaises(KeyError):
+            self.commands.add_command('invalidCommand')
+
+    def test_invalid_args_raises_error(self):
+        with self.assertRaises(TypeError):
+            self.commands.add_command('parrot', 3.7)
+
+    def test_invalid_number_of_args_raises_error(self):
+        with self.assertRaises(ValueError):
+            self.commands.add_command('parrot', 0, 0)
 
     def test_commands_are_readonly(self):
         with self.assertRaises(AttributeError):
             self.commands.command_list = []
 
     def test_next_command(self):
-        expected_first_command = (1, 0, 9)
+        expected_first_command = (0,)
         expected_remaining_commands = (
-            (0,),
-            (3, 0, 3, 7, 8),
-            (4,),
-            (5, 6, 2),
+            (1, 7),
+            (10, 3, 1),
+            (30, 5),
+            (31, 17, 1)
         )
         popped_command = self.commands.next_command()
         self.assertEqual(popped_command, expected_first_command)

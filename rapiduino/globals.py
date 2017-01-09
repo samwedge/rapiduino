@@ -1,6 +1,10 @@
-LOW = 0
-HIGH = 1
+from collections import namedtuple
 
-INPUT = 0
-OUTPUT = 1
-INPUT_PULLUP = 2
+GlobalParameter = namedtuple('GlobalParameter', ['name', 'value'])
+
+LOW = GlobalParameter('LOW', 0)
+HIGH = GlobalParameter('HIGH', 1)
+
+INPUT = GlobalParameter('INPUT', 0)
+OUTPUT = GlobalParameter('OUTPUT', 1)
+INPUT_PULLUP = GlobalParameter('INPUT_PULLUP', 2)

@@ -2,6 +2,7 @@ import unittest
 
 from rapiduino.communication import Commands
 from rapiduino.devices import ArduinoBase, ArduinoUno
+from rapiduino.exceptions import PinError
 from rapiduino.globals import *
 
 
@@ -74,20 +75,24 @@ class TestArduinoUno(unittest.TestCase):
             self.device.analog_read(500)
 
     def test_analog_write_sets_state(self):
-        self.device.analog_write(0, 100)
-        expected = (31, 0, 100)
+        self.device.analog_write(14, 100)
+        expected = (31, 14, 100)
         self.assertEqual(self.device.commands.next_command(), expected)
 
     def test_analog_write_with_incorrect_state(self):
         with self.assertRaises(ValueError):
-            self.device.analog_write(0, 500)
-            self.device.analog_write(0, -1)
+            self.device.analog_write(14, 500)
+            self.device.analog_write(14, -1)
         with self.assertRaises(TypeError):
-            self.device.analog_write(0, 10.1)
+            self.device.analog_write(14, 10.1)
 
     def test_analog_write_with_pin_no_out_of_range(self):
         with self.assertRaises(IndexError):
             self.device.analog_write(500, 100)
+
+    def test_analog_write_on_non_analog_pin_raises_error(self):
+        with self.assertRaisesRegexp(PinError, 'cannot complete operation as analog=False for pin 0'):
+            self.device.analog_write(0, 1)
 
     def test_assert_valid_pin_number(self):
         for pin_no in range(20):
@@ -96,6 +101,13 @@ class TestArduinoUno(unittest.TestCase):
             self.device._assert_valid_pin_number(20)
         with self.assertRaises(IndexError):
             self.device._assert_valid_pin_number(-1)
+
+    def test_assert_analog_pin(self):
+        for pin_no in range(14):
+            with self.assertRaisesRegexp(PinError, 'pin {}'.format(pin_no)):
+                self.device._assert_analog_pin(pin_no)
+        for pin_no in range(14, 20):
+            self.device._assert_analog_pin(pin_no)
 
     def test_assert_analog_write_range(self):
         for integer in range(255):

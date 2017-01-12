@@ -1,6 +1,8 @@
 from rapiduino.base import Pin
 from rapiduino.communication import Commands
+from rapiduino.exceptions import PinError
 from rapiduino.globals import *
+
 
 class ArduinoBase(object):
 
@@ -23,6 +25,7 @@ class ArduinoBase(object):
     def analog_write(self, pin_no, value):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_analog_write_range(value)
+        self._assert_analog_pin(pin_no)
         self.commands.add_command('analogWrite', pin_no, value)
 
     def pin_mode(self, pin_no, mode):
@@ -33,6 +36,10 @@ class ArduinoBase(object):
     def _assert_valid_pin_number(self, pin_no):
         if (pin_no >= len(self.pins)) or (pin_no < 0):
             raise IndexError('Specified pin number {} is outside pin range of {}'.format(pin_no, len(self.pins)))
+
+    def _assert_analog_pin(self, pin_no):
+        if not self.pins[pin_no].is_analog:
+            raise PinError('cannot complete operation as analog=False for pin {}'.format(pin_no))
 
     @staticmethod
     def _assert_valid_analog_write_range(value):

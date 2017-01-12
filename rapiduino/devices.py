@@ -20,12 +20,13 @@ class ArduinoBase(object):
 
     def analog_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
+        self._assert_analog_pin(pin_no)
         self.commands.add_command('analogRead', pin_no)
 
     def analog_write(self, pin_no, value):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_analog_write_range(value)
-        self._assert_analog_pin(pin_no)
+        self._assert_pwm_pin(pin_no)
         self.commands.add_command('analogWrite', pin_no, value)
 
     def pin_mode(self, pin_no, mode):
@@ -40,6 +41,10 @@ class ArduinoBase(object):
     def _assert_analog_pin(self, pin_no):
         if not self.pins[pin_no].is_analog:
             raise PinError('cannot complete operation as analog=False for pin {}'.format(pin_no))
+
+    def _assert_pwm_pin(self, pin_no):
+        if not self.pins[pin_no].is_pwm:
+            raise PinError('cannot complete operation as pwm=False for pin {}'.format(pin_no))
 
     @staticmethod
     def _assert_valid_analog_write_range(value):

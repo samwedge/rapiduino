@@ -40,14 +40,9 @@ class Commands(object):
                 )
             )
 
-        command_sequence = [
-            self._get_command_spec()[command]['cmd']
-        ]
-        for arg in args:
-            command_sequence.append(arg)
-        command_sequence = tuple(command_sequence)
-
-        self._command_list.append(command_sequence)
+        command_sequence = list(args)
+        command_sequence.insert(0, command_spec[command]['cmd'])
+        self._command_list.append(tuple(command_sequence))
 
     def next_command(self):
         return self._command_list.pop(0)

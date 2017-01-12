@@ -1,3 +1,4 @@
+from mock import patch
 import unittest
 from rapiduino.communication import Commands, SerialConnection
 from rapiduino.exceptions import SerialConnectionError
@@ -7,13 +8,23 @@ class TestSerialConnection(unittest.TestCase):
 
     def setUp(self):
         self.conn = SerialConnection()
+        self.port = '/dev/ttyACM0'
+        self.baudrate = 115200
+        self.timeout = 5
 
     def test_init(self):
         self.assertIsInstance(self.conn, SerialConnection)
 
-    def test_connection_fails_with_no_port(self):
-        with self.assertRaises(SerialConnectionError):
-            self.conn.connect()
+    def test_connect(self):
+        with patch('rapiduino.communication.serial.Serial') as mock_serial:
+            self.conn.connect(self.port, self.baudrate, self.timeout)
+            mock_serial.assert_called_with(self.port, baudrate=self.baudrate, timeout=self.timeout)
+
+    def test_connect_with_error(self):
+        with patch('rapiduino.communication.serial.Serial') as mock_serial:
+            mock_serial.side_effect = TypeError('Some Error Message')
+            with self.assertRaisesRegexp(SerialConnectionError, 'Some Error Message'):
+                self.conn.connect(self.port)
 
 
 class TestCommands(unittest.TestCase):

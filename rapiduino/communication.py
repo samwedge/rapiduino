@@ -6,13 +6,13 @@ from rapiduino.exceptions import SerialConnectionError
 class SerialConnection(object):
 
     def __init__(self):
-        pass
+        self.conn = None
 
-    def connect(self, port=None):
-        if port is None:
-            raise SerialConnectionError('port cannot be None')
-        else:
-            raise NotImplementedError
+    def connect(self, port, baudrate=9600, timeout=1):
+        try:
+            self.conn = serial.Serial(port, baudrate=baudrate, timeout=timeout)
+        except Exception as e:
+            raise SerialConnectionError(e)
 
 
 class Commands(object):

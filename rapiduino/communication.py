@@ -1,6 +1,5 @@
-from collections import namedtuple
-
 import serial
+
 from rapiduino.exceptions import SerialConnectionError
 
 
@@ -14,9 +13,6 @@ class SerialConnection(object):
             raise SerialConnectionError('port cannot be None')
         else:
             raise NotImplementedError
-
-
-CommandSpec = namedtuple('CommandSpec', ['command', 'nvars', 'description'])
 
 
 class Commands(object):
@@ -36,9 +32,13 @@ class Commands(object):
             raise KeyError('{} not in command specification'.format(command))
         for arg in args:
             if type(arg) != int:
-                raise TypeError('Expected arguments to be int, but received {}'.format(type(arg)))
+                raise TypeError('Expected args to be int, but received {}'.format(type(arg)))
         if len(args) != command_spec[command]['nargs']:
-            raise ValueError('Expected args to be length {}, but received length {}'.format(command_spec[command]['nargs'], len(args)))
+            raise ValueError(
+                'Expected args to be length {}, but received length {}'.format(
+                    command_spec[command]['nargs'], len(args)
+                )
+            )
 
         command_sequence = [
             self._get_command_spec()[command]['cmd']

@@ -1,5 +1,5 @@
 import unittest
-from rapiduino.communication import Commands, SerialConnection, CommandSpec
+from rapiduino.communication import Commands, SerialConnection
 from rapiduino.exceptions import SerialConnectionError
 
 

@@ -1,4 +1,6 @@
-from mock import patch
+import struct
+from serial import SerialException
+from mock import patch, Mock
 import unittest
 from rapiduino.communication import Commands, SerialConnection
 from rapiduino.exceptions import SerialConnectionError
@@ -7,24 +9,108 @@ from rapiduino.exceptions import SerialConnectionError
 class TestSerialConnection(unittest.TestCase):
 
     def setUp(self):
-        self.conn = SerialConnection()
+        self.serial_connection = SerialConnection()
         self.port = '/dev/ttyACM0'
         self.baudrate = 115200
         self.timeout = 5
+        self.data = (1, 2, 3)
+        self.bytes = struct.pack('BBB', *self.data)
 
     def test_init(self):
-        self.assertIsInstance(self.conn, SerialConnection)
+        self.assertIsInstance(self.serial_connection, SerialConnection)
 
     def test_connect(self):
-        with patch('rapiduino.communication.serial.Serial') as mock_serial:
-            self.conn.connect(self.port, self.baudrate, self.timeout)
-            mock_serial.assert_called_with(self.port, baudrate=self.baudrate, timeout=self.timeout)
+        self.assertIsNone(self.serial_connection.conn)
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            self.serial_connection.connect(self.port, self.baudrate, self.timeout)
+            self.assertEqual(self.serial_connection.conn, mock_serial.return_value)
+            mock_serial.assert_called_once_with(self.port, baudrate=self.baudrate, timeout=self.timeout)
 
     def test_connect_with_error(self):
-        with patch('rapiduino.communication.serial.Serial') as mock_serial:
-            mock_serial.side_effect = TypeError('Some Error Message')
-            with self.assertRaisesRegexp(SerialConnectionError, 'Some Error Message'):
-                self.conn.connect(self.port)
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_serial.side_effect = SerialException('Some Error Message')
+            with self.assertRaisesRegexp(SerialException, 'Some Error Message'):
+                self.serial_connection.connect(self.port)
+            self.assertIsNone(self.serial_connection.conn)
+
+    def test_close(self):
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_conn = Mock()
+            mock_serial.return_value = mock_conn
+
+            self.serial_connection.connect(self.port)
+
+            self.assertEqual(self.serial_connection.conn, mock_conn)
+            self.serial_connection.close()
+            mock_conn.close.assert_called_once_with()
+            self.assertIsNone(self.serial_connection.conn)
+
+    def test_send(self):
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_conn = Mock()
+            mock_conn.write.return_value = len(self.data)
+            mock_serial.return_value = mock_conn
+
+            self.serial_connection.connect(self.port)
+            self.serial_connection.send(self.data)
+
+            mock_conn.write.assert_called_once_with(self.bytes)
+
+    def test_send_with_error_writing_bytes(self):
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_conn = Mock()
+            mock_conn.write.return_value = len(self.data) - 1
+            mock_serial.return_value = mock_conn
+
+            with self.assertRaisesRegexp(SerialConnectionError, 'not all bytes written'):
+                self.serial_connection.connect(self.port)
+                self.serial_connection.send(self.data)
+
+            mock_conn.write.assert_called_once_with(self.bytes)
+
+    def test_send_without_connecting(self):
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_conn = Mock()
+            mock_serial.return_value = mock_conn
+
+            with self.assertRaisesRegexp(SerialConnectionError, 'not connected'):
+                self.serial_connection.send(self.data)
+
+            mock_conn.write.assert_not_called()
+
+    def test_recv(self):
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_conn = Mock()
+            mock_conn.read.return_value = self.bytes
+            mock_serial.return_value = mock_conn
+
+            self.serial_connection.connect(self.port)
+            received_data = self.serial_connection.recv(len(self.data))
+
+            self.assertTupleEqual(received_data, self.data)
+            mock_conn.read.assert_called_once_with(len(self.data))
+
+    def test_recv_with_error_reading_bytes(self):
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_conn = Mock()
+            mock_conn.read.return_value = self.bytes
+            mock_serial.return_value = mock_conn
+
+            with self.assertRaisesRegexp(SerialConnectionError, 'not all bytes read'):
+                self.serial_connection.connect(self.port)
+                self.serial_connection.recv(len(self.data) + 1)
+
+            mock_conn.read.assert_called_once_with(len(self.data) + 1)
+
+    def test_recv_without_connecting(self):
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_conn = Mock()
+            mock_serial.return_value = mock_conn
+
+            with self.assertRaisesRegexp(SerialConnectionError, 'not connected'):
+                self.serial_connection.recv(len(self.data))
+
+            mock_conn.read.assert_not_called()
 
 
 class TestCommands(unittest.TestCase):

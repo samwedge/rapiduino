@@ -1,18 +1,44 @@
-import serial
+import struct
+from serial import Serial, SerialException
 
 from rapiduino.exceptions import SerialConnectionError
 
 
 class SerialConnection(object):
 
-    def __init__(self):
-        self.conn = None
+    def __init__(self, conn=None):
+        self.conn = conn
 
     def connect(self, port, baudrate=9600, timeout=1):
-        try:
-            self.conn = serial.Serial(port, baudrate=baudrate, timeout=timeout)
-        except Exception as e:
-            raise SerialConnectionError(e)
+        if not self.conn:
+            try:
+                self.conn = Serial(port, baudrate=baudrate, timeout=timeout)
+            except SerialException:
+                raise
+
+    def send(self, data):
+        if self.conn:
+            bytes = struct.pack('{}B'.format(len(data)), *data)
+            n_bytes_written = self.conn.write(bytes)
+            if n_bytes_written != len(data):
+                raise SerialConnectionError('Error sending data - not all bytes written')
+        else:
+            raise SerialConnectionError('Error sending data - not connected')
+
+    def recv(self, n_bytes):
+        if self.conn:
+            bytes = self.conn.read(n_bytes)
+            if len(bytes) != n_bytes:
+                raise SerialConnectionError('Error sending data - not all bytes read')
+            data = struct.unpack('{}B'.format(n_bytes), bytes)
+            return data
+        else:
+            raise SerialConnectionError('Error receiving data - not connected')
+
+    def close(self):
+        if self.conn:
+            self.conn.close()
+            self.conn = None
 
 
 class Commands(object):

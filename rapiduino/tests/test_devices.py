@@ -1,7 +1,7 @@
 import unittest
 
 from rapiduino.communication import Commands
-from rapiduino.devices import ArduinoBase, ArduinoUno
+from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560
 from rapiduino.exceptions import PinError
 from rapiduino.globals import *
 
@@ -172,6 +172,17 @@ class TestArduinoUno(unittest.TestCase, TestArduinoMixin):
         self.valid_pins = range(20)
         self.valid_analog_pins = range(14, 20)
         self.valid_pwm_pins = [3, 5, 6, 9, 10, 11]
+
+        self.setup_mixin()
+
+
+class TestArduinoMega2560(unittest.TestCase, TestArduinoMixin):
+
+    def setUp(self):
+        self.device = ArduinoMega2560()
+        self.valid_pins = range(70)
+        self.valid_analog_pins = range(54, 70)
+        self.valid_pwm_pins = list(range(2, 14)) + [44, 45, 46]
 
         self.setup_mixin()
 

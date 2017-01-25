@@ -1,6 +1,8 @@
 import unittest
 
-from rapiduino.communication import Commands
+from mock import Mock
+
+from rapiduino.communication import Connection, SerialConnection
 from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560
 from rapiduino.exceptions import PinError
 from rapiduino.globals import *
@@ -26,9 +28,15 @@ class TestArduinoMixin(object):
             if (self.invalid_analog_pin is not None) and (self.invalid_pwm_pin is not None):
                 break
 
+        self.mocked_send = Mock()
+        self.mocked_recv = Mock()
+        self.device.connection._send = self.mocked_send
+        self.device.connection._recv = self.mocked_recv
+
     def test_init(self):
         self.assertIsInstance(self.device._pins, tuple)
-        self.assertIsInstance(self.device.commands, Commands)
+        self.assertIsInstance(self.device.connection, SerialConnection)
+        self.assertIsInstance(self.device.connection, Connection)
 
     def test_subclass(self):
         self.assertTrue(isinstance(self.device, ArduinoBase))
@@ -48,7 +56,7 @@ class TestArduinoMixin(object):
     def test_pin_mode_sets_mode(self):
         self.device.pin_mode(self.valid_digital_pin, OUTPUT)
         expected = (10, self.valid_digital_pin, OUTPUT.value)
-        self.assertEqual(self.device.commands.next_command(), expected)
+        self.mocked_send.assert_called_once_with(expected)
 
     def test_pin_mode_with_incorrect_mode(self):
         with self.assertRaises(ValueError):
@@ -61,7 +69,7 @@ class TestArduinoMixin(object):
     def test_digital_read_gets_state(self):
         self.device.digital_read(self.valid_digital_pin)
         expected = (20, self.valid_digital_pin)
-        self.assertEqual(self.device.commands.next_command(), expected)
+        self.mocked_send.assert_called_once_with(expected)
 
     def test_digital_read_with_pin_no_out_of_range(self):
         with self.assertRaises(IndexError):
@@ -70,7 +78,7 @@ class TestArduinoMixin(object):
     def test_digital_write_sets_state(self):
         self.device.digital_write(self.valid_digital_pin, HIGH)
         expected = (21, self.valid_digital_pin, HIGH.value)
-        self.assertEqual(self.device.commands.next_command(), expected)
+        self.mocked_send.assert_called_once_with(expected)
 
     def test_digital_write_with_incorrect_state(self):
         with self.assertRaises(ValueError):
@@ -83,7 +91,7 @@ class TestArduinoMixin(object):
     def test_analog_read_gets_state(self):
         self.device.analog_read(self.valid_analog_pin)
         expected = (30, self.valid_analog_pin)
-        self.assertEqual(self.device.commands.next_command(), expected)
+        self.mocked_send.assert_called_once_with(expected)
 
     def test_analog_read_with_pin_no_out_of_range(self):
         with self.assertRaises(IndexError):
@@ -96,7 +104,7 @@ class TestArduinoMixin(object):
     def test_analog_write_sets_state(self):
         self.device.analog_write(self.valid_pwm_pin, 100)
         expected = (31, self.valid_pwm_pin, 100)
-        self.assertEqual(self.device.commands.next_command(), expected)
+        self.mocked_send.assert_called_once_with(expected)
 
     def test_analog_write_with_incorrect_state(self):
         with self.assertRaises(ValueError):

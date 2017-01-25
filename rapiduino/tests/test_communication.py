@@ -2,7 +2,7 @@ import struct
 from serial import SerialException
 from mock import patch, Mock
 import unittest
-from rapiduino.communication import Commands, SerialConnection
+from rapiduino.communication import Connection, SerialConnection
 from rapiduino.exceptions import SerialConnectionError
 
 
@@ -18,19 +18,20 @@ class TestSerialConnection(unittest.TestCase):
 
     def test_init(self):
         self.assertIsInstance(self.serial_connection, SerialConnection)
+        self.assertIsInstance(self.serial_connection, Connection)
 
-    def test_connect(self):
+    def test_open(self):
         self.assertIsNone(self.serial_connection.conn)
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
-            self.serial_connection.connect(self.port, self.baudrate, self.timeout)
+            self.serial_connection.open(self.port, self.baudrate, self.timeout)
             self.assertEqual(self.serial_connection.conn, mock_serial.return_value)
             mock_serial.assert_called_once_with(self.port, baudrate=self.baudrate, timeout=self.timeout)
 
-    def test_connect_with_error(self):
+    def test_open_with_error(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
             mock_serial.side_effect = SerialException('Some Error Message')
             with self.assertRaisesRegexp(SerialException, 'Some Error Message'):
-                self.serial_connection.connect(self.port)
+                self.serial_connection.open(self.port)
             self.assertIsNone(self.serial_connection.conn)
 
     def test_close(self):
@@ -38,7 +39,7 @@ class TestSerialConnection(unittest.TestCase):
             mock_conn = Mock()
             mock_serial.return_value = mock_conn
 
-            self.serial_connection.connect(self.port)
+            self.serial_connection.open(self.port)
 
             self.assertEqual(self.serial_connection.conn, mock_conn)
             self.serial_connection.close()
@@ -51,8 +52,8 @@ class TestSerialConnection(unittest.TestCase):
             mock_conn.write.return_value = len(self.data)
             mock_serial.return_value = mock_conn
 
-            self.serial_connection.connect(self.port)
-            self.serial_connection.send(self.data)
+            self.serial_connection.open(self.port)
+            self.serial_connection._send(self.data)
 
             mock_conn.write.assert_called_once_with(self.bytes)
 
@@ -63,8 +64,8 @@ class TestSerialConnection(unittest.TestCase):
             mock_serial.return_value = mock_conn
 
             with self.assertRaisesRegexp(SerialConnectionError, 'not all bytes written'):
-                self.serial_connection.connect(self.port)
-                self.serial_connection.send(self.data)
+                self.serial_connection.open(self.port)
+                self.serial_connection._send(self.data)
 
             mock_conn.write.assert_called_once_with(self.bytes)
 
@@ -74,7 +75,7 @@ class TestSerialConnection(unittest.TestCase):
             mock_serial.return_value = mock_conn
 
             with self.assertRaisesRegexp(SerialConnectionError, 'not connected'):
-                self.serial_connection.send(self.data)
+                self.serial_connection._send(self.data)
 
             mock_conn.write.assert_not_called()
 
@@ -84,8 +85,8 @@ class TestSerialConnection(unittest.TestCase):
             mock_conn.read.return_value = self.bytes
             mock_serial.return_value = mock_conn
 
-            self.serial_connection.connect(self.port)
-            received_data = self.serial_connection.recv(len(self.data))
+            self.serial_connection.open(self.port)
+            received_data = self.serial_connection._recv(len(self.data))
 
             self.assertTupleEqual(received_data, self.data)
             mock_conn.read.assert_called_once_with(len(self.data))
@@ -97,8 +98,8 @@ class TestSerialConnection(unittest.TestCase):
             mock_serial.return_value = mock_conn
 
             with self.assertRaisesRegexp(SerialConnectionError, 'not all bytes read'):
-                self.serial_connection.connect(self.port)
-                self.serial_connection.recv(len(self.data) + 1)
+                self.serial_connection.open(self.port)
+                self.serial_connection._recv(len(self.data) + 1)
 
             mock_conn.read.assert_called_once_with(len(self.data) + 1)
 
@@ -108,75 +109,45 @@ class TestSerialConnection(unittest.TestCase):
             mock_serial.return_value = mock_conn
 
             with self.assertRaisesRegexp(SerialConnectionError, 'not connected'):
-                self.serial_connection.recv(len(self.data))
+                self.serial_connection._recv(len(self.data))
 
             mock_conn.read.assert_not_called()
 
 
-class TestCommands(unittest.TestCase):
+class TestConnection(unittest.TestCase):
 
     def setUp(self):
-        self.commands = Commands()
-        self.commands.add_command('poll')
-        self.commands.add_command('parrot', 7)
-        self.commands.add_command('pinMode', 3, 1)
-        self.commands.add_command('analogRead', 5)
-        self.commands.add_command('analogWrite', 17, 1)
+        self.mocked_send = Mock()
+        self.connection = Connection()
+        self.connection._send = self.mocked_send
 
-    def test_commands_have_been_added(self):
-        expected_commands = (
-            (0,),
-            (1, 7),
-            (10, 3, 1),
-            (30, 5),
-            (31, 17, 1)
-        )
-        self.assertEqual(self.commands.command_list, expected_commands)
+    def test_process_command(self):
+        self.connection.process_command('parrot', 5)
+        self.mocked_send.assert_called_once_with((1, 5))
 
-    def test_invalid_command_raises_error(self):
+    def test_process_command_with_invalid_command(self):
         with self.assertRaises(KeyError):
-            self.commands.add_command('invalidCommand')
+            self.connection.process_command('invalidCommand')
+        self.mocked_send.assert_not_called()
 
-    def test_invalid_args_raises_error(self):
+    def test_process_command_with_invalid_args(self):
         with self.assertRaises(TypeError):
-            self.commands.add_command('parrot', 3.7)
+            self.connection.process_command('parrot', 3.7)
+        self.mocked_send.assert_not_called()
 
-    def test_invalid_number_of_args_raises_error(self):
+    def test_process_command_with_invalid_number_of_args(self):
         with self.assertRaises(ValueError):
-            self.commands.add_command('parrot', 0, 0)
-
-    def test_commands_are_readonly(self):
-        with self.assertRaises(AttributeError):
-            self.commands.command_list = []
-
-    def test_next_command(self):
-        expected_first_command = (0,)
-        expected_remaining_commands = (
-            (1, 7),
-            (10, 3, 1),
-            (30, 5),
-            (31, 17, 1)
-        )
-        popped_command = self.commands.next_command()
-        self.assertEqual(popped_command, expected_first_command)
-        self.assertEqual(self.commands.command_list, expected_remaining_commands)
-
-    def test_add_command_rejects_non_tuple(self):
-        with self.assertRaises(TypeError):
-            self.commands.add_command(0)
+            self.connection.process_command('parrot', 0, 0)
+        self.mocked_send.assert_not_called()
 
     def test_command_spec(self):
-        self.assertIsInstance(self.commands.command_spec, dict)
-        for key in self.commands.command_spec.keys():
-            self.assertIn('cmd', self.commands.command_spec[key])
-            self.assertIn('nargs', self.commands.command_spec[key])
-            self.assertEqual(len(self.commands.command_spec[key]), 2)
-            self.assertIsInstance(self.commands.command_spec[key]['cmd'], int)
-            self.assertIsInstance(self.commands.command_spec[key]['nargs'], int)
-
-    def test_command_spec_readonly(self):
-        with self.assertRaises(AttributeError):
-            self.commands.command_spec = 5
+        self.assertIsInstance(self.connection._command_spec, dict)
+        for key in self.connection._command_spec.keys():
+            self.assertIn('cmd', self.connection._command_spec[key])
+            self.assertIn('nargs', self.connection._command_spec[key])
+            self.assertEqual(len(self.connection._command_spec[key]), 2)
+            self.assertIsInstance(self.connection._command_spec[key]['cmd'], int)
+            self.assertIsInstance(self.connection._command_spec[key]['nargs'], int)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 from rapiduino.base import Pin
-from rapiduino.communication import Commands
+from rapiduino.communication import SerialConnection
 from rapiduino.exceptions import PinError
 from rapiduino.globals import *
 
@@ -7,32 +7,32 @@ from rapiduino.globals import *
 class ArduinoBase(object):
 
     def __init__(self):
-        self.commands = Commands()
+        self.connection = SerialConnection()
 
     def digital_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
-        self.commands.add_command('digitalRead', pin_no)
+        self.connection.process_command('digitalRead', pin_no)
 
     def digital_write(self, pin_no, state):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_state(state)
-        self.commands.add_command('digitalWrite', pin_no, state.value)
+        self.connection.process_command('digitalWrite', pin_no, state.value)
 
     def analog_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
         self._assert_analog_pin(pin_no)
-        self.commands.add_command('analogRead', pin_no)
+        self.connection.process_command('analogRead', pin_no)
 
     def analog_write(self, pin_no, value):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_analog_write_range(value)
         self._assert_pwm_pin(pin_no)
-        self.commands.add_command('analogWrite', pin_no, value)
+        self.connection.process_command('analogWrite', pin_no, value)
 
     def pin_mode(self, pin_no, mode):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_mode(mode)
-        self.commands.add_command('pinMode', pin_no, mode.value)
+        self.connection.process_command('pinMode', pin_no, mode.value)
 
     def _assert_valid_pin_number(self, pin_no):
         if (pin_no >= len(self.pins)) or (pin_no < 0):

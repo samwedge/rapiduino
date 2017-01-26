@@ -1,9 +1,12 @@
 import struct
+import abc
+import six
 from serial import Serial, SerialException
 
 from rapiduino.exceptions import SerialConnectionError
 
 
+@six.add_metaclass(abc.ABCMeta)
 class Connection(object):
 
     def process_command(self, command, *args):
@@ -26,18 +29,21 @@ class Connection(object):
         command_sequence.insert(0, command_spec[command]['cmd'])
         self._send(tuple(command_sequence))
 
+    @abc.abstractmethod
     def open(self, *args, **kwargs):
-        raise NotImplementedError()
+        pass
 
+    @abc.abstractmethod
     def close(self, *args, **kwargs):
-        raise NotImplementedError()
+        pass
 
+    @abc.abstractmethod
     def _send(self, *args, **kwargs):
-        raise NotImplementedError()
+        pass
 
+    @abc.abstractmethod
     def _recv(self, *args, **kwargs):
-        raise NotImplementedError()
-
+        pass
 
     @property
     def _command_spec(self):

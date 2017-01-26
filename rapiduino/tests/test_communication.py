@@ -20,6 +20,15 @@ class TestSerialConnection(unittest.TestCase):
         self.assertIsInstance(self.serial_connection, SerialConnection)
         self.assertIsInstance(self.serial_connection, Connection)
 
+    def test_command_spec(self):
+        self.assertIsInstance(self.serial_connection._command_spec, dict)
+        for key in self.serial_connection._command_spec.keys():
+            self.assertIn('cmd', self.serial_connection._command_spec[key])
+            self.assertIn('nargs', self.serial_connection._command_spec[key])
+            self.assertEqual(len(self.serial_connection._command_spec[key]), 2)
+            self.assertIsInstance(self.serial_connection._command_spec[key]['cmd'], int)
+            self.assertIsInstance(self.serial_connection._command_spec[key]['nargs'], int)
+
     def test_open(self):
         self.assertIsNone(self.serial_connection.conn)
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
@@ -113,41 +122,28 @@ class TestSerialConnection(unittest.TestCase):
 
             mock_conn.read.assert_not_called()
 
+    @patch.object(SerialConnection, '_send')
+    def test_process_command(self, mocked_send):
+        self.serial_connection.process_command('parrot', 5)
+        mocked_send.assert_called_once_with((1, 5))
 
-class TestConnection(unittest.TestCase):
-
-    def setUp(self):
-        self.mocked_send = Mock()
-        self.connection = Connection()
-        self.connection._send = self.mocked_send
-
-    def test_process_command(self):
-        self.connection.process_command('parrot', 5)
-        self.mocked_send.assert_called_once_with((1, 5))
-
-    def test_process_command_with_invalid_command(self):
+    @patch.object(SerialConnection, '_send')
+    def test_process_command_with_invalid_command(self, mocked_send):
         with self.assertRaises(KeyError):
-            self.connection.process_command('invalidCommand')
-        self.mocked_send.assert_not_called()
+            self.serial_connection.process_command('invalidCommand')
+        mocked_send.assert_not_called()
 
-    def test_process_command_with_invalid_args(self):
+    @patch.object(SerialConnection, '_send')
+    def test_process_command_with_invalid_args(self, mocked_send):
         with self.assertRaises(TypeError):
-            self.connection.process_command('parrot', 3.7)
-        self.mocked_send.assert_not_called()
+            self.serial_connection.process_command('parrot', 3.7)
+        mocked_send.assert_not_called()
 
-    def test_process_command_with_invalid_number_of_args(self):
+    @patch.object(SerialConnection, '_send')
+    def test_process_command_with_invalid_number_of_args(self, mocked_send):
         with self.assertRaises(ValueError):
-            self.connection.process_command('parrot', 0, 0)
-        self.mocked_send.assert_not_called()
-
-    def test_command_spec(self):
-        self.assertIsInstance(self.connection._command_spec, dict)
-        for key in self.connection._command_spec.keys():
-            self.assertIn('cmd', self.connection._command_spec[key])
-            self.assertIn('nargs', self.connection._command_spec[key])
-            self.assertEqual(len(self.connection._command_spec[key]), 2)
-            self.assertIsInstance(self.connection._command_spec[key]['cmd'], int)
-            self.assertIsInstance(self.connection._command_spec[key]['nargs'], int)
+            self.serial_connection.process_command('parrot', 0, 0)
+        mocked_send.assert_not_called()
 
 
 if __name__ == '__main__':

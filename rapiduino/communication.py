@@ -18,16 +18,18 @@ class Connection(object):
         for arg in args:
             if type(arg) != int:
                 raise TypeError('Expected args to be int, but received {}'.format(type(arg)))
-        if len(args) != command_spec[command]['nargs']:
+        if len(args) != command_spec[command]['tx_len']:
             raise ValueError(
                 'Expected args to be length {}, but received length {}'.format(
-                    command_spec[command]['nargs'], len(args)
+                    command_spec[command]['tx_len'], len(args)
                 )
             )
 
         command_sequence = list(args)
         command_sequence.insert(0, command_spec[command]['cmd'])
-        self._send(tuple(command_sequence))
+        self._send(command_spec[command], args)
+
+        return self._recv(command_spec[command])
 
     @abc.abstractmethod
     def open(self, *args, **kwargs):
@@ -50,35 +52,59 @@ class Connection(object):
         return {
             'poll': {
                 'cmd': 0,
-                'nargs': 0
+                'tx_len': 0,
+                'tx_type': 'B',
+                'rx_len': 1,
+                'rx_type': 'B'
             },
             'parrot': {
                 'cmd': 1,
-                'nargs': 1
+                'tx_len': 1,
+                'tx_type': 'B',
+                'rx_len': 1,
+                'rx_type': 'B'
             },
             'version': {
                 'cmd': 2,
-                'nargs': 0
+                'tx_len': 0,
+                'tx_type': 'B',
+                'rx_len': 3,
+                'rx_type': 'B'
             },
             'pinMode': {
                 'cmd': 10,
-                'nargs': 2
+                'tx_len': 2,
+                'tx_type': 'B',
+                'rx_len': 0,
+                'rx_type': ''
             },
             'digitalRead': {
                 'cmd': 20,
-                'nargs': 1
+                'tx_len': 1,
+                'tx_type': 'B',
+                'rx_len': 1,
+                'rx_type': 'B'
             },
             'digitalWrite': {
                 'cmd': 21,
-                'nargs': 2
+                'tx_len': 2,
+                'tx_type': 'B',
+                'rx_len': 0,
+                'rx_type': ''
             },
             'analogRead': {
                 'cmd': 30,
-                'nargs': 1
+                'tx_len': 1,
+                'tx_type': 'B',
+                'rx_len': 1,
+                'rx_type': 'H'
             },
             'analogWrite': {
                 'cmd': 31,
-                'nargs': 2
+                'tx_len': 2,
+                'tx_type': 'B',
+                'rx_len': 0,
+                'rx_type': ''
             },
         }
 
@@ -100,21 +126,20 @@ class SerialConnection(Connection):
             self.conn.close()
             self.conn = None
 
-    def _send(self, data):
+    def _send(self, cmd_spec, data):
         if self.conn:
-            bytes = struct.pack('{}B'.format(len(data)), *data)
-            n_bytes_written = self.conn.write(bytes)
-            if n_bytes_written != len(data):
+            bytes_to_send = struct.pack('B{}{}'.format(cmd_spec['tx_len'], cmd_spec['tx_type']), cmd_spec['cmd'], *data)
+            n_bytes_written = self.conn.write(bytes_to_send)
+            if n_bytes_written != (len(data) + 1):
                 raise SerialConnectionError('Error sending data - not all bytes written')
         else:
             raise SerialConnectionError('Error sending data - not connected')
 
-    def _recv(self, n_bytes):
+    def _recv(self, cmd_spec):
         if self.conn:
-            bytes = self.conn.read(n_bytes)
-            if len(bytes) != n_bytes:
+            bytes_read = self.conn.read(cmd_spec['rx_len'])
+            if len(bytes_read) != cmd_spec['rx_len']:
                 raise SerialConnectionError('Error sending data - not all bytes read')
-            data = struct.unpack('{}B'.format(n_bytes), bytes)
-            return data
+            return struct.unpack('{}{}'.format(cmd_spec['rx_len'], cmd_spec['rx_type']), bytes_read)
         else:
             raise SerialConnectionError('Error receiving data - not connected')

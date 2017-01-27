@@ -105,7 +105,7 @@ class Connection(object):
                 'tx_type': 'B',
                 'rx_len': 0,
                 'rx_type': ''
-            },
+            }
         }
 
 
@@ -137,7 +137,7 @@ class SerialConnection(Connection):
 
     def _recv(self, cmd_spec):
         if cmd_spec['rx_len'] == 0:
-            return
+            return ()
         if self.conn:
             bytes_read = self.conn.read(cmd_spec['rx_len'])
             if len(bytes_read) != cmd_spec['rx_len']:

@@ -126,7 +126,7 @@ class TestSerialConnection(unittest.TestCase):
             self.serial_connection.open(self.port)
             received_data = self.serial_connection._recv(self.digital_write_cmd_spec)
 
-            self.assertIsNone(received_data)
+            self.assertEqual(received_data, ())
             mock_conn.read.assert_not_called()
 
     def test_recv_with_error_reading_bytes(self):

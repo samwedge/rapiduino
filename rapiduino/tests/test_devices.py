@@ -53,7 +53,47 @@ class TestArduinoMixin(object):
             self.device.pins = []
         self.assertIsInstance(self.device.pins, tuple)
 
-    def test_pin_mode_sets_mode(self):
+    def test_poll(self):
+        self.mocked_recv.return_value = (1,)
+        value = self.device.poll()
+        poll_cmd_spec = {
+            'cmd': 0,
+            'tx_len': 0,
+            'tx_type': 'B',
+            'rx_len': 1,
+            'rx_type': 'B'
+
+            }
+        self.mocked_send.assert_called_once_with(poll_cmd_spec, ())
+        self.assertEqual(value, 1)
+
+    def test_parrot(self):
+        self.mocked_recv.return_value = (5,)
+        value = self.device.parrot(5)
+        parrot_cmd_spec = {
+            'cmd': 1,
+            'tx_len': 1,
+            'tx_type': 'B',
+            'rx_len': 1,
+            'rx_type': 'B'
+        }
+        self.mocked_send.assert_called_once_with(parrot_cmd_spec, (5,))
+        self.assertEqual(value, 5)
+
+    def test_version(self):
+        self.mocked_recv.return_value = (1, 2, 3)
+        version = self.device.version()
+        version_cmd_spec = {
+            'cmd': 2,
+            'tx_len': 0,
+            'tx_type': 'B',
+            'rx_len': 3,
+            'rx_type': 'B'
+        }
+        self.mocked_send.assert_called_once_with(version_cmd_spec, ())
+        self.assertEqual(version, (1, 2, 3))
+
+    def test_pin_mode(self):
         self.device.pin_mode(self.valid_digital_pin, OUTPUT)
         pin_mode_cmd_spec = {
             'cmd': 10,
@@ -72,7 +112,7 @@ class TestArduinoMixin(object):
         with self.assertRaises(IndexError):
             self.device.pin_mode(self.out_of_range_pin, OUTPUT)
 
-    def test_digital_read_gets_state(self):
+    def test_digital_read(self):
         self.mocked_recv.return_value = (1,)
         state = self.device.digital_read(self.valid_digital_pin)
         digital_read_cmd_spec = {
@@ -89,7 +129,7 @@ class TestArduinoMixin(object):
         with self.assertRaises(IndexError):
             self.device.digital_read(self.out_of_range_pin)
 
-    def test_digital_write_sets_state(self):
+    def test_digital_write(self):
         self.device.digital_write(self.valid_digital_pin, HIGH)
         digital_write_cmd_spec = {
             'cmd': 21,
@@ -108,7 +148,7 @@ class TestArduinoMixin(object):
         with self.assertRaises(IndexError):
             self.device.digital_write(self.out_of_range_pin, HIGH)
 
-    def test_analog_read_gets_state(self):
+    def test_analog_read(self):
         self.mocked_recv.return_value = (100,)
         value = self.device.analog_read(self.valid_analog_pin)
         analog_read_cmd_spec = {
@@ -129,7 +169,7 @@ class TestArduinoMixin(object):
         with self.assertRaisesRegexp(PinError, 'cannot complete operation as analog=False for pin {}'.format(self.invalid_analog_pin)):
             self.device.analog_read(self.invalid_analog_pin)
 
-    def test_analog_write_sets_state(self):
+    def test_analog_write(self):
         self.device.analog_write(self.valid_pwm_pin, 100)
         analog_write_cmd_spec = {
             'cmd': 31,

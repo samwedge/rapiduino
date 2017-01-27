@@ -9,6 +9,15 @@ class ArduinoBase(object):
     def __init__(self):
         self.connection = SerialConnection()
 
+    def poll(self):
+        return self.connection.process_command('poll')[0]
+
+    def parrot(self, value):
+        return self.connection.process_command('parrot', value)[0]
+
+    def version(self):
+        return self.connection.process_command('version')
+
     def digital_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
         state = self.connection.process_command('digitalRead', pin_no)

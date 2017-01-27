@@ -73,7 +73,8 @@ class TestArduinoMixin(object):
             self.device.pin_mode(self.out_of_range_pin, OUTPUT)
 
     def test_digital_read_gets_state(self):
-        self.device.digital_read(self.valid_digital_pin)
+        self.mocked_recv.return_value = (1,)
+        state = self.device.digital_read(self.valid_digital_pin)
         digital_read_cmd_spec = {
             'cmd': 20,
             'tx_len': 1,
@@ -82,6 +83,7 @@ class TestArduinoMixin(object):
             'rx_type': 'B'
         }
         self.mocked_send.assert_called_once_with(digital_read_cmd_spec, (self.valid_digital_pin,))
+        self.assertEqual(state, HIGH)
 
     def test_digital_read_with_pin_no_out_of_range(self):
         with self.assertRaises(IndexError):
@@ -107,7 +109,8 @@ class TestArduinoMixin(object):
             self.device.digital_write(self.out_of_range_pin, HIGH)
 
     def test_analog_read_gets_state(self):
-        self.device.analog_read(self.valid_analog_pin)
+        self.mocked_recv.return_value = (100,)
+        value = self.device.analog_read(self.valid_analog_pin)
         analog_read_cmd_spec = {
             'cmd': 30,
             'tx_len': 1,
@@ -116,6 +119,7 @@ class TestArduinoMixin(object):
             'rx_type': 'H'
         }
         self.mocked_send.assert_called_once_with(analog_read_cmd_spec, (self.valid_analog_pin,))
+        self.assertEqual(value, 100)
 
     def test_analog_read_with_pin_no_out_of_range(self):
         with self.assertRaises(IndexError):

@@ -11,7 +11,11 @@ class ArduinoBase(object):
 
     def digital_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
-        self.connection.process_command('digitalRead', pin_no)
+        state = self.connection.process_command('digitalRead', pin_no)
+        if state[0] == 1:
+            return HIGH
+        else:
+            return LOW
 
     def digital_write(self, pin_no, state):
         self._assert_valid_pin_number(pin_no)
@@ -21,7 +25,7 @@ class ArduinoBase(object):
     def analog_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
         self._assert_analog_pin(pin_no)
-        self.connection.process_command('analogRead', pin_no)
+        return self.connection.process_command('analogRead', pin_no)[0]
 
     def analog_write(self, pin_no, value):
         self._assert_valid_pin_number(pin_no)

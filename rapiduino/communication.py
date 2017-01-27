@@ -136,6 +136,8 @@ class SerialConnection(Connection):
             raise SerialConnectionError('Error sending data - not connected')
 
     def _recv(self, cmd_spec):
+        if cmd_spec['rx_len'] == 0:
+            return
         if self.conn:
             bytes_read = self.conn.read(cmd_spec['rx_len'])
             if len(bytes_read) != cmd_spec['rx_len']:

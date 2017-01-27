@@ -13,8 +13,10 @@ class TestSerialConnection(unittest.TestCase):
         self.port = '/dev/ttyACM0'
         self.baudrate = 115200
         self.timeout = 5
-        self.version_data = (1, 2, 3)
-        self.version_bytes = struct.pack('BBB', *self.version_data)
+        self.version_tx_data = (2,)
+        self.version_tx_bytes = struct.pack('B', *self.version_tx_data)
+        self.version_rx_data = (1, 2, 3)
+        self.version_rx_bytes = struct.pack('BBB', *self.version_rx_data)
         self.version_cmd_spec = {
                 'cmd': 2,
                 'tx_len': 0,
@@ -22,8 +24,8 @@ class TestSerialConnection(unittest.TestCase):
                 'rx_len': 3,
                 'rx_type': 'B'
             }
-        self.digital_write_data = (21, 1, 2)
-        self.digital_write_bytes = struct.pack('BBB', *self.digital_write_data)
+        self.digital_write_tx_data = (21, 1, 2)
+        self.digital_write_tx_bytes = struct.pack('BBB', *self.digital_write_tx_data)
         self.digital_write_cmd_spec = {
                 'cmd': 21,
                 'tx_len': 2,
@@ -31,7 +33,6 @@ class TestSerialConnection(unittest.TestCase):
                 'rx_len': 0,
                 'rx_type': ''
             }
-
 
     def test_init(self):
         self.assertIsInstance(self.serial_connection, SerialConnection)
@@ -76,25 +77,25 @@ class TestSerialConnection(unittest.TestCase):
     def test_send(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
             mock_conn = Mock()
-            mock_conn.write.return_value = len(self.digital_write_data)
+            mock_conn.write.return_value = len(self.digital_write_tx_data)
             mock_serial.return_value = mock_conn
 
             self.serial_connection.open(self.port)
-            self.serial_connection._send(self.digital_write_cmd_spec, self.digital_write_data[1::])
+            self.serial_connection._send(self.digital_write_cmd_spec, self.digital_write_tx_data[1::])
 
-            mock_conn.write.assert_called_once_with(self.digital_write_bytes)
+            mock_conn.write.assert_called_once_with(self.digital_write_tx_bytes)
 
     def test_send_with_error_writing_bytes(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
             mock_conn = Mock()
-            mock_conn.write.return_value = len(self.digital_write_data) + 1
+            mock_conn.write.return_value = len(self.digital_write_tx_data) + 1
             mock_serial.return_value = mock_conn
 
             with self.assertRaisesRegexp(SerialConnectionError, 'not all bytes written'):
                 self.serial_connection.open(self.port)
-                self.serial_connection._send(self.digital_write_cmd_spec, self.digital_write_data[1::])
+                self.serial_connection._send(self.digital_write_cmd_spec, self.digital_write_tx_data[1::])
 
-            mock_conn.write.assert_called_once_with(self.digital_write_bytes)
+            mock_conn.write.assert_called_once_with(self.digital_write_tx_bytes)
 
     def test_send_without_connecting(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
@@ -102,33 +103,43 @@ class TestSerialConnection(unittest.TestCase):
             mock_serial.return_value = mock_conn
 
             with self.assertRaisesRegexp(SerialConnectionError, 'not connected'):
-                self.serial_connection._send(self.digital_write_cmd_spec, self.digital_write_data[1::])
+                self.serial_connection._send(self.digital_write_cmd_spec, self.digital_write_tx_data[1::])
 
             mock_conn.write.assert_not_called()
 
     def test_recv(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
             mock_conn = Mock()
-            mock_conn.read.return_value = self.version_bytes
+            mock_conn.read.return_value = self.version_rx_bytes
             mock_serial.return_value = mock_conn
 
             self.serial_connection.open(self.port)
             received_data = self.serial_connection._recv(self.version_cmd_spec)
 
-            self.assertTupleEqual(received_data, self.version_data)
-            mock_conn.read.assert_called_once_with(len(self.version_data))
+            self.assertTupleEqual(received_data, self.version_rx_data)
+            mock_conn.read.assert_called_once_with(len(self.version_rx_data))
+
+    def test_recv_with_no_data_to_recv(self):
+        with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
+            mock_conn = Mock()
+            mock_serial.return_value = mock_conn
+            self.serial_connection.open(self.port)
+            received_data = self.serial_connection._recv(self.digital_write_cmd_spec)
+
+            self.assertIsNone(received_data)
+            mock_conn.read.assert_not_called()
 
     def test_recv_with_error_reading_bytes(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
             mock_conn = Mock()
-            mock_conn.read.return_value = self.version_bytes
+            mock_conn.read.return_value = self.version_rx_bytes
             mock_serial.return_value = mock_conn
             self.version_cmd_spec['rx_len'] += 1
             with self.assertRaisesRegexp(SerialConnectionError, 'not all bytes read'):
                 self.serial_connection.open(self.port)
                 self.serial_connection._recv(self.version_cmd_spec)
 
-            mock_conn.read.assert_called_once_with(len(self.version_data) + 1)
+            mock_conn.read.assert_called_once_with(len(self.version_rx_data) + 1)
 
     def test_recv_without_connecting(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
@@ -143,20 +154,13 @@ class TestSerialConnection(unittest.TestCase):
     @patch.object(SerialConnection, '_recv')
     @patch.object(SerialConnection, '_send')
     def test_process_command(self, mocked_send, mocked_recv):
-        mocked_recv.return_value = 5
-        command = {
-                'cmd': 1,
-                'tx_len': 1,
-                'tx_type': 'B',
-                'rx_len': 1,
-                'rx_type': 'B'
-            }
+        mocked_recv.return_value = self.version_rx_data
 
-        received = self.serial_connection.process_command('parrot', 5)
+        received = self.serial_connection.process_command('version')
 
-        mocked_send.assert_called_once_with(command, (5,))
-        mocked_recv.assert_called_once_with(command)
-        self.assertEqual(received, 5)
+        mocked_send.assert_called_once_with(self.version_cmd_spec, self.version_tx_data[1::])
+        mocked_recv.assert_called_once_with(self.version_cmd_spec)
+        self.assertEqual(received, self.version_rx_data)
 
     @patch.object(SerialConnection, '_send')
     def test_process_command_with_invalid_command(self, mocked_send):

@@ -1,52 +1,103 @@
 
-//Define the acknowledgement bytes
+char versionMajor = 0;
+char versionMinor = 1;
+char versionMicro = 0;
 
-int versionMajor = 0;
-int versionMinor = 1;
-int versionPatch = 0;
+char cmdByte;
+char pinNum;
+char dataByte;
 
-#define ackBadCommand (byte)0
-#define ackGoodCommand 1
-#define ackData 2
+void sendByte(char databyte){
+  Serial.write(databyte);
+  return;
+}
 
-int recvByte;
+char recvByte(){
+  while(!Serial.available());
+  return Serial.read();
+}
 
 void setup(){
   Serial.begin(9600);
-
-  //pinMode(beepPin,OUTPUT);
-  //digitalWrite(beepPin,LOW);
-
 }
 
 void loop(){
 
-  //Wait for information to become available
+  // Wait for information to become available
   while(!Serial.available());
 
-  //Receive the Command Byte
-  recvByte = Serial.read();
+  // Receive the Command Byte
+  cmdByte = Serial.read();
 
-  //Polling
-  if(recvByte==0){
-    Serial.write(ackGoodCommand);
-  }
-
-  //Versioning
-  else if(recvByte==1){
-    Serial.write(ackGoodCommand);
-    Serial.write(versionMajor);
-    Serial.write(versionMinor);
-    Serial.write(versionPatch);
-  }
-  //Arduino Version
-  else if(recvByte==2){
-    Serial.write(ackGoodCommand);
-    Serial.write(11);
-    Serial.print("Arduino Uno");
-  }
-  else{
-    Serial.write(ackBadCommand);
+  // poll
+  if(cmdByte==0){
+    sendByte(1);
   }
 
+  // parrot
+  if(cmdByte==1){
+    char dataByte = recvByte();
+    Serial.write(dataByte);
+  }
+
+  // version
+  if(cmdByte==2){
+    sendByte(versionMajor);
+    sendByte(versionMinor);
+    sendByte(versionMicro);
+  }
+
+  // pinMode
+  if(cmdByte==10){
+    pinNum = recvByte();
+    dataByte = recvByte();
+    if(dataByte == 0){
+      pinMode(pinNum, INPUT);
+    }
+    else if(dataByte == 1){
+      pinMode(pinNum, OUTPUT);
+    }
+    else if(dataByte == 2){
+      pinMode(pinNum, INPUT_PULLUP);
+    }
+  }
+  
+  // digitalRead
+  if(cmdByte==20){
+    pinNum = recvByte();
+    dataByte = digitalRead(pinNum);
+    if(dataByte == LOW){
+      Serial.write(0);
+    }
+    else if(dataByte == HIGH){
+      Serial.write(1);
+    }
+  }
+  
+  // digitalWrite
+  if(cmdByte==21){
+    pinNum = recvByte();
+    dataByte = recvByte();
+    if(dataByte == 0){
+      digitalWrite(pinNum, LOW);
+    }
+    else if(dataByte == 1){
+      digitalWrite(pinNum, HIGH);
+    }
+  }
+  
+  // analogRead
+  if(cmdByte==30){
+    pinNum = recvByte();
+    dataByte = analogRead(pinNum);
+    Serial.write(dataByte);
+  }
+  
+  // analogWrite
+  if(cmdByte==31){;
+    pinNum = recvByte();
+    int value = recvByte();
+    analogWrite(pinNum, value);
+  }
+   
 }

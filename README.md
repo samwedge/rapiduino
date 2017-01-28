@@ -8,32 +8,32 @@ The Rapiduino library can be used to connect to the Arduino and send it familiar
 By sending these commands from Python and not writing them directly on the Arduino, you gain the power of Python's wonderful syntax and libraries. 
 
 
-## Why develop Rapiduino?
+## Why use Rapiduino?
 
 * Rapidly develop using everyone's favourite language
 * Easily integrate an Arduino with Python's libraries to provide a real-time clock, web access, data visualisation, number crunching etc...
-* Allow hot-swappable parts - change pin mode, pin state etc. whenever you like from your Python code!
+* Allow hot-swappable parts. Change pin mode, pin state etc. whenever you like from your Python code!
 * Easily obtain data from your Arduino without setting up any custom communication
 * Probably many other benefits that will become realised as time goes on...
 
 
-## Are there any donwsides?
+## Are there any downsides?
 
 Of course. Don't use this library if:
 * You are not able to run a computer alongside an Arduino (not even a Raspberry Pi) because of issues such as size, battery, operating conditions etc.
-* You need timing accuracy that Rapiduino does not yet support; For example, for an ultrasonic sensor
+* You need timing accuracy that Rapiduino does not yet support; For example, for an ultrasonic sensor where the connection lag could cause innacuracy
 * Probably many others personal to your project...
 
 
 ## Status
 
 Rapiduino is in active development.
-It is ready to be used in simple projects, but there may be some major breaking changes and restructuring until it finds its place.
+It is ready to be used in simple projects, but there may be some major breaking changes and restructuring until it settles down
 
 
 ## Installation
 
-To use this package, copy the "rapiduino" directory it into your python site-packages or to a local directory
+To use this package, copy the "rapiduino" directory into your python site-packages or to a local directory
 It has been fully tested with Python 2.7 and Python 3.4.
 
 

@@ -1,9 +1,13 @@
+import abc
+import six
+
 from rapiduino.base import Pin
 from rapiduino.communication import SerialConnection
 from rapiduino.exceptions import PinError
 from rapiduino.globals import *
 
 
+@six.add_metaclass(abc.ABCMeta)
 class ArduinoBase(object):
 
     def __init__(self):

@@ -38,7 +38,7 @@ setup(
 
     packages=find_packages(exclude=['arduino', 'tests']),
 
-    install_requires=['serial', 'six'],
+    install_requires=['pyserial', 'six'],
 
     extras_require={
         'test': ['mock'],

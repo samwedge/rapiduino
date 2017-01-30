@@ -47,15 +47,13 @@ It has been fully tested with Python 2.7 and Python 3.4.
 To use with an ArduinoUno, simply import the class and globals as follows
 
     from rapiduino.devices import ArduinoUno
-    from rapiduino.globals import *
+    from rapiduino.globals.arduino_uno import *
 
-Set up the class and serial connection with the following. The port can be identified using the Arduino software
+Set up the class and serial connection with the following. The port to be passed in can be identified using the Arduino software
 
-    serial_port = '/dev/ttyACM0'
-    arduino = ArduinoUno()
-    arduino.connection.open(serial_port)
+    arduino = ArduinoUno('/dev/ttyACM0')
     
-Then start using! Here is a blinking LED example:
+Then start using it! Here is a blinking LED example:
     
     import time
     while True:

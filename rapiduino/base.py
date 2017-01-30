@@ -1,4 +1,4 @@
-from rapiduino.globals import *
+from rapiduino.globals.common import *
 
 
 class Pin(object):

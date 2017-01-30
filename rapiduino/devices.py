@@ -4,7 +4,7 @@ import six
 from rapiduino.base import Pin
 from rapiduino.communication import SerialConnection
 from rapiduino.exceptions import PinError
-from rapiduino.globals import *
+from rapiduino.globals.common import *
 
 
 @six.add_metaclass(abc.ABCMeta)

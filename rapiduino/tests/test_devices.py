@@ -5,7 +5,9 @@ from mock import Mock, patch
 from rapiduino.communication import Connection, SerialConnection
 from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560
 from rapiduino.exceptions import PinError
-from rapiduino.globals import *
+from rapiduino.globals.common import *
+import rapiduino.globals.arduino_uno as arduino_uno_globals
+import rapiduino.globals.arduino_mega_2560 as arduino_mega_2560_globals
 
 
 class TestArduinoMixin(object):
@@ -253,11 +255,16 @@ class TestArduinoMixin(object):
         with self.assertRaises(ValueError):
             self.device._assert_valid_pin_state(OUTPUT)
 
+    def test_analog_alias_globals(self):
+        for analog_alias, pin_num in enumerate(self.valid_analog_pins):
+            self.assertEqual(getattr(self.analog_alias, 'A{}'.format(analog_alias)), pin_num)
+
 
 class TestArduinoUno(unittest.TestCase, TestArduinoMixin):
 
     def setUp(self):
         self.device_class = ArduinoUno
+        self.analog_alias = arduino_uno_globals
         self.valid_pins = range(20)
         self.valid_analog_pins = range(14, 20)
         self.valid_pwm_pins = [3, 5, 6, 9, 10, 11]
@@ -269,6 +276,7 @@ class TestArduinoMega2560(unittest.TestCase, TestArduinoMixin):
 
     def setUp(self):
         self.device_class = ArduinoMega2560
+        self.analog_alias = arduino_mega_2560_globals
         self.valid_pins = range(70)
         self.valid_analog_pins = range(54, 70)
         self.valid_pwm_pins = list(range(2, 14)) + [44, 45, 46]

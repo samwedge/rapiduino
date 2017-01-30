@@ -1,6 +1,6 @@
 import unittest
 
-from rapiduino.globals import *
+from rapiduino.globals.common import *
 
 
 class GlobalsTestCase(unittest.TestCase):

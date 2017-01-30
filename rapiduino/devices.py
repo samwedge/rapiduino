@@ -10,8 +10,10 @@ from rapiduino.globals import *
 @six.add_metaclass(abc.ABCMeta)
 class ArduinoBase(object):
 
-    def __init__(self):
+    def __init__(self, port=None):
         self.connection = SerialConnection()
+        if port is not None:
+            self.connection.open(port)
 
     def poll(self):
         return self.connection.process_command('poll')[0]
@@ -95,8 +97,8 @@ class ArduinoBase(object):
 
 class ArduinoUno(ArduinoBase):
 
-    def __init__(self):
-        super(ArduinoUno, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(ArduinoUno, self).__init__(*args, **kwargs)
         self._pins = (
             Pin(0),
             Pin(1),
@@ -123,8 +125,8 @@ class ArduinoUno(ArduinoBase):
 
 class ArduinoMega2560(ArduinoBase):
 
-    def __init__(self):
-        super(ArduinoMega2560, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(ArduinoMega2560, self).__init__(*args, **kwargs)
         self._pins = (
             Pin(0),
             Pin(1),

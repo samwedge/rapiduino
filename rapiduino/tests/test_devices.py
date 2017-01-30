@@ -1,6 +1,6 @@
 import unittest
 
-from mock import Mock
+from mock import Mock, patch
 
 from rapiduino.communication import Connection, SerialConnection
 from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560
@@ -11,6 +11,7 @@ from rapiduino.globals import *
 class TestArduinoMixin(object):
 
     def setup_mixin(self):
+        self.device = self.device_class()
         self.valid_analog_pin = self.valid_analog_pins[0]
         self.valid_digital_pin = self.valid_pins[0]
         self.valid_pwm_pin = self.valid_pwm_pins[0]
@@ -30,6 +31,7 @@ class TestArduinoMixin(object):
 
         self.mocked_send = Mock()
         self.mocked_recv = Mock()
+
         self.device.connection._send = self.mocked_send
         self.device.connection._recv = self.mocked_recv
 
@@ -37,6 +39,11 @@ class TestArduinoMixin(object):
         self.assertIsInstance(self.device._pins, tuple)
         self.assertIsInstance(self.device.connection, SerialConnection)
         self.assertIsInstance(self.device.connection, Connection)
+
+    def test_init_with_port(self):
+        with patch.object(SerialConnection, 'open') as mocked_open:
+            self.device_class('port_id')
+            mocked_open.assert_called_once_with('port_id')
 
     def test_subclass(self):
         self.assertTrue(isinstance(self.device, ArduinoBase))
@@ -250,7 +257,7 @@ class TestArduinoMixin(object):
 class TestArduinoUno(unittest.TestCase, TestArduinoMixin):
 
     def setUp(self):
-        self.device = ArduinoUno()
+        self.device_class = ArduinoUno
         self.valid_pins = range(20)
         self.valid_analog_pins = range(14, 20)
         self.valid_pwm_pins = [3, 5, 6, 9, 10, 11]
@@ -261,7 +268,7 @@ class TestArduinoUno(unittest.TestCase, TestArduinoMixin):
 class TestArduinoMega2560(unittest.TestCase, TestArduinoMixin):
 
     def setUp(self):
-        self.device = ArduinoMega2560()
+        self.device_class = ArduinoMega2560
         self.valid_pins = range(70)
         self.valid_analog_pins = range(54, 70)
         self.valid_pwm_pins = list(range(2, 14)) + [44, 45, 46]

@@ -33,7 +33,12 @@ It is ready to be used in simple projects, but there may be some major breaking 
 
 ## Installation
 
-To use this package, copy the "rapiduino" directory into your python site-packages or to a local directory
+Install this package using Pip:
+    
+    pip install git+https://github.com/samwedge/rapiduino.git
+
+Alternatively, copy the "rapiduino" package directory into your python site-packages or to a local directory.
+
 It has been fully tested with Python 2.7 and Python 3.4.
 
 

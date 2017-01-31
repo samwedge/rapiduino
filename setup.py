@@ -1,12 +1,13 @@
 from setuptools import setup, find_packages
 from os import path
+import rapiduino
 
 here = path.abspath(path.dirname(__file__))
 
 setup(
     name='rapiduino',
 
-    version='0.1.0',
+    version=rapiduino.__version__,
 
     description='Rapidly develop code to control an Arduino using Python',
     long_description='Rapidly develop code to control an Arduino using Python. Python code is executed on a computer. '
@@ -52,5 +53,5 @@ setup(
 
     entry_points={
 
-    },
+    }
 )

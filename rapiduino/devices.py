@@ -58,10 +58,9 @@ class ArduinoBase(object):
             device_pin = self.pins[device_pin_no]
             component_pin = component.pins[component_pin_no]
             self._assert_pins_compatible(device_pin, component_pin)
-
-            component.bind_to_device(self)
             device_pin.bind(component, component_pin_no)
             component_pin.bind(self, device_pin_no)
+        component.bind_to_device(self)
 
     @staticmethod
     def _assert_pins_compatible(device_pin, component_pin):

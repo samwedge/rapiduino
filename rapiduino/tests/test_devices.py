@@ -1,13 +1,25 @@
 import unittest
-
 from mock import Mock, patch
 
+from rapiduino.base import Pin
 from rapiduino.communication import Connection, SerialConnection
+from rapiduino.components.base import BaseComponent
 from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560
 from rapiduino.exceptions import PinError
 from rapiduino.globals.common import *
 import rapiduino.globals.arduino_uno as arduino_uno_globals
 import rapiduino.globals.arduino_mega_2560 as arduino_mega_2560_globals
+
+
+class ExampleTestComponent(BaseComponent):
+
+    def __init__(self):
+        super(ExampleTestComponent, self).__init__()
+        self._pins = (
+            Pin(0),
+            Pin(1, pwm=True),
+            Pin(2, analog=True),
+        )
 
 
 class TestArduinoMixin(object):
@@ -203,6 +215,32 @@ class TestArduinoMixin(object):
     def test_analog_write_on_non_pwm_pin_raises_error(self):
         with self.assertRaisesRegexp(PinError, 'cannot complete operation as pwm=False for pin {}'.format(self.invalid_pwm_pin)):
             self.device.analog_write(self.invalid_pwm_pin, self.invalid_pwm_pin)
+
+    def test_bind_component(self):
+        component = ExampleTestComponent()
+        pin_mappings = ((self.valid_digital_pin, 0), (self.valid_pwm_pin, 1), (self.valid_analog_pin, 2))
+        self.device.bind_component(component, pin_mappings)
+        self.assertIsInstance(component.device, self.device_class)
+        for device_pin_no, component_pin_no in pin_mappings:
+            self.assertTupleEqual(self.device.pins[device_pin_no].bound_to, (component, component_pin_no))
+            self.assertTupleEqual(component.pins[component_pin_no].bound_to, (self.device, device_pin_no))
+
+    def test_assert_pins_compatible(self):
+        self.device._assert_pins_compatible(Pin(0), Pin(1))
+        self.device._assert_pins_compatible(Pin(0, analog=True), Pin(1, analog=True))
+        self.device._assert_pins_compatible(Pin(0, pwm=True), Pin(1, pwm=True))
+        self.device._assert_pins_compatible(Pin(0, pwm=True), Pin(1))
+        self.device._assert_pins_compatible(Pin(0, analog=True), Pin(1))
+
+    def test_assert_pins_incompatible(self):
+        with self.assertRaises(PinError):
+            self.device._assert_pins_compatible(Pin(0), Pin(1, analog=True))
+        with self.assertRaises(PinError):
+            self.device._assert_pins_compatible(Pin(0, pwm=True), Pin(1, analog=True))
+        with self.assertRaises(PinError):
+            self.device._assert_pins_compatible(Pin(0), Pin(1, pwm=True))
+        with self.assertRaises(PinError):
+            self.device._assert_pins_compatible(Pin(0, analog=True), Pin(1, pwm=True))
 
     def test_assert_valid_pin_number(self):
         for pin_no in range(self.num_pins):

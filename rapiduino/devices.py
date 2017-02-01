@@ -53,6 +53,23 @@ class ArduinoBase(object):
         self._assert_valid_pin_mode(mode)
         self.connection.process_command('pinMode', pin_no, mode.value)
 
+    def bind_component(self, component, pin_mappings):
+        for device_pin_no, component_pin_no in pin_mappings:
+            device_pin = self.pins[device_pin_no]
+            component_pin = component.pins[component_pin_no]
+            self._assert_pins_compatible(device_pin, component_pin)
+
+            component.bind_to_device(self)
+            device_pin.bind(component, component_pin_no)
+            component_pin.bind(self, device_pin_no)
+
+    @staticmethod
+    def _assert_pins_compatible(device_pin, component_pin):
+        if component_pin.is_analog and not device_pin.is_analog:
+            raise PinError('Device pin requires a Component pin with analog attribute')
+        if component_pin.is_pwm and not device_pin.is_pwm:
+            raise PinError('Device pin requires a Component pin with pwm attribute')
+
     def _assert_valid_pin_number(self, pin_no):
         if (pin_no >= len(self.pins)) or (pin_no < 0):
             raise IndexError('Specified pin number {} is outside pin range of {}'.format(pin_no, len(self.pins)))

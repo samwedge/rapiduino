@@ -1,17 +1,12 @@
-import abc
-import six
-
 from rapiduino.base import Pin
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BaseComponent(object):
-    pass
+from rapiduino.components.base import BaseComponent
 
 
 class Servo(BaseComponent):
 
     def __init__(self, angle_min=0, angle_max=180, pwm_min=0, pwm_max=1023):
+        super(Servo, self).__init__()
+
         self._pins = (
             Pin(0, pwm=True),
         )
@@ -29,10 +24,6 @@ class Servo(BaseComponent):
         self.angle_max = angle_max
         self.pwm_min = pwm_min
         self.pwm_max = pwm_max
-
-    @property
-    def pins(self):
-        return self._pins
 
     @property
     def angle_min(self):

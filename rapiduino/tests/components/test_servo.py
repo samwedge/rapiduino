@@ -1,7 +1,8 @@
 import unittest
 
 from rapiduino.base import Pin
-from rapiduino.components.servo import Servo, BaseComponent
+from rapiduino.components.servo import Servo
+from rapiduino.components.base import BaseComponent
 
 
 class TestServo(unittest.TestCase):

@@ -9,6 +9,7 @@ class Pin(object):
         self._analog = analog
         self._pin_state = LOW
         self._id = id
+        self._bound_to = None
 
     @property
     def id(self):
@@ -21,3 +22,10 @@ class Pin(object):
     @property
     def is_analog(self):
         return self._analog
+
+    @property
+    def bound_to(self):
+        return self._bound_to
+
+    def bind(self, instance, pin_no):
+        self._bound_to = (instance, pin_no)

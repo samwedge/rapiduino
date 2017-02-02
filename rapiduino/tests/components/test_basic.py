@@ -2,7 +2,7 @@ import unittest
 from mock import Mock, call
 
 from rapiduino.components.basic import LED
-from rapiduino.globals.common import HIGH, LOW
+from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.tests.components.mixin import TestComponentMixin
 
 
@@ -13,6 +13,11 @@ class TestLED(unittest.TestCase, TestComponentMixin):
         self.mock_device = Mock()
         self.component._bound_device = self.mock_device
         self.component._pins[0]._bound_to = (self.mock_device, 13)
+
+    def test_setup(self):
+        self.component.setup()
+        self.mock_device.pin_mode.assert_called_once_with(13, OUTPUT)
+        self.mock_device.digital_write.assert_called_once_with(13, LOW)
 
     def test_turn_on(self):
         self.component.turn_on()

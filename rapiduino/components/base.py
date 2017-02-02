@@ -8,6 +8,9 @@ class BaseComponent(object):
     def __init__(self):
         self._bound_device = None
 
+    def setup(self):
+        pass
+
     @property
     def pins(self):
         return self._pins
@@ -18,6 +21,7 @@ class BaseComponent(object):
 
     def bind_to_device(self, device):
         self._bound_device = device
+        self.setup()
 
 
 

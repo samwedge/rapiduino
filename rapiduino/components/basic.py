@@ -1,5 +1,5 @@
 from rapiduino.base import Pin
-from rapiduino.globals.common import HIGH, LOW
+from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.components.base import BaseComponent
 
 
@@ -11,6 +11,10 @@ class LED(BaseComponent):
         self._pins = (
             Pin(0),
         )
+
+    def setup(self):
+        self.bound_device.pin_mode(self.pins[0].bound_pin, OUTPUT)
+        self.bound_device.digital_write(self.pins[0].bound_pin, LOW)
 
     def turn_on(self):
         self.bound_device.digital_write(self.pins[0].bound_pin, HIGH)

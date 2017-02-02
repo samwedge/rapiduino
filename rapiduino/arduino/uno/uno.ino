@@ -54,11 +54,8 @@ void setup(){
 
 void loop(){
 
-  // Wait for information to become available
-  while(!Serial.available());
-
   // Receive the Command Byte
-  cmdByte = Serial.read();
+  cmdByte = recvByte();
 
   // poll
   if(cmdByte==0){

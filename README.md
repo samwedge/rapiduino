@@ -62,10 +62,39 @@ Then start using it! Here is a blinking LED example:
         arduino.digital_write(13, LOW)
         time.sleep(1)
         
-The above works out of the box.
-My plan for the future is to create components that can be "plugged in" to the Arduino object to make things really simple,
- allowing things such as servos to be hot-pluggable. 
+You can also use classes for components (such as LEDs, Servos etc.) which make using the Arduino easier and less error-prone.
+The components are "bound" to the Arduino along with a pin-mapping which tells the Arduino object which pin is connected
+to which component pin. As an example, the LED class has one pin which can be initialised and connected to the arduino
+as follows:
+
+    from rapiduino.components.basic import LED
+    led = LED()
+    bindings = ((13, 0),)
+    arduino.bind_component(led, bindings)
     
+This creates an led object and binds it to the arduino. Binding it allows you to communicate with the led object, and let
+the led object talk to the arduino object. To bind an object, you need to specify bindings. This is basically a tuple of
+tuples to tell the arduino which pin is to be connected to each part of the component. In the case of the LED, there is
+only one pin to connect (Pin 0) which is connected to the arduino (Pin 13). Hence, the tuple looks like:
+
+    ((13, 0),)
+    
+When binding, the code automatically takes care of checking compatibility, raising an error if there is a problem. For
+example, if you are trying to connect a component that requires a PWM pin to a non-PWM pin, you will get a helpful message.
+
+Once the LED has been bound to the Arduino, you can re-write the blink example as:
+
+    while True:
+        led.toggle()
+        time.sleep(1)
+
+The benefit of this is that you can use methods with familiar names such as:
+
+    led.turn_on()
+    led.turn_off()
+    
+You don't need to think of pin numbers, pin states or pin modes beyone the initial set-up.
+
 
 ## Contribution
 

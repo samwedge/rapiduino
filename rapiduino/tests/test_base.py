@@ -9,6 +9,7 @@ class TestPin(unittest.TestCase):
     def setUp(self):
         self.analog_pwm_pin = Pin(0, pwm=True, analog=True)
         self.digital_pin = Pin(5)
+        self.mock_instance = Mock()
 
     def test_init(self):
         self.assertIsInstance(self.digital_pin, Pin)
@@ -36,15 +37,25 @@ class TestPin(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.digital_pin.id = 0
 
+    def test_bind(self):
+        self.digital_pin.bind(self.mock_instance, 5)
+        self.assertTupleEqual(self.digital_pin._bound_to, (self.mock_instance, 5))
+
+    def test_bound_to(self):
+        self.digital_pin._bound_to = (self.mock_instance, 5)
+        self.assertTupleEqual(self.digital_pin.bound_to, (self.mock_instance, 5))
+
     def test_bound_to_is_readonly(self):
         with self.assertRaises(AttributeError):
             self.digital_pin.bound_to = 0
 
-    def test_bind(self):
-        mock_instance = Mock()
-        self.digital_pin.bind(mock_instance, 5)
-        binding = self.digital_pin.bound_to
-        self.assertTupleEqual(binding, (mock_instance, 5))
+    def test_bound_pin(self):
+        self.digital_pin._bound_to = (self.mock_instance, 5)
+        self.assertEqual(self.digital_pin.bound_pin, 5)
+
+    def test_bound_instance(self):
+        self.digital_pin._bound_to = (self.mock_instance, 5)
+        self.assertEqual(self.digital_pin.bound_instance, self.mock_instance)
 
 
 if __name__ == '__main__':

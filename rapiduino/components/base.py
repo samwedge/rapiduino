@@ -6,11 +6,18 @@ import six
 class BaseComponent(object):
 
     def __init__(self):
-        self.device = None
+        self._bound_device = None
 
     @property
     def pins(self):
         return self._pins
 
+    @property
+    def bound_device(self):
+        return self._bound_device
+
     def bind_to_device(self, device):
-        self.device = device
+        self._bound_device = device
+
+
+

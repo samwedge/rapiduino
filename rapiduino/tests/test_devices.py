@@ -220,7 +220,7 @@ class TestArduinoMixin(object):
         component = ExampleTestComponent()
         pin_mappings = ((self.valid_digital_pin, 0), (self.valid_pwm_pin, 1), (self.valid_analog_pin, 2))
         self.device.bind_component(component, pin_mappings)
-        self.assertIsInstance(component.device, self.device_class)
+        self.assertIsInstance(component.bound_device, self.device_class)
         for device_pin_no, component_pin_no in pin_mappings:
             self.assertTupleEqual(self.device.pins[device_pin_no].bound_to, (component, component_pin_no))
             self.assertTupleEqual(component.pins[component_pin_no].bound_to, (self.device, device_pin_no))

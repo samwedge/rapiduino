@@ -73,6 +73,10 @@ class TestServo(unittest.TestCase):
             self.servo.pins = []
         self.assertIsInstance(self.servo.pins, tuple)
 
+    def test_device_is_readonly(self):
+        with self.assertRaises(AttributeError):
+            self.servo.bound_device = 0
+
 
 if __name__ == '__main__':
     unittest.main()

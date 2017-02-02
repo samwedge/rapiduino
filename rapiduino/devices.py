@@ -65,9 +65,9 @@ class ArduinoBase(object):
     @staticmethod
     def _assert_pins_compatible(device_pin, component_pin):
         if component_pin.is_analog and not device_pin.is_analog:
-            raise PinError('Device pin requires a Component pin with analog attribute')
+            raise PinError('Component pin requires a Device pin with analog attribute')
         if component_pin.is_pwm and not device_pin.is_pwm:
-            raise PinError('Device pin requires a Component pin with pwm attribute')
+            raise PinError('Component pin requires a Device pin with pwm attribute')
 
     def _assert_valid_pin_number(self, pin_no):
         if (pin_no >= len(self.pins)) or (pin_no < 0):

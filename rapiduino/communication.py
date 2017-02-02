@@ -25,8 +25,6 @@ class Connection(object):
                 )
             )
 
-        command_sequence = list(args)
-        command_sequence.insert(0, command_spec[command]['cmd'])
         self._send(command_spec[command], args)
 
         return self._recv(command_spec[command])

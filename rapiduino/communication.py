@@ -114,7 +114,7 @@ class SerialConnection(Connection):
     def __init__(self, conn=None):
         self.conn = conn
 
-    def open(self, port, baudrate=9600, timeout=1):
+    def open(self, port, baudrate=115200, timeout=1):
         if not self.conn:
             try:
                 self.conn = Serial(port, baudrate=baudrate, timeout=timeout)

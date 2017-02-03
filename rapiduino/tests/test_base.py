@@ -15,8 +15,9 @@ class TestPin(unittest.TestCase):
         self.assertIsInstance(self.digital_pin, Pin)
 
     def test_defaults(self):
-        self.assertEqual(self.digital_pin.is_pwm, False)
-        self.assertEqual(self.digital_pin.is_analog, False)
+        self.assertFalse(self.digital_pin.is_pwm)
+        self.assertFalse(self.digital_pin.is_analog)
+        self.assertFalse(self.digital_pin.is_protected)
         self.assertEqual(self.digital_pin.id, 5)
         self.assertIsNone(self.digital_pin.bound_to)
 
@@ -32,6 +33,10 @@ class TestPin(unittest.TestCase):
     def test_is_analog_is_readonly(self):
         with self.assertRaises(AttributeError):
             self.digital_pin.is_analog = True
+
+    def test_is_protected_is_readonly(self):
+        with self.assertRaises(AttributeError):
+            self.digital_pin.is_protected = True
 
     def test_id_is_readonly(self):
         with self.assertRaises(AttributeError):

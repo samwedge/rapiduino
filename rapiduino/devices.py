@@ -84,6 +84,10 @@ class ArduinoBase(object):
         if not self.pins[pin_no].is_pwm:
             raise PinError('cannot complete operation as pwm=False for pin {}'.format(pin_no))
 
+    def _assert_pin_not_protected(self, pin_no):
+        if self.pins[pin_no].is_protected:
+            raise PinError('cannot complete operation as pin {} is protected'.format(pin_no))
+
     @staticmethod
     def _assert_valid_analog_write_range(value):
         if not isinstance(value, int):
@@ -119,8 +123,8 @@ class ArduinoUno(ArduinoBase):
     def __init__(self, *args, **kwargs):
         super(ArduinoUno, self).__init__(*args, **kwargs)
         self._pins = (
-            Pin(0),
-            Pin(1),
+            Pin(0, protected=True),
+            Pin(1, protected=True),
             Pin(2),
             Pin(3, pwm=True),
             Pin(4),
@@ -147,8 +151,8 @@ class ArduinoMega2560(ArduinoBase):
     def __init__(self, *args, **kwargs):
         super(ArduinoMega2560, self).__init__(*args, **kwargs)
         self._pins = (
-            Pin(0),
-            Pin(1),
+            Pin(0, protected=True),
+            Pin(1, protected=True),
             Pin(2, pwm=True),
             Pin(3, pwm=True),
             Pin(4, pwm=True),

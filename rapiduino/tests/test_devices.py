@@ -280,6 +280,14 @@ class TestArduinoMixin(object):
                 with self.assertRaisesRegexp(PinError, 'pin {}'.format(pin_no)):
                     self.device._assert_pwm_pin(pin_no)
 
+    def test_assert_tx_rx_pins_protected(self):
+        for pin_no in self.valid_pins:
+            if pin_no in [self.tx_pin, self.rx_pin]:
+                with self.assertRaisesRegexp(PinError, 'pin {}'.format(pin_no)):
+                    self.device._assert_pin_not_protected(pin_no)
+            else:
+                self.device._assert_pin_not_protected(pin_no)
+
     def test_assert_analog_write_range(self):
         for integer in range(255):
             self.device._assert_valid_analog_write_range(integer)
@@ -320,6 +328,8 @@ class TestArduinoUno(unittest.TestCase, TestArduinoMixin):
         self.valid_pins = range(20)
         self.valid_analog_pins = range(14, 20)
         self.valid_pwm_pins = [3, 5, 6, 9, 10, 11]
+        self.tx_pin = 0
+        self.rx_pin = 1
 
         self.setup_mixin()
 
@@ -332,6 +342,8 @@ class TestArduinoMega2560(unittest.TestCase, TestArduinoMixin):
         self.valid_pins = range(70)
         self.valid_analog_pins = range(54, 70)
         self.valid_pwm_pins = list(range(2, 14)) + [44, 45, 46]
+        self.tx_pin = 0
+        self.rx_pin = 1
 
         self.setup_mixin()
 

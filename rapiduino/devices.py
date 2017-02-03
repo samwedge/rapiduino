@@ -7,6 +7,14 @@ from rapiduino.exceptions import PinError
 from rapiduino.globals.common import *
 
 
+def enable_pin_protection(func):
+    def return_function(self, pin_no, *args, **kwargs):
+        if not kwargs.get('force', False):
+            self._assert_pin_not_protected(pin_no)
+        return func(self, pin_no, *args)
+    return return_function
+
+
 @six.add_metaclass(abc.ABCMeta)
 class ArduinoBase(object):
 
@@ -24,6 +32,7 @@ class ArduinoBase(object):
     def version(self):
         return self.connection.process_command('version')
 
+    @enable_pin_protection
     def digital_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
         state = self.connection.process_command('digitalRead', pin_no)
@@ -32,22 +41,26 @@ class ArduinoBase(object):
         else:
             return LOW
 
+    @enable_pin_protection
     def digital_write(self, pin_no, state):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_state(state)
         self.connection.process_command('digitalWrite', pin_no, state.value)
 
+    @enable_pin_protection
     def analog_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
         self._assert_analog_pin(pin_no)
         return self.connection.process_command('analogRead', pin_no)[0]
 
+    @enable_pin_protection
     def analog_write(self, pin_no, value):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_analog_write_range(value)
         self._assert_pwm_pin(pin_no)
         self.connection.process_command('analogWrite', pin_no, value)
 
+    @enable_pin_protection
     def pin_mode(self, pin_no, mode):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_mode(mode)

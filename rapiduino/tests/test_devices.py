@@ -227,6 +227,18 @@ class TestArduinoMixin(object):
             self.assertTupleEqual(component.pins[component_pin_no].bound_to, (self.device, device_pin_no))
         component.setup.assert_called_once()
 
+    def test_bind_component_with_incompatible_pins(self):
+        component = ExampleTestComponent()
+        component.setup = Mock()
+        pin_mappings = ((self.valid_digital_pin, 0), (self.invalid_pwm_pin, 1), (self.valid_analog_pin, 2))
+        with self.assertRaises(PinError):
+            self.device.bind_component(component, pin_mappings)
+        self.assertIsNone(component.bound_device)
+        for device_pin_no, component_pin_no in pin_mappings:
+            self.assertIsNone(self.device.pins[device_pin_no].bound_to)
+            self.assertIsNone(component.pins[component_pin_no].bound_to)
+        component.setup.assert_not_called()
+
     def test_assert_pins_compatible(self):
         self.device._assert_pins_compatible(Pin(0), Pin(1))
         self.device._assert_pins_compatible(Pin(0, analog=True), Pin(1, analog=True))

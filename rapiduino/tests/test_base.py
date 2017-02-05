@@ -46,6 +46,7 @@ class TestPin(unittest2.TestCase):
     def test_bind(self):
         self.digital_pin.bind(self.mock_instance, 5)
         self.assertTupleEqual(self.digital_pin._bound_to, (self.mock_instance, 5))
+        self.assertTrue(self.digital_pin.is_protected)
 
     def test_bind_when_already_bound(self):
         self.digital_pin.bind(self.mock_instance, 5)
@@ -54,9 +55,10 @@ class TestPin(unittest2.TestCase):
             self.digital_pin.bind(self.mock_instance, 5)
 
     def test_unbind(self):
-        self.digital_pin._bound_to = (self.mock_instance, 5)
+        self.digital_pin.bind(self.mock_instance, 5)
         self.digital_pin.unbind()
         self.assertIsNone(self.digital_pin._bound_to)
+        self.assertFalse(self.digital_pin.is_protected)
 
     def test_bound_to(self):
         self.digital_pin._bound_to = (self.mock_instance, 5)

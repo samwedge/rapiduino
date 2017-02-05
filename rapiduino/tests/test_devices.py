@@ -315,6 +315,7 @@ class TestArduinoMixin(object):
         for device_pin_no, component_pin_no in pin_mappings:
             self.assertTupleEqual(self.device.pins[device_pin_no].bound_to, (component, component_pin_no))
             self.assertTupleEqual(component.pins[component_pin_no].bound_to, (self.device, device_pin_no))
+            self.assertTrue(self.device.pins[device_pin_no].is_protected)
         component.setup.assert_called_once()
 
     def test_bind_component_with_incompatible_pins(self):
@@ -352,6 +353,7 @@ class TestArduinoMixin(object):
         for device_pin_no, component_pin_no in pin_mappings:
             self.assertIsNone(self.device.pins[device_pin_no].bound_to)
             self.assertIsNone(component.pins[component_pin_no].bound_to)
+            self.assertFalse(self.device.pins[device_pin_no].is_protected)
 
     def test_assert_pins_compatible(self):
         self.device._assert_pins_compatible(Pin(0), Pin(1))

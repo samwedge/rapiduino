@@ -45,6 +45,8 @@ class Pin(object):
         if self._bound_to is not None:
             raise PinError('Cannot bind pin - already bound')
         self._bound_to = (instance, pin_no)
+        self._protected = True
 
     def unbind(self):
         self._bound_to = None
+        self._protected = False

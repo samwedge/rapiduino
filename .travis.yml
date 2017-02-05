@@ -3,6 +3,9 @@ python:
   - "2.7"
   - "3.2"
   - "3.3"
+#  - "3.4"
+#  Python 3.4 build/test fails due to mock.patch not working.
+#  Does not fail due to code failing tests
   - "3.5"
   - "3.6"
 cache: pip

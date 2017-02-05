@@ -1,7 +1,7 @@
 import abc
 import six
 
-from rapiduino.base import Pin
+from rapiduino.pin import Pin
 from rapiduino.communication import SerialConnection
 from rapiduino.exceptions import PinError
 from rapiduino.globals.common import *

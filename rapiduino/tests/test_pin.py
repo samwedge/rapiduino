@@ -1,7 +1,7 @@
 import unittest2
 from mock import Mock
 
-from rapiduino.base import Pin
+from rapiduino.pin import Pin
 from rapiduino.exceptions import PinError
 
 

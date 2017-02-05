@@ -1,4 +1,4 @@
-from rapiduino.base import Pin
+from rapiduino.pin import Pin
 from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.components.base import BaseComponent
 

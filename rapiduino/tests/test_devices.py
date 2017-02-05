@@ -1,7 +1,7 @@
 import unittest2
 from mock import Mock, patch
 
-from rapiduino.base import Pin
+from rapiduino.pin import Pin
 from rapiduino.communication import Connection, SerialConnection
 from rapiduino.components.base import BaseComponent
 from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560

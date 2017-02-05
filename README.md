@@ -1,6 +1,8 @@
+[![Build Status](https://travis-ci.org/samwedge/rapiduino.svg?branch=master)](https://travis-ci.org/samwedge/rapiduino)
+
 # Rapiduino
 
-Rapiduino is a Python library (fully tested in Python 2.7 and 3.4) to allow Python code to control an Arduino.
+Rapiduino is a Python library (fully tested with Python 2.7 and Python 3) to allow Python code to control an Arduino.
 The Python code runs on a computer connected to an Arduino through a serial connection.
 
 A sketch is provided to upload to the Arduino.
@@ -38,8 +40,6 @@ Install this package using Pip:
     pip install git+https://github.com/samwedge/rapiduino.git
 
 Alternatively, copy the "rapiduino" package directory into your python site-packages or to a local directory.
-
-It has been fully tested with Python 2.7 and Python 3.4.
 
 
 ## Usage

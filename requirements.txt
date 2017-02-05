@@ -1,3 +1,4 @@
 pyserial
 six
 mock
+unittest2

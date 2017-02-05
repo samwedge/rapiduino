@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 from mock import Mock, call
 
 from rapiduino.components.basic import LED
@@ -6,7 +6,7 @@ from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.tests.components.mixin import TestComponentMixin
 
 
-class TestLED(unittest.TestCase, TestComponentMixin):
+class TestLED(unittest2.TestCase, TestComponentMixin):
 
     def setUp(self):
         self.component = LED()
@@ -48,4 +48,4 @@ class TestLED(unittest.TestCase, TestComponentMixin):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

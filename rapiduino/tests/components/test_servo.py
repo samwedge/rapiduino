@@ -1,10 +1,10 @@
-import unittest
+import unittest2
 
 from rapiduino.components.servo import Servo
 from rapiduino.tests.components.mixin import TestComponentMixin
 
 
-class TestServo(unittest.TestCase, TestComponentMixin):
+class TestServo(unittest2.TestCase, TestComponentMixin):
 
     def setUp(self):
         self.component = Servo()
@@ -57,4 +57,4 @@ class TestServo(unittest.TestCase, TestComponentMixin):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

@@ -1,4 +1,4 @@
-import unittest
+import unittest2
 from mock import Mock, patch
 
 from rapiduino.base import Pin
@@ -128,7 +128,7 @@ class TestArduinoMixin(object):
 
     def test_pin_mode_on_protected_pin(self):
         self.device.pins[self.valid_digital_pin]._protected = True
-        with self.assertRaisesRegexp(PinError, 'protected'):
+        with self.assertRaisesRegex(PinError, 'protected'):
             self.device.pin_mode(self.valid_digital_pin, INPUT)
 
     def test_pin_mode_on_protected_pin_with_force(self):
@@ -166,7 +166,7 @@ class TestArduinoMixin(object):
 
     def test_digital_read_on_protected_pin(self):
         self.device.pins[self.valid_digital_pin]._protected = True
-        with self.assertRaisesRegexp(PinError, 'protected'):
+        with self.assertRaisesRegex(PinError, 'protected'):
             self.device.digital_read(self.valid_digital_pin)
 
     def test_digital_read_on_protected_pin_with_force(self):
@@ -200,7 +200,7 @@ class TestArduinoMixin(object):
 
     def test_digital_write_on_protected_pin(self):
         self.device.pins[self.valid_digital_pin]._protected = True
-        with self.assertRaisesRegexp(PinError, 'protected'):
+        with self.assertRaisesRegex(PinError, 'protected'):
             self.device.digital_write(self.valid_digital_pin, HIGH)
 
     def test_digital_write_on_protected_pin_with_force(self):
@@ -238,7 +238,7 @@ class TestArduinoMixin(object):
 
     def test_analog_read_on_protected_pin(self):
         self.device.pins[self.valid_analog_pin]._protected = True
-        with self.assertRaisesRegexp(PinError, 'protected'):
+        with self.assertRaisesRegex(PinError, 'protected'):
             self.device.analog_read(self.valid_analog_pin)
 
     def test_analog_read_on_protected_pin_with_force(self):
@@ -260,7 +260,7 @@ class TestArduinoMixin(object):
             self.device.analog_read(self.out_of_range_pin)
 
     def test_analog_read_on_non_analog_pin_raises_error(self):
-        with self.assertRaisesRegexp(PinError, 'cannot complete operation as analog=False for pin {}'.format(self.invalid_analog_pin)):
+        with self.assertRaisesRegex(PinError, 'cannot complete operation as analog=False for pin {}'.format(self.invalid_analog_pin)):
             self.device.analog_read(self.invalid_analog_pin)
 
     def test_analog_write(self):
@@ -276,7 +276,7 @@ class TestArduinoMixin(object):
 
     def test_analog_write_on_protected_pin(self):
         self.device.pins[self.valid_pwm_pin]._protected = True
-        with self.assertRaisesRegexp(PinError, 'protected'):
+        with self.assertRaisesRegex(PinError, 'protected'):
             self.device.analog_write(self.valid_pwm_pin, 100)
 
     def test_analog_write_on_protected_pin_with_force(self):
@@ -303,7 +303,7 @@ class TestArduinoMixin(object):
             self.device.analog_write(self.out_of_range_pin, 100)
 
     def test_analog_write_on_non_pwm_pin_raises_error(self):
-        with self.assertRaisesRegexp(PinError, 'cannot complete operation as pwm=False for pin {}'.format(self.invalid_pwm_pin)):
+        with self.assertRaisesRegex(PinError, 'cannot complete operation as pwm=False for pin {}'.format(self.invalid_pwm_pin)):
             self.device.analog_write(self.invalid_pwm_pin, self.invalid_pwm_pin)
 
     def test_bind_component(self):
@@ -359,7 +359,7 @@ class TestArduinoMixin(object):
             if pin_no in self.valid_analog_pins:
                 self.device._assert_analog_pin(pin_no)
             else:
-                with self.assertRaisesRegexp(PinError, 'pin {}'.format(pin_no)):
+                with self.assertRaisesRegex(PinError, 'pin {}'.format(pin_no)):
                     self.device._assert_analog_pin(pin_no)
 
     def test_assert_pwm_pin(self):
@@ -367,13 +367,13 @@ class TestArduinoMixin(object):
             if pin_no in self.valid_pwm_pins:
                 self.device._assert_pwm_pin(pin_no)
             else:
-                with self.assertRaisesRegexp(PinError, 'pin {}'.format(pin_no)):
+                with self.assertRaisesRegex(PinError, 'pin {}'.format(pin_no)):
                     self.device._assert_pwm_pin(pin_no)
 
     def test_assert_tx_rx_pins_protected(self):
         for pin_no in self.valid_pins:
             if pin_no in [self.tx_pin, self.rx_pin]:
-                with self.assertRaisesRegexp(PinError, 'pin {}'.format(pin_no)):
+                with self.assertRaisesRegex(PinError, 'pin {}'.format(pin_no)):
                     self.device._assert_pin_not_protected(pin_no)
             else:
                 self.device._assert_pin_not_protected(pin_no)
@@ -410,7 +410,7 @@ class TestArduinoMixin(object):
             self.assertEqual(getattr(self.analog_alias, 'A{}'.format(analog_alias)), pin_num)
 
 
-class TestArduinoUno(unittest.TestCase, TestArduinoMixin):
+class TestArduinoUno(unittest2.TestCase, TestArduinoMixin):
 
     def setUp(self):
         self.device_class = ArduinoUno
@@ -424,7 +424,7 @@ class TestArduinoUno(unittest.TestCase, TestArduinoMixin):
         self.setup_mixin()
 
 
-class TestArduinoMega2560(unittest.TestCase, TestArduinoMixin):
+class TestArduinoMega2560(unittest2.TestCase, TestArduinoMixin):
 
     def setUp(self):
         self.device_class = ArduinoMega2560
@@ -439,4 +439,4 @@ class TestArduinoMega2560(unittest.TestCase, TestArduinoMixin):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

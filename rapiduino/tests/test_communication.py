@@ -1,12 +1,12 @@
 import struct
 from serial import SerialException
 from mock import patch, Mock
-import unittest
+import unittest2
 from rapiduino.communication import Connection, SerialConnection
 from rapiduino.exceptions import SerialConnectionError
 
 
-class TestSerialConnection(unittest.TestCase):
+class TestSerialConnection(unittest2.TestCase):
 
     def setUp(self):
         self.serial_connection = SerialConnection()
@@ -58,7 +58,7 @@ class TestSerialConnection(unittest.TestCase):
     def test_open_with_error(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
             mock_serial.side_effect = SerialException('Some Error Message')
-            with self.assertRaisesRegexp(SerialException, 'Some Error Message'):
+            with self.assertRaisesRegex(SerialException, 'Some Error Message'):
                 self.serial_connection.open(self.port)
             self.assertIsNone(self.serial_connection.conn)
 
@@ -91,7 +91,7 @@ class TestSerialConnection(unittest.TestCase):
             mock_conn.write.return_value = len(self.digital_write_tx_data) + 1
             mock_serial.return_value = mock_conn
 
-            with self.assertRaisesRegexp(SerialConnectionError, 'not all bytes written'):
+            with self.assertRaisesRegex(SerialConnectionError, 'not all bytes written'):
                 self.serial_connection.open(self.port)
                 self.serial_connection._send(self.digital_write_cmd_spec, self.digital_write_tx_data[1::])
 
@@ -102,7 +102,7 @@ class TestSerialConnection(unittest.TestCase):
             mock_conn = Mock()
             mock_serial.return_value = mock_conn
 
-            with self.assertRaisesRegexp(SerialConnectionError, 'not connected'):
+            with self.assertRaisesRegex(SerialConnectionError, 'not connected'):
                 self.serial_connection._send(self.digital_write_cmd_spec, self.digital_write_tx_data[1::])
 
             mock_conn.write.assert_not_called()
@@ -135,7 +135,7 @@ class TestSerialConnection(unittest.TestCase):
             mock_conn.read.return_value = self.version_rx_bytes
             mock_serial.return_value = mock_conn
             self.version_cmd_spec['rx_len'] += 1
-            with self.assertRaisesRegexp(SerialConnectionError, 'not all bytes read'):
+            with self.assertRaisesRegex(SerialConnectionError, 'not all bytes read'):
                 self.serial_connection.open(self.port)
                 self.serial_connection._recv(self.version_cmd_spec)
 
@@ -146,7 +146,7 @@ class TestSerialConnection(unittest.TestCase):
             mock_conn = Mock()
             mock_serial.return_value = mock_conn
 
-            with self.assertRaisesRegexp(SerialConnectionError, 'not connected'):
+            with self.assertRaisesRegex(SerialConnectionError, 'not connected'):
                 self.serial_connection._recv(self.version_cmd_spec)
 
             mock_conn.read.assert_not_called()
@@ -182,4 +182,4 @@ class TestSerialConnection(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

@@ -1,10 +1,10 @@
-import unittest
+import unittest2
 from mock import Mock
 
 from rapiduino.base import Pin
 
 
-class TestPin(unittest.TestCase):
+class TestPin(unittest2.TestCase):
 
     def setUp(self):
         self.analog_pwm_pin = Pin(0, pwm=True, analog=True)
@@ -64,4 +64,4 @@ class TestPin(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

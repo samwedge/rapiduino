@@ -1,9 +1,9 @@
-import unittest
+import unittest2
 
 from rapiduino.globals.common import *
 
 
-class GlobalsTestCase(unittest.TestCase):
+class GlobalsTestCase(unittest2.TestCase):
 
     def test_global_type(self):
         parameters = [HIGH, LOW, INPUT, OUTPUT, INPUT_PULLUP]
@@ -14,4 +14,4 @@ class GlobalsTestCase(unittest.TestCase):
             self.assertIsInstance(parameter[1], int)
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest2.main()

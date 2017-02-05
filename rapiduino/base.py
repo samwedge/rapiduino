@@ -1,3 +1,4 @@
+from rapiduino.exceptions import PinError
 from rapiduino.globals.common import *
 
 
@@ -41,4 +42,9 @@ class Pin(object):
         return self._bound_to[1]
 
     def bind(self, instance, pin_no):
+        if self._bound_to is not None:
+            raise PinError('Cannot bind pin - already bound')
         self._bound_to = (instance, pin_no)
+
+    def unbind(self):
+        self._bound_to = None

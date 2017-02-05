@@ -2,6 +2,7 @@ import unittest2
 from mock import Mock
 
 from rapiduino.base import Pin
+from rapiduino.exceptions import PinError
 
 
 class TestPin(unittest2.TestCase):
@@ -45,6 +46,17 @@ class TestPin(unittest2.TestCase):
     def test_bind(self):
         self.digital_pin.bind(self.mock_instance, 5)
         self.assertTupleEqual(self.digital_pin._bound_to, (self.mock_instance, 5))
+
+    def test_bind_when_already_bound(self):
+        self.digital_pin.bind(self.mock_instance, 5)
+        self.assertTupleEqual(self.digital_pin._bound_to, (self.mock_instance, 5))
+        with self.assertRaisesRegex(PinError, 'already bound'):
+            self.digital_pin.bind(self.mock_instance, 5)
+
+    def test_unbind(self):
+        self.digital_pin._bound_to = (self.mock_instance, 5)
+        self.digital_pin.unbind()
+        self.assertIsNone(self.digital_pin._bound_to)
 
     def test_bound_to(self):
         self.digital_pin._bound_to = (self.mock_instance, 5)

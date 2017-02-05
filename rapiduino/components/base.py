@@ -23,5 +23,8 @@ class BaseComponent(object):
         self._bound_device = device
         self.setup()
 
+    def unbind_to_device(self):
+        self._bound_device = None
+
 
 

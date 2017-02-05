@@ -67,16 +67,24 @@ class ArduinoBase(object):
         self.connection.process_command('pinMode', pin_no, mode.value)
 
     def bind_component(self, component, pin_mappings):
+        try:
+            for device_pin_no, component_pin_no in pin_mappings:
+                device_pin = self.pins[device_pin_no]
+                component_pin = component.pins[component_pin_no]
+                device_pin.bind(component, component_pin_no)
+                component_pin.bind(self, device_pin_no)
+            component.bind_to_device(self)
+        except PinError:
+            self._undo_bind_component(component, pin_mappings)
+            raise
+
+    def _undo_bind_component(self, component, pin_mappings):
         for device_pin_no, component_pin_no in pin_mappings:
             device_pin = self.pins[device_pin_no]
             component_pin = component.pins[component_pin_no]
-            self._assert_pins_compatible(device_pin, component_pin)
-        for device_pin_no, component_pin_no in pin_mappings:
-            device_pin = self.pins[device_pin_no]
-            component_pin = component.pins[component_pin_no]
-            device_pin.bind(component, component_pin_no)
-            component_pin.bind(self, device_pin_no)
-        component.bind_to_device(self)
+            device_pin.unbind()
+            component_pin.unbind()
+        component.unbind_to_device()
 
     @staticmethod
     def _assert_pins_compatible(device_pin, component_pin):

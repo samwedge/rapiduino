@@ -1,4 +1,4 @@
-from rapiduino.pin import Pin
+from rapiduino.pin import ComponentPin
 from rapiduino.components.base import BaseComponent
 
 
@@ -7,7 +7,7 @@ class TestComponentMixin(object):
     def test_subclass(self):
         self.assertTrue(isinstance(self.component, BaseComponent))
         for pin in self.component.pins:
-            self.assertTrue(isinstance(pin, Pin))
+            self.assertTrue(isinstance(pin, ComponentPin))
 
     def test_number_of_pins(self):
         self.assertEqual(len(self.component.pins), 1)

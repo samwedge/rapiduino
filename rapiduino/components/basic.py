@@ -1,4 +1,4 @@
-from rapiduino.pin import Pin
+from rapiduino.pin import ComponentPin
 from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.components.base import BaseComponent
 
@@ -9,7 +9,7 @@ class LED(BaseComponent):
         super(LED, self).__init__()
 
         self._pins = (
-            Pin(0),
+            ComponentPin(0),
         )
 
     def setup(self):

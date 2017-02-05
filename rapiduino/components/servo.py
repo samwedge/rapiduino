@@ -1,4 +1,4 @@
-from rapiduino.pin import Pin
+from rapiduino.pin import ComponentPin
 from rapiduino.components.base import BaseComponent
 
 
@@ -8,7 +8,7 @@ class Servo(BaseComponent):
         super(Servo, self).__init__()
 
         self._pins = (
-            Pin(0, pwm=True),
+            ComponentPin(0, pwm=True),
         )
         self._min_allowed_angle = 0
         self._max_allowed_angle = 180

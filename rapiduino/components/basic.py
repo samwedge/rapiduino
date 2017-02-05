@@ -13,18 +13,18 @@ class LED(BaseComponent):
         )
 
     def setup(self):
-        self.bound_device.pin_mode(self.pins[0].bound_pin, OUTPUT)
-        self.bound_device.digital_write(self.pins[0].bound_pin, LOW)
+        self._pin_mode(self.pins[0].bound_pin, OUTPUT)
+        self._digital_write(self.pins[0].bound_pin, LOW)
 
     def turn_on(self):
-        self.bound_device.digital_write(self.pins[0].bound_pin, HIGH)
+        self._digital_write(self.pins[0].bound_pin, HIGH)
 
     def turn_off(self):
-        self.bound_device.digital_write(self.pins[0].bound_pin, LOW)
+        self._digital_write(self.pins[0].bound_pin, LOW)
 
     def toggle(self):
-        state = self.bound_device.digital_read(self.pins[0].bound_pin)
+        state = self._digital_read(self.pins[0].bound_pin)
         if state == HIGH:
-            self.bound_device.digital_write(self.pins[0].bound_pin, LOW)
-        else:
-            self.bound_device.digital_write(self.pins[0].bound_pin, HIGH)
+            self._digital_write(self.pins[0].bound_pin, LOW)
+        elif state == LOW:
+            self._digital_write(self.pins[0].bound_pin, HIGH)

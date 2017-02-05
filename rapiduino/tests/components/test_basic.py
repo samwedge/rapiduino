@@ -16,26 +16,26 @@ class TestLED(unittest2.TestCase, TestComponentMixin):
 
     def test_setup(self):
         self.component.setup()
-        self.mock_device.pin_mode.assert_called_once_with(13, OUTPUT)
-        self.mock_device.digital_write.assert_called_once_with(13, LOW)
+        self.mock_device.pin_mode.assert_called_once_with(13, OUTPUT, force=True)
+        self.mock_device.digital_write.assert_called_once_with(13, LOW, force=True)
 
     def test_turn_on(self):
         self.component.turn_on()
-        self.mock_device.digital_write.assert_called_once_with(13, HIGH)
+        self.mock_device.digital_write.assert_called_once_with(13, HIGH, force=True)
 
     def test_turn_off(self):
         self.component.turn_off()
-        self.mock_device.digital_write.assert_called_once_with(13, LOW)
+        self.mock_device.digital_write.assert_called_once_with(13, LOW, force=True)
 
     def test_toggle(self):
         self.mock_device.digital_read.side_effect = [LOW, HIGH]
         digital_read_calls = [
-            call(13),
-            call(13)
+            call(13, force=True),
+            call(13, force=True)
         ]
         digital_write_calls = [
-            call(13, HIGH),
-            call(13, LOW)
+            call(13, HIGH, force=True),
+            call(13, LOW, force=True)
         ]
 
         self.component.toggle()
@@ -48,4 +48,4 @@ class TestLED(unittest2.TestCase, TestComponentMixin):
 
 
 if __name__ == '__main__':
-    unittest2.main()
+    unittest2 .main()

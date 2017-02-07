@@ -10,8 +10,13 @@ class TestComponentMixin(object):
         for pin in self.component.pins:
             self.assertTrue(isinstance(pin, ComponentPin))
 
+    def test_pins(self):
+        for pin_num in range(len(self.pins)):
+            self.assertEqual(self.component.pins[pin_num].is_analog, self.pins[pin_num].is_analog)
+            self.assertEqual(self.component.pins[pin_num].is_pwm, self.pins[pin_num].is_pwm)
+
     def test_number_of_pins(self):
-        self.assertEqual(len(self.component.pins), 1)
+        self.assertEqual(len(self.component.pins), len(self.pins))
 
     def test_pin_ids(self):
         for pin_no, pin in enumerate(self.component.pins):

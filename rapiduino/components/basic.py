@@ -28,3 +28,15 @@ class LED(BaseComponent):
             self._digital_write(self.pins[0].bound_pin, LOW)
         elif state == LOW:
             self._digital_write(self.pins[0].bound_pin, HIGH)
+
+
+class DimmableLED(LED):
+    def __init__(self):
+        super(LED, self).__init__()
+
+        self._pins = (
+            ComponentPin(0, pwm=True),
+        )
+
+    def set_brightness(self, brightness):
+        self._analog_write(self.pins[0].bound_pin, brightness)

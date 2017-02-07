@@ -2,16 +2,21 @@ import unittest2
 from mock import Mock
 
 from rapiduino.components.servo import Servo
+from rapiduino.pin import ComponentPin
 from rapiduino.tests.components.mixin import TestComponentMixin
 
 
 class TestServo(unittest2.TestCase, TestComponentMixin):
 
     def setUp(self):
+        self.pin_num = 9
+        self.pins = (
+            ComponentPin(0, pwm=True),
+        )
         self.component = Servo()
         self.mock_device = Mock()
         self.component._bound_device = self.mock_device
-        self.component._pins[0]._bound_to = (self.mock_device, 9)
+        self.component._pins[0]._bound_to = (self.mock_device, self.pin_num)
 
     def test_init(self):
         self.assertEqual(self.component.angle_min, 0)

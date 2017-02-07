@@ -113,8 +113,8 @@ class ArduinoBase(object):
     def _assert_valid_analog_write_range(value):
         if not isinstance(value, int):
             raise TypeError('Expected analog value type to be int, but found {}'.format(type(value)))
-        if (value < 0) or (value >= 255):
-            raise ValueError('Specified analog value {} is not valid'.format(value))
+        if (value < 0) or (value > 255):
+            raise ValueError('Specified analog value {} is outside valid range 0 to 255'.format(value))
 
     @staticmethod
     def _assert_valid_pin_mode(mode):

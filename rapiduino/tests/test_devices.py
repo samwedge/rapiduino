@@ -405,7 +405,7 @@ class TestArduinoMixin(object):
                 self.device._assert_pin_not_protected(pin_no)
 
     def test_assert_analog_write_range(self):
-        for integer in range(255):
+        for integer in range(256):
             self.device._assert_valid_analog_write_range(integer)
         with self.assertRaises(ValueError):
             self.device._assert_valid_analog_write_range(256)

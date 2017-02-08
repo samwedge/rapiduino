@@ -341,6 +341,19 @@ class TestArduinoMixin(object):
             self.assertIsNone(component.pins[component_pin_no].bound_to)
             self.assertFalse(self.device.pins[device_pin_no].is_protected)
 
+    def test_unbind_component(self):
+        component = ExampleTestComponent()
+        component.setup = Mock()
+        pin_mappings = ((self.valid_digital_pin, 0), (self.valid_pwm_pin, 1), (self.valid_analog_pin, 2))
+        self.device.bind_component(component, pin_mappings)
+        self.device.unbind_component(component)
+
+        self.assertIsNone(component.bound_device)
+        for device_pin_no, component_pin_no in pin_mappings:
+            self.assertIsNone(self.device.pins[device_pin_no].bound_to)
+            self.assertIsNone(component.pins[component_pin_no].bound_to)
+            self.assertFalse(self.device.pins[device_pin_no].is_protected)
+
     def test_assert_pins_compatible(self):
         self.device._assert_pins_compatible(DevicePin(0), ComponentPin(1))
         self.device._assert_pins_compatible(DevicePin(0, analog=True), ComponentPin(1, analog=True))

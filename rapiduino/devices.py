@@ -87,6 +87,12 @@ class ArduinoBase(object):
             component_pin.unbind()
         component.unbind_to_device()
 
+    def unbind_component(self, component):
+        for component_pin in component.pins:
+            self.pins[component_pin.bound_pin].unbind()
+            component_pin.unbind()
+        component.unbind_to_device()
+
     @staticmethod
     def _assert_pins_compatible(device_pin, component_pin):
         if component_pin.is_analog and not device_pin.is_analog:

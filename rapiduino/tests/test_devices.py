@@ -26,23 +26,9 @@ class TestArduinoMixin(object):
 
     def setup_mixin(self):
         self.device = self.device_class()
-        self.valid_analog_pin = self.valid_analog_pins[0]
-        self.valid_digital_pin = [x for x in self.valid_pins if x not in self.valid_pwm_pins + self.valid_analog_pins + [self.tx_pin, self.rx_pin]][0]
-        self.valid_pwm_pin = self.valid_pwm_pins[0]
 
         self.num_pins = len(self.valid_pins)
         self.out_of_range_pin = self.num_pins
-
-        self.invalid_analog_pin = None
-        self.invalid_pwm_pin = None
-        for pin_num in self.valid_pins:
-            if pin_num not in [self.tx_pin, self.rx_pin]:
-                if (self.invalid_analog_pin is None) and (pin_num not in self.valid_analog_pins):
-                    self.invalid_analog_pin = pin_num
-                if (self.invalid_pwm_pin is None) and (pin_num not in self.valid_pwm_pins):
-                    self.invalid_pwm_pin = pin_num
-                if (self.invalid_analog_pin is not None) and (self.invalid_pwm_pin is not None):
-                    break
 
         self.mocked_send = Mock()
         self.mocked_recv = Mock()
@@ -322,7 +308,7 @@ class TestArduinoMixin(object):
         component = ExampleTestComponent()
         component.setup = Mock()
         pin_mappings = ((self.valid_digital_pin, 0), (self.invalid_pwm_pin, 1), (self.valid_analog_pin, 2))
-        with self.assertRaises(PinError):
+        with self.assertRaisesRegex(PinError, 'pin with pwm attribute'):
             self.device.bind_component(component, pin_mappings)
         self.assertIsNone(component.bound_device)
         for device_pin_no, component_pin_no in pin_mappings:
@@ -446,6 +432,11 @@ class TestArduinoUno(unittest2.TestCase, TestArduinoMixin):
         self.valid_pwm_pins = [3, 5, 6, 9, 10, 11]
         self.tx_pin = 0
         self.rx_pin = 1
+        self.valid_digital_pin = 2
+        self.valid_analog_pin = 14
+        self.valid_pwm_pin = 3
+        self.invalid_analog_pin = 8
+        self.invalid_pwm_pin = 7
 
         self.setup_mixin()
 
@@ -460,6 +451,11 @@ class TestArduinoMega2560(unittest2.TestCase, TestArduinoMixin):
         self.valid_pwm_pins = list(range(2, 14)) + [44, 45, 46]
         self.tx_pin = 0
         self.rx_pin = 1
+        self.valid_digital_pin = 2
+        self.valid_analog_pin = 54
+        self.valid_pwm_pin = 3
+        self.invalid_analog_pin = 4
+        self.invalid_pwm_pin = 22
 
         self.setup_mixin()
 

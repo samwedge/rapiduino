@@ -71,6 +71,7 @@ class ArduinoBase(object):
             for device_pin_no, component_pin_no in pin_mappings:
                 device_pin = self.pins[device_pin_no]
                 component_pin = component.pins[component_pin_no]
+                self._assert_pins_compatible(device_pin, component_pin)
                 device_pin.bind(component, component_pin_no)
                 component_pin.bind(self, device_pin_no)
             component.bind_to_device(self)

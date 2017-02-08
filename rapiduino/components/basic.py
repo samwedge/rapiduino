@@ -32,7 +32,7 @@ class LED(BaseComponent):
 
 class DimmableLED(LED):
     def __init__(self):
-        super(LED, self).__init__()
+        super(DimmableLED, self).__init__()
 
         self._pins = (
             ComponentPin(0, pwm=True),

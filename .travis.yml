@@ -11,3 +11,4 @@ install:
 script:
   - unit2 discover --pattern=test_*.py
   - flake8 rapiduino
+  - coverage run --source=rapiduino -m unittest2 discover && coveralls

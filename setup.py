@@ -46,7 +46,7 @@ setup(
     install_requires=['pyserial', 'six'],
 
     extras_require={
-        'test': ['unittest2', 'mock', 'flake8'],
+        'test': ['unittest2', 'mock', 'flake8', 'coveralls'],
     },
 
     package_data={

@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/samwedge/rapiduino.svg?branch=master)](https://travis-ci.org/samwedge/rapiduino)
 [![Coverage Status](https://coveralls.io/repos/github/samwedge/rapiduino/badge.svg?branch=master)](https://coveralls.io/github/samwedge/rapiduino?branch=master)
+[![Python Supported Versions](https://img.shields.io/pypi/pyversions/coveralls.svg?style=flat-square)](https://travis-ci.org/samwedge/rapiduino)
 
 # Rapiduino
 

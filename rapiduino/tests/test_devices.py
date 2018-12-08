@@ -2,7 +2,8 @@ import unittest2
 from mock import Mock, patch
 
 from rapiduino.pin import ComponentPin, DevicePin
-from rapiduino.communication import Connection, SerialConnection
+from rapiduino.communication import (SerialConnection)
+from rapiduino.commands import *
 from rapiduino.components.base import BaseComponent
 from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560
 from rapiduino.exceptions import PinError
@@ -39,12 +40,6 @@ class TestArduinoMixin(object):
     def test_init(self):
         self.assertIsInstance(self.device._pins, tuple)
         self.assertIsInstance(self.device.connection, SerialConnection)
-        self.assertIsInstance(self.device.connection, Connection)
-
-    def test_init_with_port(self):
-        with patch.object(SerialConnection, 'open') as mocked_open:
-            self.device_class('port_id')
-            mocked_open.assert_called_once_with('port_id')
 
     def test_subclass(self):
         self.assertTrue(isinstance(self.device, ArduinoBase))
@@ -64,53 +59,25 @@ class TestArduinoMixin(object):
     def test_poll(self):
         self.mocked_recv.return_value = (1,)
         value = self.device.poll()
-        poll_cmd_spec = {
-            'cmd': 0,
-            'tx_len': 0,
-            'tx_type': 'B',
-            'rx_len': 1,
-            'rx_type': 'B'
-
-            }
-        self.mocked_send.assert_called_once_with(poll_cmd_spec, ())
+        self.mocked_send.assert_called_once_with(CMD_POLL, ())
         self.assertEqual(value, 1)
 
     def test_parrot(self):
         self.mocked_recv.return_value = (5,)
         value = self.device.parrot(5)
-        parrot_cmd_spec = {
-            'cmd': 1,
-            'tx_len': 1,
-            'tx_type': 'B',
-            'rx_len': 1,
-            'rx_type': 'B'
-        }
-        self.mocked_send.assert_called_once_with(parrot_cmd_spec, (5,))
+
+        self.mocked_send.assert_called_once_with(CMD_PARROT, (5,))
         self.assertEqual(value, 5)
 
     def test_version(self):
         self.mocked_recv.return_value = (1, 2, 3)
         version = self.device.version()
-        version_cmd_spec = {
-            'cmd': 2,
-            'tx_len': 0,
-            'tx_type': 'B',
-            'rx_len': 3,
-            'rx_type': 'B'
-        }
-        self.mocked_send.assert_called_once_with(version_cmd_spec, ())
+        self.mocked_send.assert_called_once_with(CMD_VERSION, ())
         self.assertEqual(version, (1, 2, 3))
 
     def test_pin_mode(self):
         self.device.pin_mode(self.valid_digital_pin, OUTPUT)
-        pin_mode_cmd_spec = {
-            'cmd': 10,
-            'tx_len': 2,
-            'tx_type': 'B',
-            'rx_len': 0,
-            'rx_type': ''
-        }
-        self.mocked_send.assert_called_once_with(pin_mode_cmd_spec, (self.valid_digital_pin, OUTPUT.value))
+        self.mocked_send.assert_called_once_with(CMD_PINMODE, (self.valid_digital_pin, OUTPUT.value))
 
     def test_pin_mode_on_protected_pin(self):
         self.device.pins[self.valid_digital_pin]._protected = True
@@ -120,14 +87,7 @@ class TestArduinoMixin(object):
     def test_pin_mode_on_protected_pin_with_force(self):
         self.device.pins[self.valid_digital_pin]._protected = True
         self.device.pin_mode(self.valid_digital_pin, OUTPUT, force=True)
-        pin_mode_cmd_spec = {
-            'cmd': 10,
-            'tx_len': 2,
-            'tx_type': 'B',
-            'rx_len': 0,
-            'rx_type': ''
-        }
-        self.mocked_send.assert_called_once_with(pin_mode_cmd_spec, (self.valid_digital_pin, OUTPUT.value))
+        self.mocked_send.assert_called_once_with(CMD_PINMODE, (self.valid_digital_pin, OUTPUT.value))
 
     def test_pin_mode_with_incorrect_mode(self):
         with self.assertRaises(ValueError):
@@ -140,14 +100,8 @@ class TestArduinoMixin(object):
     def test_digital_read(self):
         self.mocked_recv.return_value = (1,)
         state = self.device.digital_read(self.valid_digital_pin)
-        digital_read_cmd_spec = {
-            'cmd': 20,
-            'tx_len': 1,
-            'tx_type': 'B',
-            'rx_len': 1,
-            'rx_type': 'B'
-        }
-        self.mocked_send.assert_called_once_with(digital_read_cmd_spec, (self.valid_digital_pin,))
+
+        self.mocked_send.assert_called_once_with(CMD_DIGITALREAD, (self.valid_digital_pin,))
         self.assertEqual(state, HIGH)
 
     def test_digital_read_on_protected_pin(self):
@@ -159,14 +113,7 @@ class TestArduinoMixin(object):
         self.device.pins[self.valid_digital_pin]._protected = True
         self.mocked_recv.return_value = (1,)
         state = self.device.digital_read(self.valid_digital_pin, force=True)
-        digital_read_cmd_spec = {
-            'cmd': 20,
-            'tx_len': 1,
-            'tx_type': 'B',
-            'rx_len': 1,
-            'rx_type': 'B'
-        }
-        self.mocked_send.assert_called_once_with(digital_read_cmd_spec, (self.valid_digital_pin,))
+        self.mocked_send.assert_called_once_with(CMD_DIGITALREAD, (self.valid_digital_pin,))
         self.assertEqual(state, HIGH)
 
     def test_digital_read_with_pin_no_out_of_range(self):
@@ -175,14 +122,7 @@ class TestArduinoMixin(object):
 
     def test_digital_write(self):
         self.device.digital_write(self.valid_digital_pin, HIGH)
-        digital_write_cmd_spec = {
-            'cmd': 21,
-            'tx_len': 2,
-            'tx_type': 'B',
-            'rx_len': 0,
-            'rx_type': ''
-        }
-        self.mocked_send.assert_called_once_with(digital_write_cmd_spec, (self.valid_digital_pin, HIGH.value))
+        self.mocked_send.assert_called_once_with(CMD_DIGITALWRITE, (self.valid_digital_pin, HIGH.value))
 
     def test_digital_write_on_protected_pin(self):
         self.device.pins[self.valid_digital_pin]._protected = True
@@ -192,14 +132,7 @@ class TestArduinoMixin(object):
     def test_digital_write_on_protected_pin_with_force(self):
         self.device.pins[self.valid_digital_pin]._protected = True
         self.device.digital_write(self.valid_digital_pin, HIGH, force=True)
-        digital_write_cmd_spec = {
-            'cmd': 21,
-            'tx_len': 2,
-            'tx_type': 'B',
-            'rx_len': 0,
-            'rx_type': ''
-        }
-        self.mocked_send.assert_called_once_with(digital_write_cmd_spec, (self.valid_digital_pin, HIGH.value))
+        self.mocked_send.assert_called_once_with(CMD_DIGITALWRITE, (self.valid_digital_pin, HIGH.value))
 
     def test_digital_write_with_incorrect_state(self):
         with self.assertRaises(ValueError):
@@ -212,14 +145,8 @@ class TestArduinoMixin(object):
     def test_analog_read(self):
         self.mocked_recv.return_value = (100,)
         value = self.device.analog_read(self.valid_analog_pin)
-        analog_read_cmd_spec = {
-            'cmd': 30,
-            'tx_len': 1,
-            'tx_type': 'B',
-            'rx_len': 1,
-            'rx_type': 'H'
-        }
-        self.mocked_send.assert_called_once_with(analog_read_cmd_spec, (self.valid_analog_pin,))
+
+        self.mocked_send.assert_called_once_with(CMD_ANALOGREAD, (self.valid_analog_pin,))
         self.assertEqual(value, 100)
 
     def test_analog_read_on_protected_pin(self):
@@ -231,14 +158,7 @@ class TestArduinoMixin(object):
         self.device.pins[self.valid_analog_pin]._protected = True
         self.mocked_recv.return_value = (100,)
         value = self.device.analog_read(self.valid_analog_pin, force=True)
-        analog_read_cmd_spec = {
-            'cmd': 30,
-            'tx_len': 1,
-            'tx_type': 'B',
-            'rx_len': 1,
-            'rx_type': 'H'
-        }
-        self.mocked_send.assert_called_once_with(analog_read_cmd_spec, (self.valid_analog_pin,))
+        self.mocked_send.assert_called_once_with(CMD_ANALOGREAD, (self.valid_analog_pin,))
         self.assertEqual(value, 100)
 
     def test_analog_read_with_pin_no_out_of_range(self):
@@ -251,14 +171,7 @@ class TestArduinoMixin(object):
 
     def test_analog_write(self):
         self.device.analog_write(self.valid_pwm_pin, 100)
-        analog_write_cmd_spec = {
-            'cmd': 31,
-            'tx_len': 2,
-            'tx_type': 'B',
-            'rx_len': 0,
-            'rx_type': ''
-        }
-        self.mocked_send.assert_called_once_with(analog_write_cmd_spec, (self.valid_pwm_pin, 100))
+        self.mocked_send.assert_called_once_with(CMD_ANALOGWRITE, (self.valid_pwm_pin, 100))
 
     def test_analog_write_on_protected_pin(self):
         self.device.pins[self.valid_pwm_pin]._protected = True
@@ -268,14 +181,7 @@ class TestArduinoMixin(object):
     def test_analog_write_on_protected_pin_with_force(self):
         self.device.pins[self.valid_pwm_pin]._protected = True
         self.device.analog_write(self.valid_pwm_pin, 100, force=True)
-        analog_write_cmd_spec = {
-            'cmd': 31,
-            'tx_len': 2,
-            'tx_type': 'B',
-            'rx_len': 0,
-            'rx_type': ''
-        }
-        self.mocked_send.assert_called_once_with(analog_write_cmd_spec, (self.valid_pwm_pin, 100))
+        self.mocked_send.assert_called_once_with(CMD_ANALOGWRITE, (self.valid_pwm_pin, 100))
 
     def test_analog_write_with_incorrect_state(self):
         with self.assertRaises(ValueError):

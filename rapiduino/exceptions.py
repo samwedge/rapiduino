@@ -2,7 +2,15 @@ class RapiduinoError(Exception):
     pass
 
 
-class SerialConnectionError(RapiduinoError):
+class SerialConnectionSendDataError(RapiduinoError):
+    pass
+
+
+class SerialConnectionReceiveDataError(RapiduinoError):
+    pass
+
+
+class SerialConnectionNotConnectedError(RapiduinoError):
     pass
 
 

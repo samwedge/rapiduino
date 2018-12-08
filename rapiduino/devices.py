@@ -3,6 +3,8 @@ import six
 
 from rapiduino.pin import DevicePin
 from rapiduino.communication import SerialConnection
+from rapiduino.commands import CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_DIGITALWRITE, \
+    CMD_ANALOGREAD, CMD_ANALOGWRITE
 from rapiduino.exceptions import PinError
 from rapiduino.globals.common import *
 
@@ -19,23 +21,21 @@ def enable_pin_protection(func):
 class ArduinoBase(object):
 
     def __init__(self, port=None):
-        self.connection = SerialConnection()
-        if port is not None:
-            self.connection.open(port)
+        self.connection = SerialConnection.build(port)
 
     def poll(self):
-        return self.connection.process_command('poll')[0]
+        return self.connection.process_command(CMD_POLL)[0]
 
     def parrot(self, value):
-        return self.connection.process_command('parrot', value)[0]
+        return self.connection.process_command(CMD_PARROT, value)[0]
 
     def version(self):
-        return self.connection.process_command('version')
+        return self.connection.process_command(CMD_VERSION)
 
     @enable_pin_protection
     def digital_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
-        state = self.connection.process_command('digitalRead', pin_no)
+        state = self.connection.process_command(CMD_DIGITALREAD, pin_no)
         if state[0] == 1:
             return HIGH
         else:
@@ -45,26 +45,26 @@ class ArduinoBase(object):
     def digital_write(self, pin_no, state):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_state(state)
-        self.connection.process_command('digitalWrite', pin_no, state.value)
+        self.connection.process_command(CMD_DIGITALWRITE, pin_no, state.value)
 
     @enable_pin_protection
     def analog_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
         self._assert_analog_pin(pin_no)
-        return self.connection.process_command('analogRead', pin_no)[0]
+        return self.connection.process_command(CMD_ANALOGREAD, pin_no)[0]
 
     @enable_pin_protection
     def analog_write(self, pin_no, value):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_analog_write_range(value)
         self._assert_pwm_pin(pin_no)
-        self.connection.process_command('analogWrite', pin_no, value)
+        self.connection.process_command(CMD_ANALOGWRITE, pin_no, value)
 
     @enable_pin_protection
     def pin_mode(self, pin_no, mode):
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_mode(mode)
-        self.connection.process_command('pinMode', pin_no, mode.value)
+        self.connection.process_command(CMD_PINMODE, pin_no, mode.value)
 
     def bind_component(self, component, pin_mappings):
         try:

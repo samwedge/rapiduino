@@ -1,4 +1,4 @@
-from rapiduino.exceptions import PinError, AlreadyBoundPinError
+from rapiduino.exceptions import AlreadyBoundPinError
 from rapiduino.globals.common import *
 
 

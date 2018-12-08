@@ -33,6 +33,12 @@ class ArduinoBase(object):
         return self.connection.process_command(CMD_VERSION)
 
     @enable_pin_protection
+    def pin_mode(self, pin_no, mode):
+        self._assert_valid_pin_number(pin_no)
+        self._assert_valid_pin_mode(mode)
+        self.connection.process_command(CMD_PINMODE, pin_no, mode.value)
+
+    @enable_pin_protection
     def digital_read(self, pin_no):
         self._assert_valid_pin_number(pin_no)
         state = self.connection.process_command(CMD_DIGITALREAD, pin_no)
@@ -60,12 +66,6 @@ class ArduinoBase(object):
         self._assert_pwm_pin(pin_no)
         self.connection.process_command(CMD_ANALOGWRITE, pin_no, value)
 
-    @enable_pin_protection
-    def pin_mode(self, pin_no, mode):
-        self._assert_valid_pin_number(pin_no)
-        self._assert_valid_pin_mode(mode)
-        self.connection.process_command(CMD_PINMODE, pin_no, mode.value)
-
     def bind_component(self, component, pin_mappings):
         try:
             for device_pin_no, component_pin_no in pin_mappings:
@@ -79,17 +79,17 @@ class ArduinoBase(object):
             self._undo_bind_component(component, pin_mappings)
             raise
 
+    def unbind_component(self, component):
+        for component_pin in component.pins:
+            self.pins[component_pin.bound_pin].unbind()
+            component_pin.unbind()
+        component.unbind_to_device()
+
     def _undo_bind_component(self, component, pin_mappings):
         for device_pin_no, component_pin_no in pin_mappings:
             device_pin = self.pins[device_pin_no]
             component_pin = component.pins[component_pin_no]
             device_pin.unbind()
-            component_pin.unbind()
-        component.unbind_to_device()
-
-    def unbind_component(self, component):
-        for component_pin in component.pins:
-            self.pins[component_pin.bound_pin].unbind()
             component_pin.unbind()
         component.unbind_to_device()
 

@@ -6,8 +6,6 @@ from rapiduino.components.base import BaseComponent
 class LED(BaseComponent):
 
     def __init__(self):
-        super(LED, self).__init__()
-
         self._pins = (
             ComponentPin(0),
         )

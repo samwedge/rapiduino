@@ -1,5 +1,3 @@
-from rapiduino.globals.common import *
-
 A0 = 14
 A1 = 15
 A2 = 16

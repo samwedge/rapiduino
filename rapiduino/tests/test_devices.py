@@ -3,13 +3,14 @@ import six
 import unittest2
 from mock import Mock, call
 
+from rapiduino.commands import (CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_DIGITALWRITE,
+                                CMD_ANALOGREAD, CMD_ANALOGWRITE)
+from rapiduino.globals.common import INPUT, OUTPUT, HIGH
 from rapiduino.pin import ComponentPin
 from rapiduino.communication import (SerialConnection)
-from rapiduino.commands import *
 from rapiduino.components.base import BaseComponent
 from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560, PinMapping
 from rapiduino.exceptions import NotPwmPinError, NotAnalogPinError, ProtectedPinError, AlreadyBoundPinError
-from rapiduino.globals.common import *
 import rapiduino.globals.arduino_uno as arduino_uno_globals
 import rapiduino.globals.arduino_mega_2560 as arduino_mega_2560_globals
 
@@ -133,6 +134,7 @@ class ArduinoCommon(object):
             self.assertEqual(version, (1, 2, 3))
 
         def test_pin_mode_with_valid_args(self):
+            from rapiduino.globals.common import OUTPUT
             self.device.pin_mode(self.valid_digital_pin, OUTPUT)
             self.assertEqual(self.mocked_send.call_args, call(CMD_PINMODE, (self.valid_digital_pin, OUTPUT.value)))
 

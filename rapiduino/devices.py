@@ -3,12 +3,12 @@ from collections import namedtuple
 
 import six
 
+from rapiduino.commands import CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_ANALOGREAD, \
+    CMD_DIGITALWRITE, CMD_ANALOGWRITE
 from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
 from rapiduino.pin import DevicePin
 from rapiduino.communication import SerialConnection
-from rapiduino.commands import *
-from rapiduino.globals.common import *
-from rapiduino.globals.common import GlobalParameter
+from rapiduino.globals.common import GlobalParameter, INPUT, OUTPUT, INPUT_PULLUP, LOW, HIGH
 
 
 def enable_pin_protection(func):

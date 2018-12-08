@@ -7,8 +7,7 @@ from rapiduino.exceptions import NoDeviceBoundError
 @six.add_metaclass(abc.ABCMeta)
 class BaseComponent(object):
 
-    def __init__(self):
-        self._bound_device = None
+    _bound_device = None
 
     def _setup(self):
         pass

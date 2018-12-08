@@ -32,7 +32,11 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
 
     keywords='arduino python rapid development serial communication',
@@ -42,7 +46,7 @@ setup(
     install_requires=['pyserial', 'six'],
 
     extras_require={
-        'test': ['mock'],
+        'test': ['unittest2', 'mock', 'flake8'],
     },
 
     package_data={

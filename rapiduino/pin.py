@@ -1,5 +1,5 @@
 from rapiduino.exceptions import AlreadyBoundPinError
-from rapiduino.globals.common import *
+from rapiduino.globals.common import INPUT, LOW
 
 
 class Pin(object):

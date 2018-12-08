@@ -5,8 +5,6 @@ from rapiduino.components.base import BaseComponent
 class Servo(BaseComponent):
 
     def __init__(self, angle_min=0, angle_max=180, pwm_min=0, pwm_max=1023):
-        super(Servo, self).__init__()
-
         self._pins = (
             ComponentPin(0, pwm=True),
         )

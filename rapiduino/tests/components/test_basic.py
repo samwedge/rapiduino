@@ -28,12 +28,11 @@ class TestLED(ComponentCommon.TestCase):
     def test_unbind_to_device(self):
         self.component.bind_to_device(self.mock_device)
         self.component.unbind_to_device()
-
         self.assertIsNone(self.component._bound_device)
 
     def test_turn_on(self):
         self.component.turn_on()
-        self.mock_device.digital_write.assert_called_once_with(self.pin_num, HIGH, force=True)
+        self.assertEqual(self.mock_device.digital_write.call_args, call(self.pin_num, HIGH, force=True))
 
     def test_turn_on_when_component_not_bound_to_device(self):
         self.component.unbind_to_device()
@@ -43,7 +42,7 @@ class TestLED(ComponentCommon.TestCase):
 
     def test_turn_off(self):
         self.component.turn_off()
-        self.mock_device.digital_write.assert_called_once_with(self.pin_num, LOW, force=True)
+        self.assertEqual(self.mock_device.digital_write.call_args, call(self.pin_num, LOW, force=True))
 
     def test_toggle(self):
         self.mock_device.digital_read.side_effect = [LOW, HIGH]

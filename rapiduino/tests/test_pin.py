@@ -64,7 +64,7 @@ class TestPinMixin(object):
 
     def test_bound_pin(self):
         self.digital_pin._bound_to = (self.mock_instance, 5)
-        self.assertEqual(self.digital_pin.bound_pin, 5)
+        self.assertEqual(self.digital_pin.bound_pin_num, 5)
 
     def test_bound_instance(self):
         self.digital_pin._bound_to = (self.mock_instance, 5)

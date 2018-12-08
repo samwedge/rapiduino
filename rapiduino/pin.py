@@ -33,7 +33,7 @@ class Pin(object):
         return self._bound_to[0]
 
     @property
-    def bound_pin(self):
+    def bound_pin_num(self):
         return self._bound_to[1]
 
     def bind(self, instance, pin_no):

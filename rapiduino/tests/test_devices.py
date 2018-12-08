@@ -7,7 +7,7 @@ from rapiduino.pin import ComponentPin
 from rapiduino.communication import (SerialConnection)
 from rapiduino.commands import *
 from rapiduino.components.base import BaseComponent
-from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560
+from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560, PinMapping
 from rapiduino.exceptions import NotPwmPinError, NotAnalogPinError, ProtectedPinError, AlreadyBoundPinError
 from rapiduino.globals.common import *
 import rapiduino.globals.arduino_uno as arduino_uno_globals
@@ -269,7 +269,11 @@ class ArduinoCommon(object):
             self.assertEqual(self.mocked_send.call_count, 0)
 
         def test_bind_component_with_valid_args(self):
-            pin_mappings = ((self.valid_digital_pin, 0), (self.valid_pwm_pin, 1), (self.valid_analog_pin, 2))
+            pin_mappings = (
+                PinMapping(device_pin_no=self.valid_digital_pin, component_pin_no=0),
+                PinMapping(device_pin_no=self.valid_pwm_pin, component_pin_no=1),
+                PinMapping(device_pin_no=self.valid_analog_pin, component_pin_no=2)
+            )
             self.device.bind_component(self.component, pin_mappings)
             self.assertIsInstance(self.component.bound_device, self.device_class)
             for device_pin_no, component_pin_no in pin_mappings:
@@ -279,7 +283,11 @@ class ArduinoCommon(object):
                 self.assertEqual(self.component.setup.call_count, 1)
 
         def test_bind_component_with_incompatible_pins(self):
-            pin_mappings = ((self.valid_digital_pin, 0), (self.invalid_pwm_pin, 1), (self.valid_analog_pin, 2))
+            pin_mappings = (
+                PinMapping(device_pin_no=self.valid_digital_pin, component_pin_no=0),
+                PinMapping(device_pin_no=self.invalid_pwm_pin, component_pin_no=1),
+                PinMapping(device_pin_no=self.valid_analog_pin, component_pin_no=2)
+            )
             with self.assertRaises(NotPwmPinError):
                 self.device.bind_component(self.component, pin_mappings)
             self.assertIsNone(self.component.bound_device)
@@ -289,7 +297,11 @@ class ArduinoCommon(object):
                 self.assertEqual(self.component.setup.call_count, 0)
 
         def test_bind_component_with_duplicate_pin_in_mapping(self):
-            pin_mappings = ((self.valid_pwm_pin, 0), (self.valid_pwm_pin, 1), (self.valid_analog_pin, 2))
+            pin_mappings = (
+                PinMapping(device_pin_no=self.valid_pwm_pin, component_pin_no=0),
+                PinMapping(device_pin_no=self.valid_pwm_pin, component_pin_no=1),
+                PinMapping(device_pin_no=self.valid_analog_pin, component_pin_no=2)
+            )
             with self.assertRaises(AlreadyBoundPinError):
                 self.device.bind_component(self.component, pin_mappings)
             self.assertIsNone(self.component.bound_device)
@@ -299,8 +311,11 @@ class ArduinoCommon(object):
                 self.assertEqual(self.component.setup.call_count, 0)
 
         def test_bind_component_does_not_bind_pins_if_error(self):
-            pin_mappings = ((self.valid_digital_pin, 0), (self.invalid_pwm_pin, 1), (self.valid_analog_pin, 2))
-
+            pin_mappings = (
+                PinMapping(device_pin_no=self.valid_digital_pin, component_pin_no=0),
+                PinMapping(device_pin_no=self.invalid_pwm_pin, component_pin_no=1),
+                PinMapping(device_pin_no=self.valid_analog_pin, component_pin_no=2)
+            )
             with self.assertRaises(NotPwmPinError):
                 self.device.bind_component(self.component, pin_mappings)
 
@@ -311,7 +326,11 @@ class ArduinoCommon(object):
                 self.assertFalse(self.device.pins[device_pin_no].is_protected)
 
         def test_unbind_component(self):
-            pin_mappings = ((self.valid_digital_pin, 0), (self.valid_pwm_pin, 1), (self.valid_analog_pin, 2))
+            pin_mappings = (
+                PinMapping(device_pin_no=self.valid_digital_pin, component_pin_no=0),
+                PinMapping(device_pin_no=self.valid_pwm_pin, component_pin_no=1),
+                PinMapping(device_pin_no=self.valid_analog_pin, component_pin_no=2)
+            )
             self.device.bind_component(self.component, pin_mappings)
             self.device.unbind_component(self.component)
 

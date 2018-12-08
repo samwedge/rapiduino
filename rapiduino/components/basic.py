@@ -13,21 +13,21 @@ class LED(BaseComponent):
         )
 
     def setup(self):
-        self._pin_mode(self.pins[0].bound_pin, OUTPUT)
-        self._digital_write(self.pins[0].bound_pin, LOW)
+        self._pin_mode(self.pins[0].bound_pin_num, OUTPUT)
+        self._digital_write(self.pins[0].bound_pin_num, LOW)
 
     def turn_on(self):
-        self._digital_write(self.pins[0].bound_pin, HIGH)
+        self._digital_write(self.pins[0].bound_pin_num, HIGH)
 
     def turn_off(self):
-        self._digital_write(self.pins[0].bound_pin, LOW)
+        self._digital_write(self.pins[0].bound_pin_num, LOW)
 
     def toggle(self):
-        state = self._digital_read(self.pins[0].bound_pin)
+        state = self._digital_read(self.pins[0].bound_pin_num)
         if state == HIGH:
-            self._digital_write(self.pins[0].bound_pin, LOW)
+            self._digital_write(self.pins[0].bound_pin_num, LOW)
         elif state == LOW:
-            self._digital_write(self.pins[0].bound_pin, HIGH)
+            self._digital_write(self.pins[0].bound_pin_num, HIGH)
 
 
 class DimmableLED(LED):
@@ -39,4 +39,4 @@ class DimmableLED(LED):
         )
 
     def set_brightness(self, brightness):
-        self._analog_write(self.pins[0].bound_pin, brightness)
+        self._analog_write(self.pins[0].bound_pin_num, brightness)

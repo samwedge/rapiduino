@@ -1,4 +1,6 @@
 import abc
+from collections import namedtuple
+
 import six
 
 from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
@@ -15,6 +17,9 @@ def enable_pin_protection(func):
             self._assert_pin_not_protected(pin_no)
         return func(self, pin_no, *args)
     return return_function
+
+
+PinMapping = namedtuple('PinMapping', ['device_pin_no', 'component_pin_no'])
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -81,7 +86,7 @@ class ArduinoBase(object):
 
     def unbind_component(self, component):
         for component_pin in component.pins:
-            self.pins[component_pin.bound_pin].unbind()
+            self.pins[component_pin.bound_pin_num].unbind()
             component_pin.unbind()
         component.unbind_to_device()
 

@@ -68,16 +68,17 @@ to which component pin. As an example, the LED class has one pin which can be in
 as follows:
 
     from rapiduino.components.basic import LED
+    from rapiduino.devices import PinMapping
     led = LED()
-    bindings = ((13, 0),)
+    bindings = [PinMapping(device_pin_no=13, component_pin_no=0)]
     arduino.bind_component(led, bindings)
     
 This creates an led object and binds it to the arduino. Binding it allows you to communicate with the led object, and let
-the led object talk to the arduino object. To bind an object, you need to specify bindings. This is basically a tuple of
-tuples to tell the arduino which pin is to be connected to each part of the component. In the case of the LED, there is
-only one pin to connect (Pin 0) which is connected to the arduino (Pin 13). Hence, the tuple looks like:
+the led object talk to the arduino object. To bind an object, you need to specify bindings. This is basically a sequence of
+PinMappings to tell the arduino which pin is to be connected to each part of the component. In the case of the LED, there is
+only one pin to connect (Pin 0) which is connected to the arduino (Pin 13). Hence, the binding looks like:
 
-    ((13, 0),)
+    [PinMapping(device_pin_no=13, component_pin_no=0)]
     
 When binding, the code automatically takes care of checking compatibility, raising an error if there is a problem. For
 example, if you are trying to connect a component that requires a PWM pin to a non-PWM pin, you will get a helpful message.
@@ -103,8 +104,8 @@ Yes please! Code and/or suggestions are very welcome!
 
 ## License
 
-Copyright (c) 2017 Samuel Wedge
-samwedge@gmail.com, samwedge.co.uk
+Copyright (c) 2018 Samuel Wedge
+samwedge@gmail.com, samwedge.uk
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -12,7 +12,7 @@ class LED(BaseComponent):
             ComponentPin(0),
         )
 
-    def setup(self):
+    def _setup(self):
         self._pin_mode(self.pins[0].bound_pin_num, OUTPUT)
         self._digital_write(self.pins[0].bound_pin_num, LOW)
 

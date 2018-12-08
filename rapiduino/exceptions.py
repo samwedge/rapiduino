@@ -36,3 +36,7 @@ class ProtectedPinError(PinError):
 
 class AlreadyBoundPinError(PinError):
     pass
+
+
+class NoDeviceBoundError(RapiduinoError):
+    pass

@@ -1,13 +1,13 @@
-import unittest2
 from mock import Mock, call
 
 from rapiduino.components.basic import LED, DimmableLED
+from rapiduino.exceptions import NoDeviceBoundError
 from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.pin import ComponentPin
-from rapiduino.tests.components.mixin import TestComponentMixin
+from rapiduino.tests.components.common import ComponentCommon
 
 
-class TestLED(unittest2.TestCase, TestComponentMixin):
+class TestLED(ComponentCommon.TestCase):
 
     def setUp(self):
         self.pin_num = 13
@@ -19,14 +19,27 @@ class TestLED(unittest2.TestCase, TestComponentMixin):
         self.component._bound_device = self.mock_device
         self.component._pins[0]._bound_to = (self.mock_device, self.pin_num)
 
-    def test_setup(self):
-        self.component.setup()
-        self.mock_device.pin_mode.assert_called_once_with(self.pin_num, OUTPUT, force=True)
-        self.mock_device.digital_write.assert_called_once_with(self.pin_num, LOW, force=True)
+    def test_bind_to_device(self):
+        self.component.bind_to_device(self.mock_device)
+        self.assertIsNotNone(self.component._bound_device)
+        self.assertEqual(self.mock_device.pin_mode.call_args, call(self.pin_num, OUTPUT, force=True))
+        self.assertEqual(self.mock_device.digital_write.call_args, call(self.pin_num, LOW, force=True))
+
+    def test_unbind_to_device(self):
+        self.component.bind_to_device(self.mock_device)
+        self.component.unbind_to_device()
+
+        self.assertIsNone(self.component._bound_device)
 
     def test_turn_on(self):
         self.component.turn_on()
         self.mock_device.digital_write.assert_called_once_with(self.pin_num, HIGH, force=True)
+
+    def test_turn_on_when_component_not_bound_to_device(self):
+        self.component.unbind_to_device()
+        with self.assertRaises(NoDeviceBoundError):
+            self.component.turn_on()
+        self.assertEqual(self.mock_device.digital_write.call_count, 0)
 
     def test_turn_off(self):
         self.component.turn_off()
@@ -66,7 +79,3 @@ class TestDimmableLED(TestLED):
     def test_set_brightness(self):
         self.component.set_brightness(100)
         self.mock_device.analog_write.assert_called_once_with(self.pin_num, 100, force=True)
-
-
-if __name__ == '__main__':
-    unittest2 .main()

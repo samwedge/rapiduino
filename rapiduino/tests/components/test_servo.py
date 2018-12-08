@@ -1,12 +1,11 @@
-import unittest2
 from mock import Mock
 
 from rapiduino.components.servo import Servo
 from rapiduino.pin import ComponentPin
-from rapiduino.tests.components.mixin import TestComponentMixin
+from rapiduino.tests.components.common import ComponentCommon
 
 
-class TestServo(unittest2.TestCase, TestComponentMixin):
+class TestServo(ComponentCommon.TestCase):
 
     def setUp(self):
         self.pin_num = 9
@@ -54,7 +53,7 @@ class TestServo(unittest2.TestCase, TestComponentMixin):
         with self.assertRaises(ValueError):
             self.component.pwm_max = -1
 
-    def test_set_invalid_pwm(self):
+    def test_set_invalid_angle(self):
         with self.assertRaises(ValueError):
             self.component.angle_min = -1
         with self.assertRaises(ValueError):
@@ -63,7 +62,3 @@ class TestServo(unittest2.TestCase, TestComponentMixin):
             self.component.angle_min = 181
         with self.assertRaises(ValueError):
             self.component.angle_max = -1
-
-
-if __name__ == '__main__':
-    unittest2.main()

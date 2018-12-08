@@ -43,7 +43,7 @@ class ArduinoCommon(object):
             self.device.connection._recv = self.mocked_recv
 
             self.component = ExampleTestComponent()
-            self.component.setup = Mock()
+            self.component._setup = Mock()
 
         @abc.abstractproperty
         def device_class(self):
@@ -280,7 +280,7 @@ class ArduinoCommon(object):
                 self.assertTupleEqual(self.device.pins[device_pin_no].bound_to, (self.component, component_pin_no))
                 self.assertTupleEqual(self.component.pins[component_pin_no].bound_to, (self.device, device_pin_no))
                 self.assertTrue(self.device.pins[device_pin_no].is_protected)
-                self.assertEqual(self.component.setup.call_count, 1)
+                self.assertEqual(self.component._setup.call_count, 1)
 
         def test_bind_component_with_incompatible_pins(self):
             pin_mappings = (
@@ -294,7 +294,7 @@ class ArduinoCommon(object):
             for device_pin_no, component_pin_no in pin_mappings:
                 self.assertIsNone(self.device.pins[device_pin_no].bound_to)
                 self.assertIsNone(self.component.pins[component_pin_no].bound_to)
-                self.assertEqual(self.component.setup.call_count, 0)
+                self.assertEqual(self.component._setup.call_count, 0)
 
         def test_bind_component_with_duplicate_pin_in_mapping(self):
             pin_mappings = (
@@ -308,7 +308,7 @@ class ArduinoCommon(object):
             for device_pin_no, component_pin_no in pin_mappings:
                 self.assertIsNone(self.device.pins[device_pin_no].bound_to)
                 self.assertIsNone(self.component.pins[component_pin_no].bound_to)
-                self.assertEqual(self.component.setup.call_count, 0)
+                self.assertEqual(self.component._setup.call_count, 0)
 
         def test_bind_component_does_not_bind_pins_if_error(self):
             pin_mappings = (

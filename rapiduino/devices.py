@@ -1,12 +1,12 @@
 import abc
 import six
 
+from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
 from rapiduino.pin import DevicePin
 from rapiduino.communication import SerialConnection
-from rapiduino.commands import CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_DIGITALWRITE, \
-    CMD_ANALOGREAD, CMD_ANALOGWRITE
-from rapiduino.exceptions import PinError
+from rapiduino.commands import *
 from rapiduino.globals.common import *
+from rapiduino.globals.common import GlobalParameter
 
 
 def enable_pin_protection(func):
@@ -96,9 +96,9 @@ class ArduinoBase(object):
     @staticmethod
     def _assert_pins_compatible(device_pin, component_pin):
         if component_pin.is_analog and not device_pin.is_analog:
-            raise PinError('Component pin requires a Device pin with analog attribute')
+            raise NotAnalogPinError('Component pin requires a Device pin with analog attribute')
         if component_pin.is_pwm and not device_pin.is_pwm:
-            raise PinError('Component pin requires a Device pin with pwm attribute')
+            raise NotPwmPinError('Component pin requires a Device pin with pwm attribute')
 
     def _assert_valid_pin_number(self, pin_no):
         if (pin_no >= len(self.pins)) or (pin_no < 0):
@@ -106,15 +106,15 @@ class ArduinoBase(object):
 
     def _assert_analog_pin(self, pin_no):
         if not self.pins[pin_no].is_analog:
-            raise PinError('cannot complete operation as analog=False for pin {}'.format(pin_no))
+            raise NotAnalogPinError('cannot complete operation as analog=False for pin {}'.format(pin_no))
 
     def _assert_pwm_pin(self, pin_no):
         if not self.pins[pin_no].is_pwm:
-            raise PinError('cannot complete operation as pwm=False for pin {}'.format(pin_no))
+            raise NotPwmPinError('cannot complete operation as pwm=False for pin {}'.format(pin_no))
 
     def _assert_pin_not_protected(self, pin_no):
         if self.pins[pin_no].is_protected:
-            raise PinError('cannot complete operation as pin {} is protected'.format(pin_no))
+            raise ProtectedPinError('cannot complete operation as pin {} is protected'.format(pin_no))
 
     @staticmethod
     def _assert_valid_analog_write_range(value):

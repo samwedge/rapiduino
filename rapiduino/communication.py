@@ -2,8 +2,8 @@ import struct
 
 from serial import Serial, SerialException
 
-from rapiduino.exceptions import (SerialConnectionNotConnectedError, SerialConnectionSendDataError,
-                                  SerialConnectionReceiveDataError)
+from rapiduino.exceptions import (NotConnectedSerialConnectionError, SerialConnectionSendDataError,
+                                  ReceiveDataSerialConnectionError)
 
 
 class SerialConnection(object):
@@ -16,7 +16,7 @@ class SerialConnection(object):
         try:
             conn = Serial(port, baudrate=baudrate, timeout=timeout)
         except SerialException:
-            raise SerialConnectionNotConnectedError()
+            raise NotConnectedSerialConnectionError()
         return cls(conn)
 
     def close(self):
@@ -45,7 +45,7 @@ class SerialConnection(object):
             if n_bytes_written != (len(data) + 1):
                 raise SerialConnectionSendDataError()
         else:
-            raise SerialConnectionNotConnectedError()
+            raise NotConnectedSerialConnectionError()
 
     def _recv(self, cmd_spec):
         if cmd_spec.rx_len == 0:
@@ -53,7 +53,7 @@ class SerialConnection(object):
         if self.conn:
             bytes_read = self.conn.read(cmd_spec.rx_len)
             if len(bytes_read) != cmd_spec.rx_len:
-                raise SerialConnectionReceiveDataError()
+                raise ReceiveDataSerialConnectionError()
             return struct.unpack('{}{}'.format(cmd_spec.rx_len, cmd_spec.rx_type), bytes_read)
         else:
-            raise SerialConnectionNotConnectedError()
+            raise NotConnectedSerialConnectionError()

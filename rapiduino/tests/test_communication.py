@@ -4,7 +4,7 @@ from mock import patch, Mock, call
 import unittest2
 from rapiduino.communication import SerialConnection
 from rapiduino.commands import *
-from rapiduino.exceptions import SerialConnectionNotConnectedError, SerialConnectionReceiveDataError, \
+from rapiduino.exceptions import NotConnectedSerialConnectionError, ReceiveDataSerialConnectionError, \
     SerialConnectionSendDataError
 
 
@@ -31,7 +31,7 @@ class TestSerialConnection(unittest2.TestCase):
     def test_open_with_error(self):
         with patch('rapiduino.communication.Serial', autospec=True) as mock_serial:
             mock_serial.side_effect = SerialException()
-            with self.assertRaises(SerialConnectionNotConnectedError):
+            with self.assertRaises(NotConnectedSerialConnectionError):
                 self.serial_connection.build(self.port)
 
     def test_close_when_connection_open(self):
@@ -63,14 +63,14 @@ class TestSerialConnection(unittest2.TestCase):
 
     def test_process_command_when_connection_closed(self):
         self.serial_connection.close()
-        with self.assertRaises(SerialConnectionNotConnectedError):
+        with self.assertRaises(NotConnectedSerialConnectionError):
             self.serial_connection.process_command(CMD_VERSION)
         self.assertEqual(self.mock_conn.write.call_count, 0)
 
     def test_process_command_when_error_reading_bytes(self):
         self.mock_conn.write.return_value = 1
         self.mock_conn.read.return_value = struct.pack('BBBB', 1, 2, 3, 4)
-        with self.assertRaises(SerialConnectionReceiveDataError):
+        with self.assertRaises(ReceiveDataSerialConnectionError):
             self.serial_connection.process_command(CMD_VERSION)
 
     def test_process_command_when_error_writing_bytes(self):

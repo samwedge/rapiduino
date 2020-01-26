@@ -1,5 +1,6 @@
 .idea
 dist
+build
 py2env
 py3env
 *.egg-info

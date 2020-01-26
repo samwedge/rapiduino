@@ -43,10 +43,19 @@ setup(
 
     packages=find_packages(exclude=['arduino', 'tests']),
 
-    install_requires=['pyserial', 'six'],
+    install_requires=[
+        'pyserial==3.4',
+        'six==1.11.0',
+    ],
 
     extras_require={
-        'test': ['unittest2', 'mock', 'flake8', 'coveralls'],
+        'test': [
+            'unittest2==1.1.0',
+            'mock==2.0.0',
+            'flake8==3.7.9',
+            'coveralls==1.10.0',
+            'wheel==0.33.6',
+        ],
     },
 
     package_data={

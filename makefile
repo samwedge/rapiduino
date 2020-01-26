@@ -1,11 +1,9 @@
-build:
+build-dev: clean
 	virtualenv -p python2 py2env; \
-	curl https://bootstrap.pypa.io/get-pip.py | py2env/bin/python; \
-	py2env/bin/pip install -r requirements.txt; \
+	py2env/bin/pip install -e .[test]; \
 
 	virtualenv -p python3 py3env; \
-	curl https://bootstrap.pypa.io/get-pip.py | py3env/bin/python; \
-	py3env/bin/pip install -r requirements.txt; \
+	py3env/bin/pip install -e .[test]; \
 
 clean:
 	rm -rf py2env; \
@@ -14,13 +12,14 @@ clean:
 	rm -rf dist; \
 	rm -rf rapiduino.egg-info; \
 
-package:
-	python setup.py sdist bdist_wheel; \
+package: build-dev
+	py3env/bin/python setup.py sdist; \
+	py3env/bin/python setup.py bdist_wheel; \
 
-publish:
+publish: package
 	twine upload dist/*; \
 
-test:
+test: build-dev
 	py2env/bin/flake8 rapiduino; \
 	py2env/bin/unit2 discover --pattern=test_*.py; \
 	py3env/bin/flake8 rapiduino; \

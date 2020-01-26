@@ -8,6 +8,6 @@ python:
   - "3.8"
 cache: pip
 install:
-  - pip install -r requirements.txt
+  - pip install .[test]
 script:
   - make travis

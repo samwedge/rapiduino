@@ -4,7 +4,7 @@ from rapiduino.components.basic import LED, DimmableLED
 from rapiduino.exceptions import NoDeviceBoundError
 from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.pin import ComponentPin
-from rapiduino.tests.components.common import ComponentCommon
+from tests.test_components.test_common import ComponentCommon
 
 
 class TestLED(ComponentCommon.TestCase):

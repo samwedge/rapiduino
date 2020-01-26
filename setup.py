@@ -27,7 +27,6 @@ setup(
                      'The Arduino is controlled through serial connection. Suitable for rapid development where a '
                      'computer connection is not a burden, or where a small microcomputer (such as a Raspberry Pi) '
                      'can be used.',
-
     url='https://github.com/samwedge/rapiduino',
     author='Sam Wedge',
     author_email='samwedge@gmail.com',
@@ -36,9 +35,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Build Tools',
-
         'License :: OSI Approved :: MIT License',
-
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
@@ -47,7 +44,7 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     keywords='arduino python rapid development serial communication',
-    packages=find_packages(exclude=['arduino', 'tests']),
+    packages=find_packages(exclude=['tests.*', 'tests']),
     install_requires=install_requires,
     extras_require=extras_require,
     package_data={},

@@ -25,7 +25,7 @@ class ExampleTestComponent(BaseComponent):
         )
 
 
-class ArduinoCommon(object):
+class ArduinoCommon:
 
     class TestCase(unittest.TestCase, metaclass=abc.ABCMeta):
 

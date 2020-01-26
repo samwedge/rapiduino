@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 from rapiduino.components.servo import Servo
 from rapiduino.pin import ComponentPin
-from rapiduino.tests.components.common import ComponentCommon
+from tests.test_components.test_common import ComponentCommon
 
 
 class TestServo(ComponentCommon.TestCase):

@@ -1,10 +1,12 @@
 [![Build Status](https://travis-ci.org/samwedge/rapiduino.svg?branch=master)](https://travis-ci.org/samwedge/rapiduino)
 [![Coverage Status](https://coveralls.io/repos/github/samwedge/rapiduino/badge.svg?branch=master)](https://coveralls.io/github/samwedge/rapiduino?branch=master)
-[![Python Supported Versions](https://img.shields.io/pypi/pyversions/coveralls.svg?style=flat-square)](https://travis-ci.org/samwedge/rapiduino)
+![Python Supported Versions](https://img.shields.io/pypi/pyversions/rapiduino)
+[![Python Supported Versions](https://img.shields.io/pypi/l/rapiduino)](https://github.com/samwedge/rapiduino/blob/master/LICENSE)
+[![Latest Version](https://img.shields.io/pypi/v/rapiduino)](https://github.com/samwedge/rapiduino/releases)
 
 # Rapiduino
 
-Rapiduino is a Python library (fully tested with Python 2.7 and Python 3) to allow Python code to control an Arduino.
+Rapiduino is a Python library to allow Python code to control an Arduino.
 The Python code runs on a computer connected to an Arduino through a serial connection.
 
 A sketch is provided to upload to the Arduino.
@@ -37,11 +39,7 @@ It is ready to be used in simple projects, but there may be some major breaking 
 
 ## Installation
 
-Install this package using Pip:
-    
-    pip install git+https://github.com/samwedge/rapiduino.git
-
-Alternatively, copy the "rapiduino" package directory into your python site-packages or to a local directory.
+    pip install rapiduino
 
 
 ## Usage
@@ -104,25 +102,6 @@ You don't need to think of pin numbers, pin states or pin modes beyone the initi
 Yes please! Code and/or suggestions are very welcome!
 
 
-## License
+## Licence
 
-Copyright (c) 2018 Samuel Wedge
-samwedge@gmail.com, samwedge.uk
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+[Rapiduino is released under the MIT licence](LICENSE)

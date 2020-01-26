@@ -6,3 +6,4 @@ py3env
 *.egg-info
 __pycache__
 *.pyc
+.coverage

@@ -2,13 +2,17 @@ build-dev: clean
 	virtualenv -p python3 env;
 	env/bin/pip install -e .[dev];
 
+build-package: clean
+	virtualenv -p python3 env;
+	env/bin/pip install -e .[package];
+
 clean:
 	rm -rf env;
 	rm -rf build;
 	rm -rf dist;
 	rm -rf rapiduino.egg-info;
 
-package: build-dev
+package: build-package
 	env/bin/python setup.py sdist;
 	env/bin/python setup.py bdist_wheel;
 

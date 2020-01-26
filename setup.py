@@ -1,8 +1,5 @@
 from setuptools import setup, find_packages
-from os import path
 import rapiduino
-
-here = path.abspath(path.dirname(__file__))
 
 install_requires = [
     'pyserial==3.4',
@@ -12,6 +9,8 @@ extras_require = {
     'dev': [
         'flake8==3.7.9',
         'wheel==0.33.6',
+    ],
+    'publish': [
         'setuptools==45.1.0',
         'twine==3.1.1',
     ],
@@ -19,6 +18,7 @@ extras_require = {
         'coveralls==1.10.0',
     ]
 }
+extras_require['publish'] += extras_require['dev']
 extras_require['travis'] += extras_require['dev']
 
 with open('README.md') as f:

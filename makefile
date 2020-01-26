@@ -13,7 +13,7 @@ package: build-dev
 	env/bin/python setup.py bdist_wheel;
 
 publish: package
-	twine upload dist/*;
+	env/bin/twine upload dist/*;
 
 test: build-dev
 	env/bin/python -m flake8 rapiduino;

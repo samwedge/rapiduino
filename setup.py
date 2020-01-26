@@ -12,7 +12,8 @@ extras_require = {
     'dev': [
         'flake8==3.7.9',
         'wheel==0.33.6',
-        'setuptools==45.1.0'
+        'setuptools==45.1.0',
+        'twine==3.1.1',
     ],
     'travis': [
         'coveralls==1.10.0',

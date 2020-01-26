@@ -1,4 +1,4 @@
-from rapiduino.pin import ComponentPin
+from rapiduino.pin import Pin
 from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.components.base import BaseComponent
 
@@ -7,7 +7,7 @@ class LED(BaseComponent):
 
     def __init__(self):
         self._pins = (
-            ComponentPin(0),
+            Pin(0),
         )
 
     def _setup(self):
@@ -33,7 +33,7 @@ class DimmableLED(LED):
         super(DimmableLED, self).__init__()
 
         self._pins = (
-            ComponentPin(0, pwm=True),
+            Pin(0, pwm=True),
         )
 
     def set_brightness(self, brightness):

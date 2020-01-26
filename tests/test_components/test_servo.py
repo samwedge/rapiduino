@@ -1,7 +1,7 @@
 from unittest.mock import Mock
 
 from rapiduino.components.servo import Servo
-from rapiduino.pin import ComponentPin
+from rapiduino.pin import Pin
 from tests.test_components.test_common import ComponentCommon
 
 
@@ -10,7 +10,7 @@ class TestServo(ComponentCommon.TestCase):
     def setUp(self):
         self.pin_num = 9
         self.pins = (
-            ComponentPin(0, pwm=True),
+            Pin(0, pwm=True),
         )
         self.component = Servo()
         self.mock_device = Mock()

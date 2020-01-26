@@ -3,7 +3,7 @@ from unittest.mock import Mock, call
 from rapiduino.components.basic import LED, DimmableLED
 from rapiduino.exceptions import NoDeviceBoundError
 from rapiduino.globals.common import HIGH, LOW, OUTPUT
-from rapiduino.pin import ComponentPin
+from rapiduino.pin import Pin
 from tests.test_components.test_common import ComponentCommon
 
 
@@ -12,7 +12,7 @@ class TestLED(ComponentCommon.TestCase):
     def setUp(self):
         self.pin_num = 13
         self.pins = (
-            ComponentPin(0),
+            Pin(0),
         )
         self.component = LED()
         self.mock_device = Mock()
@@ -68,7 +68,7 @@ class TestDimmableLED(TestLED):
     def setUp(self):
         self.pin_num = 9
         self.pins = (
-            ComponentPin(0, pwm=True),
+            Pin(0, pwm=True),
         )
         self.component = DimmableLED()
         self.mock_device = Mock()

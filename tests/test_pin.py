@@ -1,16 +1,16 @@
 import unittest
 from unittest.mock import Mock
 
-from rapiduino.pin import ComponentPin, DevicePin
+from rapiduino.pin import Pin
 from rapiduino.exceptions import PinError
 
 
 class TestComponentPin(unittest.TestCase):
 
     def setUp(self):
-        self.pin_class = ComponentPin
-        self.analog_pwm_pin = ComponentPin(0, pwm=True, analog=True)
-        self.digital_pin = ComponentPin(5)
+        self.pin_class = Pin
+        self.analog_pwm_protected_pin = Pin(0, pwm=True, analog=True, protected=True)
+        self.digital_pin = Pin(5)
         self.mock_instance = Mock()
 
     def test_init(self):
@@ -19,13 +19,15 @@ class TestComponentPin(unittest.TestCase):
     def test_defaults(self):
         self.assertFalse(self.digital_pin.is_pwm)
         self.assertFalse(self.digital_pin.is_analog)
-        self.assertEqual(self.digital_pin.id, 5)
+        self.assertEqual(self.digital_pin.pin_id, 5)
         self.assertIsNone(self.digital_pin.bound_to)
+        self.assertFalse(self.digital_pin.is_protected)
 
     def test_pin_default_overrides(self):
-        self.assertEqual(self.analog_pwm_pin.is_analog, True)
-        self.assertEqual(self.analog_pwm_pin.is_pwm, True)
-        self.assertEqual(self.analog_pwm_pin.id, 0)
+        self.assertTrue(self.analog_pwm_protected_pin.is_analog, True)
+        self.assertTrue(self.analog_pwm_protected_pin.is_pwm, True)
+        self.assertTrue(self.analog_pwm_protected_pin.is_protected, True)
+        self.assertEqual(self.analog_pwm_protected_pin.pin_id, 0)
 
     def test_is_pwm_is_readonly(self):
         with self.assertRaises(AttributeError):
@@ -35,13 +37,14 @@ class TestComponentPin(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.digital_pin.is_analog = True
 
-    def test_id_is_readonly(self):
+    def test_pin_id_is_readonly(self):
         with self.assertRaises(AttributeError):
-            self.digital_pin.id = 0
+            self.digital_pin.pin_id = 0
 
     def test_bind(self):
         self.digital_pin.bind(self.mock_instance, 5)
         self.assertTupleEqual(self.digital_pin._bound_to, (self.mock_instance, 5))
+        self.assertTrue(self.digital_pin.is_protected)
 
     def test_bind_when_already_bound(self):
         self.digital_pin.bind(self.mock_instance, 5)
@@ -53,6 +56,7 @@ class TestComponentPin(unittest.TestCase):
         self.digital_pin.bind(self.mock_instance, 5)
         self.digital_pin.unbind()
         self.assertIsNone(self.digital_pin._bound_to)
+        self.assertFalse(self.digital_pin.is_protected)
 
     def test_bound_to(self):
         self.digital_pin._bound_to = (self.mock_instance, 5)
@@ -70,37 +74,6 @@ class TestComponentPin(unittest.TestCase):
         self.digital_pin._bound_to = (self.mock_instance, 5)
         self.assertEqual(self.digital_pin.bound_instance, self.mock_instance)
 
-
-class TestDevicePin(unittest.TestCase):
-    def setUp(self):
-        self.pin_class = DevicePin
-        self.analog_pwm_pin = DevicePin(0, pwm=True, analog=True)
-        self.digital_pin = DevicePin(5)
-        self.mock_instance = Mock()
-
-    def test_defaults(self):
-        self.assertFalse(self.digital_pin.is_pwm)
-        self.assertFalse(self.digital_pin.is_analog)
-        self.assertEqual(self.digital_pin.id, 5)
-        self.assertIsNone(self.digital_pin.bound_to)
-        self.assertFalse(self.digital_pin.is_protected)
-
-    def test_pin_default_overrides(self):
-        self.assertEqual(self.analog_pwm_pin.is_analog, True)
-        self.assertEqual(self.analog_pwm_pin.is_pwm, True)
-        self.assertEqual(self.analog_pwm_pin.id, 0)
-
     def test_is_protected_is_readonly(self):
         with self.assertRaises(AttributeError):
             self.digital_pin.is_protected = True
-
-    def test_bind(self):
-        self.digital_pin.bind(self.mock_instance, 5)
-        self.assertTupleEqual(self.digital_pin._bound_to, (self.mock_instance, 5))
-        self.assertTrue(self.digital_pin.is_protected)
-
-    def test_unbind(self):
-        self.digital_pin.bind(self.mock_instance, 5)
-        self.digital_pin.unbind()
-        self.assertIsNone(self.digital_pin._bound_to)
-        self.assertFalse(self.digital_pin.is_protected)

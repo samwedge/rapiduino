@@ -5,7 +5,7 @@ from unittest.mock import Mock, call
 from rapiduino.commands import (CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_DIGITALWRITE,
                                 CMD_ANALOGREAD, CMD_ANALOGWRITE)
 from rapiduino.globals.common import INPUT, OUTPUT, HIGH
-from rapiduino.pin import ComponentPin
+from rapiduino.pin import Pin
 from rapiduino.communication import (SerialConnection)
 from rapiduino.components.base import BaseComponent
 from rapiduino.devices import Arduino, UNO, MEGA2560, PinMapping
@@ -20,9 +20,9 @@ class ExampleTestComponent(BaseComponent):
     def __init__(self):
         super(ExampleTestComponent, self).__init__()
         self._pins = (
-            ComponentPin(0),
-            ComponentPin(1, pwm=True),
-            ComponentPin(2, analog=True),
+            Pin(0),
+            Pin(1, pwm=True),
+            Pin(2, analog=True),
         )
 
 
@@ -126,7 +126,7 @@ class ArduinoTests:
 
         def test_pin_ids_are_sequential(self):
             for pin_no, pin in enumerate(self.device.pins):
-                self.assertEqual(pin_no, pin.id)
+                self.assertEqual(pin_no, pin.pin_id)
 
         def test_pins_are_private_and_cannot_be_modified(self):
             with self.assertRaises(AttributeError):

@@ -1,7 +1,7 @@
 import abc
 import unittest
 
-from rapiduino.pin import ComponentPin
+from rapiduino.pin import Pin
 from rapiduino.components.base import BaseComponent
 
 
@@ -12,7 +12,7 @@ class ComponentCommon:
         def test_subclass(self):
             self.assertTrue(isinstance(self.component, BaseComponent))
             for pin in self.component.pins:
-                self.assertTrue(isinstance(pin, ComponentPin))
+                self.assertTrue(isinstance(pin, Pin))
 
         def test_pins(self):
             for pin_num in range(len(self.pins)):
@@ -24,7 +24,7 @@ class ComponentCommon:
 
         def test_pin_ids(self):
             for pin_no, pin in enumerate(self.component.pins):
-                self.assertEqual(pin_no, pin.id)
+                self.assertEqual(pin_no, pin.pin_id)
 
         def test_pins_are_readonly(self):
             with self.assertRaises(AttributeError):

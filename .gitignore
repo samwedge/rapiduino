@@ -1,0 +1,7 @@
+.idea
+dist
+py2env
+py3env
+*.egg-info
+__pycache__
+*.pyc

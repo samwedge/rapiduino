@@ -8,8 +8,9 @@ from rapiduino.globals.common import INPUT, OUTPUT, HIGH
 from rapiduino.pin import ComponentPin
 from rapiduino.communication import (SerialConnection)
 from rapiduino.components.base import BaseComponent
-from rapiduino.devices import ArduinoBase, ArduinoUno, ArduinoMega2560, PinMapping
-from rapiduino.exceptions import NotPwmPinError, NotAnalogPinError, ProtectedPinError, AlreadyBoundPinError
+from rapiduino.devices import Arduino, UNO, MEGA2560, PinMapping
+from rapiduino.exceptions import NotPwmPinError, NotAnalogPinError, ProtectedPinError, AlreadyBoundPinError, \
+    UnknownBoardError
 import rapiduino.globals.arduino_uno as arduino_uno_globals
 import rapiduino.globals.arduino_mega_2560 as arduino_mega_2560_globals
 
@@ -25,12 +26,19 @@ class ExampleTestComponent(BaseComponent):
         )
 
 
-class ArduinoCommon:
+class ArduinoTestCase(unittest.TestCase):
+
+    def test_with_unknown_board_type(self):
+        with self.assertRaises(UnknownBoardError):
+            Arduino(board_type='foo')
+
+
+class ArduinoTests:
 
     class TestCase(unittest.TestCase, metaclass=abc.ABCMeta):
 
         def setUp(self):
-            self.device = self.device_class()
+            self.device = Arduino(self.board_type)
 
             self.num_pins = len(self.valid_pins)
             self.out_of_range_pin = self.num_pins
@@ -46,7 +54,7 @@ class ArduinoCommon:
 
         @property
         @abc.abstractmethod
-        def device_class(self):
+        def board_type(self):
             pass
 
         @property
@@ -105,13 +113,13 @@ class ArduinoCommon:
             pass
 
         def test_class_builds_serial_connection(self):
-            self.assertIsInstance(self.device_class().connection, SerialConnection)
+            self.assertIsInstance(self.device.connection, SerialConnection)
 
         def test_class_has_required_pins_attribute(self):
             self.assertIsInstance(self.device._pins, tuple)
 
         def test_class_implements_base_abstract_class(self):
-            self.assertTrue(isinstance(self.device, ArduinoBase))
+            self.assertTrue(isinstance(self.device, Arduino))
 
         def test_device_has_correct_number_of_pins(self):
             self.assertEqual(len(self.device.pins), self.num_pins)
@@ -287,7 +295,7 @@ class ArduinoCommon:
                 PinMapping(device_pin_no=self.valid_analog_pin, component_pin_no=2)
             )
             self.device.bind_component(self.component, pin_mappings)
-            self.assertIsInstance(self.component.bound_device, self.device_class)
+            self.assertIsInstance(self.component.bound_device, Arduino)
             for device_pin_no, component_pin_no in pin_mappings:
                 self.assertTupleEqual(self.device.pins[device_pin_no].bound_to, (self.component, component_pin_no))
                 self.assertTupleEqual(self.component.pins[component_pin_no].bound_to, (self.device, device_pin_no))
@@ -357,11 +365,11 @@ class ArduinoCommon:
                 self.assertEqual(getattr(self.analog_alias, 'A{}'.format(analog_alias)), pin_num)
 
 
-class TestArduinoUno(ArduinoCommon.TestCase):
+class TestArduinoUno(ArduinoTests.TestCase):
 
     @property
-    def device_class(self):
-        return ArduinoUno
+    def board_type(self):
+        return UNO
 
     @property
     def analog_alias(self):
@@ -408,11 +416,11 @@ class TestArduinoUno(ArduinoCommon.TestCase):
         return 7
 
 
-class TestArduinoMega2560(ArduinoCommon.TestCase):
+class TestArduinoMega2560(ArduinoTests.TestCase):
 
     @property
-    def device_class(self):
-        return ArduinoMega2560
+    def board_type(self):
+        return MEGA2560
 
     @property
     def analog_alias(self):

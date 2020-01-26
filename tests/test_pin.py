@@ -1,19 +1,19 @@
 import unittest
 from unittest.mock import Mock
 
-from rapiduino.pin import Pin, ComponentPin, DevicePin
+from rapiduino.pin import ComponentPin, DevicePin
 from rapiduino.exceptions import PinError
 
 
-class TestPinMixin:
+class TestComponentPin(unittest.TestCase):
 
-    def setup_mixin(self):
-        self.analog_pwm_pin = self.pin_class(0, pwm=True, analog=True)
-        self.digital_pin = self.pin_class(5)
+    def setUp(self):
+        self.pin_class = ComponentPin
+        self.analog_pwm_pin = ComponentPin(0, pwm=True, analog=True)
+        self.digital_pin = ComponentPin(5)
         self.mock_instance = Mock()
 
     def test_init(self):
-        self.assertIsInstance(self.digital_pin, Pin)
         self.assertIsInstance(self.digital_pin, self.pin_class)
 
     def test_defaults(self):
@@ -71,32 +71,36 @@ class TestPinMixin:
         self.assertEqual(self.digital_pin.bound_instance, self.mock_instance)
 
 
-class TestDevicePin(unittest.TestCase, TestPinMixin):
+class TestDevicePin(unittest.TestCase):
     def setUp(self):
         self.pin_class = DevicePin
-        self.setup_mixin()
+        self.analog_pwm_pin = DevicePin(0, pwm=True, analog=True)
+        self.digital_pin = DevicePin(5)
+        self.mock_instance = Mock()
 
     def test_defaults(self):
-        super(TestDevicePin, self).test_defaults()
+        self.assertFalse(self.digital_pin.is_pwm)
+        self.assertFalse(self.digital_pin.is_analog)
+        self.assertEqual(self.digital_pin.id, 5)
+        self.assertIsNone(self.digital_pin.bound_to)
         self.assertFalse(self.digital_pin.is_protected)
 
     def test_pin_default_overrides(self):
-        super(TestDevicePin, self).test_pin_default_overrides()
+        self.assertEqual(self.analog_pwm_pin.is_analog, True)
+        self.assertEqual(self.analog_pwm_pin.is_pwm, True)
+        self.assertEqual(self.analog_pwm_pin.id, 0)
 
     def test_is_protected_is_readonly(self):
         with self.assertRaises(AttributeError):
             self.digital_pin.is_protected = True
 
     def test_bind(self):
-        super(TestDevicePin, self).test_bind()
+        self.digital_pin.bind(self.mock_instance, 5)
+        self.assertTupleEqual(self.digital_pin._bound_to, (self.mock_instance, 5))
         self.assertTrue(self.digital_pin.is_protected)
 
     def test_unbind(self):
-        super(TestDevicePin, self).test_unbind()
+        self.digital_pin.bind(self.mock_instance, 5)
+        self.digital_pin.unbind()
+        self.assertIsNone(self.digital_pin._bound_to)
         self.assertFalse(self.digital_pin.is_protected)
-
-
-class TestComponentPin(unittest.TestCase, TestPinMixin):
-    def setUp(self):
-        self.pin_class = ComponentPin
-        self.setup_mixin()

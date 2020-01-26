@@ -1,9 +1,8 @@
-import abc
 from collections import namedtuple
 
 from rapiduino.commands import CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_ANALOGREAD, \
     CMD_DIGITALWRITE, CMD_ANALOGWRITE
-from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
+from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError, UnknownBoardError
 from rapiduino.pin import DevicePin
 from rapiduino.communication import SerialConnection
 from rapiduino.globals.common import GlobalParameter, INPUT, OUTPUT, INPUT_PULLUP, LOW, HIGH
@@ -19,10 +18,119 @@ def enable_pin_protection(func):
 
 PinMapping = namedtuple('PinMapping', ['device_pin_no', 'component_pin_no'])
 
+UNO = 'UNO'
+MEGA2560 = 'MEGA2560'
 
-class ArduinoBase(metaclass=abc.ABCMeta):
 
-    def __init__(self, port=None):
+def _get_uno_pins():
+    return (
+        DevicePin(0, protected=True),
+        DevicePin(1, protected=True),
+        DevicePin(2),
+        DevicePin(3, pwm=True),
+        DevicePin(4),
+        DevicePin(5, pwm=True),
+        DevicePin(6, pwm=True),
+        DevicePin(7),
+        DevicePin(8),
+        DevicePin(9, pwm=True),
+        DevicePin(10, pwm=True),
+        DevicePin(11, pwm=True),
+        DevicePin(12),
+        DevicePin(13),
+        DevicePin(14, analog=True),
+        DevicePin(15, analog=True),
+        DevicePin(16, analog=True),
+        DevicePin(17, analog=True),
+        DevicePin(18, analog=True),
+        DevicePin(19, analog=True),
+    )
+
+
+def _get_mega2560_pins():
+    return (
+        DevicePin(0, protected=True),
+        DevicePin(1, protected=True),
+        DevicePin(2, pwm=True),
+        DevicePin(3, pwm=True),
+        DevicePin(4, pwm=True),
+        DevicePin(5, pwm=True),
+        DevicePin(6, pwm=True),
+        DevicePin(7, pwm=True),
+        DevicePin(8, pwm=True),
+        DevicePin(9, pwm=True),
+        DevicePin(10, pwm=True),
+        DevicePin(11, pwm=True),
+        DevicePin(12, pwm=True),
+        DevicePin(13, pwm=True),
+        DevicePin(14),
+        DevicePin(15),
+        DevicePin(16),
+        DevicePin(17),
+        DevicePin(18),
+        DevicePin(19),
+        DevicePin(20),
+        DevicePin(21),
+        DevicePin(22),
+        DevicePin(23),
+        DevicePin(24),
+        DevicePin(25),
+        DevicePin(26),
+        DevicePin(27),
+        DevicePin(28),
+        DevicePin(29),
+        DevicePin(30),
+        DevicePin(31),
+        DevicePin(32),
+        DevicePin(33),
+        DevicePin(34),
+        DevicePin(35),
+        DevicePin(36),
+        DevicePin(37),
+        DevicePin(38),
+        DevicePin(39),
+        DevicePin(40),
+        DevicePin(41),
+        DevicePin(42),
+        DevicePin(43),
+        DevicePin(44, pwm=True),
+        DevicePin(45, pwm=True),
+        DevicePin(46, pwm=True),
+        DevicePin(47),
+        DevicePin(48),
+        DevicePin(49),
+        DevicePin(50),
+        DevicePin(51),
+        DevicePin(52),
+        DevicePin(53),
+        DevicePin(54, analog=True),
+        DevicePin(55, analog=True),
+        DevicePin(56, analog=True),
+        DevicePin(57, analog=True),
+        DevicePin(58, analog=True),
+        DevicePin(59, analog=True),
+        DevicePin(60, analog=True),
+        DevicePin(61, analog=True),
+        DevicePin(62, analog=True),
+        DevicePin(63, analog=True),
+        DevicePin(64, analog=True),
+        DevicePin(65, analog=True),
+        DevicePin(66, analog=True),
+        DevicePin(67, analog=True),
+        DevicePin(68, analog=True),
+        DevicePin(69, analog=True),
+    )
+
+
+class Arduino:
+
+    def __init__(self, board_type, port=None):
+        if board_type == UNO:
+            self._pins = _get_uno_pins()
+        elif board_type == MEGA2560:
+            self._pins = _get_mega2560_pins()
+        else:
+            raise UnknownBoardError('Unknown `board_type` of "{}" specified'.format(board_type))
         self.connection = SerialConnection.build(port)
 
     def poll(self):
@@ -146,109 +254,3 @@ class ArduinoBase(metaclass=abc.ABCMeta):
     @property
     def pins(self):
         return self._pins
-
-
-class ArduinoUno(ArduinoBase):
-
-    def __init__(self, *args, **kwargs):
-        super(ArduinoUno, self).__init__(*args, **kwargs)
-        self._pins = (
-            DevicePin(0, protected=True),
-            DevicePin(1, protected=True),
-            DevicePin(2),
-            DevicePin(3, pwm=True),
-            DevicePin(4),
-            DevicePin(5, pwm=True),
-            DevicePin(6, pwm=True),
-            DevicePin(7),
-            DevicePin(8),
-            DevicePin(9, pwm=True),
-            DevicePin(10, pwm=True),
-            DevicePin(11, pwm=True),
-            DevicePin(12),
-            DevicePin(13),
-            DevicePin(14, analog=True),
-            DevicePin(15, analog=True),
-            DevicePin(16, analog=True),
-            DevicePin(17, analog=True),
-            DevicePin(18, analog=True),
-            DevicePin(19, analog=True),
-        )
-
-
-class ArduinoMega2560(ArduinoBase):
-
-    def __init__(self, *args, **kwargs):
-        super(ArduinoMega2560, self).__init__(*args, **kwargs)
-        self._pins = (
-            DevicePin(0, protected=True),
-            DevicePin(1, protected=True),
-            DevicePin(2, pwm=True),
-            DevicePin(3, pwm=True),
-            DevicePin(4, pwm=True),
-            DevicePin(5, pwm=True),
-            DevicePin(6, pwm=True),
-            DevicePin(7, pwm=True),
-            DevicePin(8, pwm=True),
-            DevicePin(9, pwm=True),
-            DevicePin(10, pwm=True),
-            DevicePin(11, pwm=True),
-            DevicePin(12, pwm=True),
-            DevicePin(13, pwm=True),
-            DevicePin(14),
-            DevicePin(15),
-            DevicePin(16),
-            DevicePin(17),
-            DevicePin(18),
-            DevicePin(19),
-            DevicePin(20),
-            DevicePin(21),
-            DevicePin(22),
-            DevicePin(23),
-            DevicePin(24),
-            DevicePin(25),
-            DevicePin(26),
-            DevicePin(27),
-            DevicePin(28),
-            DevicePin(29),
-            DevicePin(30),
-            DevicePin(31),
-            DevicePin(32),
-            DevicePin(33),
-            DevicePin(34),
-            DevicePin(35),
-            DevicePin(36),
-            DevicePin(37),
-            DevicePin(38),
-            DevicePin(39),
-            DevicePin(40),
-            DevicePin(41),
-            DevicePin(42),
-            DevicePin(43),
-            DevicePin(44, pwm=True),
-            DevicePin(45, pwm=True),
-            DevicePin(46, pwm=True),
-            DevicePin(47),
-            DevicePin(48),
-            DevicePin(49),
-            DevicePin(50),
-            DevicePin(51),
-            DevicePin(52),
-            DevicePin(53),
-            DevicePin(54, analog=True),
-            DevicePin(55, analog=True),
-            DevicePin(56, analog=True),
-            DevicePin(57, analog=True),
-            DevicePin(58, analog=True),
-            DevicePin(59, analog=True),
-            DevicePin(60, analog=True),
-            DevicePin(61, analog=True),
-            DevicePin(62, analog=True),
-            DevicePin(63, analog=True),
-            DevicePin(64, analog=True),
-            DevicePin(65, analog=True),
-            DevicePin(66, analog=True),
-            DevicePin(67, analog=True),
-            DevicePin(68, analog=True),
-            DevicePin(69, analog=True),
-        )

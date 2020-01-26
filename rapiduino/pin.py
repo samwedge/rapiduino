@@ -2,14 +2,14 @@ from rapiduino.exceptions import AlreadyBoundPinError
 from rapiduino.globals.common import INPUT, LOW
 
 
-class Pin:
+class ComponentPin:
 
-    def __init__(self, id, pwm=False, analog=False):
+    def __init__(self, pin_id, pwm=False, analog=False):
         self._pin_mode = INPUT
         self._pwm = pwm
         self._analog = analog
         self._pin_state = LOW
-        self._id = id
+        self._id = pin_id
         self._bound_to = None
 
     @property
@@ -45,9 +45,9 @@ class Pin:
         self._bound_to = None
 
 
-class DevicePin(Pin):
-    def __init__(self, id, pwm=False, analog=False, protected=False):
-        super(DevicePin, self).__init__(id, pwm, analog)
+class DevicePin(ComponentPin):
+    def __init__(self, pin_id, pwm=False, analog=False, protected=False):
+        super(DevicePin, self).__init__(pin_id, pwm, analog)
         self._protected = protected
 
     @property
@@ -61,8 +61,3 @@ class DevicePin(Pin):
     def unbind(self):
         super(DevicePin, self).unbind()
         self._protected = False
-
-
-class ComponentPin(Pin):
-    def __init__(self, id, pwm=False, analog=False):
-        super(ComponentPin, self).__init__(id, pwm, analog)

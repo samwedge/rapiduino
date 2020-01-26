@@ -40,3 +40,7 @@ class AlreadyBoundPinError(PinError):
 
 class NoDeviceBoundError(RapiduinoError):
     pass
+
+
+class UnknownBoardError(RapiduinoError):
+    pass

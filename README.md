@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/samwedge/rapiduino/badge.svg?branch=master)](https://coveralls.io/github/samwedge/rapiduino?branch=master)
 ![Python Supported Versions](https://img.shields.io/pypi/pyversions/rapiduino)
 [![Python Supported Versions](https://img.shields.io/pypi/l/rapiduino)](https://github.com/samwedge/rapiduino/blob/master/LICENSE)
-[![Latest Version](https://img.shields.io/pypi/v/rapiduino)](https://github.com/samwedge/rapiduino/releases)
+[![Latest Version](https://img.shields.io/pypi/v/rapiduino)](https://pypi.org/project/rapiduino/)
 
 # Rapiduino
 
@@ -12,7 +12,6 @@ The Python code runs on a computer connected to an Arduino through a serial conn
 A sketch is provided to upload to the Arduino.
 The Rapiduino library can be used to connect to the Arduino and send it familiar commands such as digitalWrite and pinMode.
 By sending these commands from Python and not writing them directly on the Arduino, you gain the power of Python's wonderful syntax and libraries. 
-
 
 ## Why use Rapiduino?
 
@@ -104,4 +103,4 @@ Yes please! Code and/or suggestions are very welcome!
 
 ## Licence
 
-[Rapiduino is released under the MIT licence](LICENSE)
+[Rapiduino is released under the MIT licence](https://github.com/samwedge/rapiduino/blob/master/LICENSE)

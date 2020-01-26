@@ -12,6 +12,7 @@ extras_require = {
     'dev': [
         'flake8==3.7.9',
         'wheel==0.33.6',
+        'setuptools==45.1.0'
     ],
     'travis': [
         'coveralls==1.10.0',
@@ -19,14 +20,15 @@ extras_require = {
 }
 extras_require['travis'] += extras_require['dev']
 
+with open('README.md') as f:
+    long_description = f.read()
+
 setup(
     name='rapiduino',
     version=rapiduino.__version__,
     description='Rapidly develop code to control an Arduino using Python',
-    long_description='Rapidly develop code to control an Arduino using Python. Python code is executed on a computer. '
-                     'The Arduino is controlled through serial connection. Suitable for rapid development where a '
-                     'computer connection is not a burden, or where a small microcomputer (such as a Raspberry Pi) '
-                     'can be used.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/samwedge/rapiduino',
     author='Sam Wedge',
     author_email='samwedge@gmail.com',

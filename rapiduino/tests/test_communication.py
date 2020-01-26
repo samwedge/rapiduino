@@ -1,7 +1,7 @@
 import struct
 from serial import SerialException, Serial
-from mock import patch, Mock, call
-import unittest2
+from unittest.mock import patch, Mock, call
+import unittest
 
 from rapiduino.commands import CMD_VERSION, CMD_DIGITALWRITE, CMD_PARROT
 from rapiduino.communication import SerialConnection
@@ -9,7 +9,7 @@ from rapiduino.exceptions import (NotConnectedSerialConnectionError, ReceiveData
                                   SerialConnectionSendDataError)
 
 
-class TestSerialConnection(unittest2.TestCase):
+class TestSerialConnection(unittest.TestCase):
 
     def setUp(self):
         self.mock_conn = Mock(spec=Serial)

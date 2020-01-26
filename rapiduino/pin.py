@@ -2,7 +2,7 @@ from rapiduino.exceptions import AlreadyBoundPinError
 from rapiduino.globals.common import INPUT, LOW
 
 
-class Pin(object):
+class Pin:
 
     def __init__(self, id, pwm=False, analog=False):
         self._pin_mode = INPUT

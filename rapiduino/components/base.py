@@ -1,11 +1,9 @@
 import abc
-import six
 
 from rapiduino.exceptions import NoDeviceBoundError
 
 
-@six.add_metaclass(abc.ABCMeta)
-class BaseComponent(object):
+class BaseComponent(metaclass=abc.ABCMeta):
 
     _bound_device = None
 

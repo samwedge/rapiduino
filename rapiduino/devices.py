@@ -1,8 +1,6 @@
 import abc
 from collections import namedtuple
 
-import six
-
 from rapiduino.commands import CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_ANALOGREAD, \
     CMD_DIGITALWRITE, CMD_ANALOGWRITE
 from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
@@ -22,8 +20,7 @@ def enable_pin_protection(func):
 PinMapping = namedtuple('PinMapping', ['device_pin_no', 'component_pin_no'])
 
 
-@six.add_metaclass(abc.ABCMeta)
-class ArduinoBase(object):
+class ArduinoBase(metaclass=abc.ABCMeta):
 
     def __init__(self, port=None):
         self.connection = SerialConnection.build(port)

@@ -6,7 +6,7 @@ from rapiduino.exceptions import (NotConnectedSerialConnectionError, SerialConne
                                   ReceiveDataSerialConnectionError)
 
 
-class SerialConnection(object):
+class SerialConnection:
 
     def __init__(self, conn):
         self.conn = conn

@@ -1,9 +1,9 @@
-import unittest2
+import unittest
 
 from rapiduino.globals.common import HIGH, LOW, INPUT, OUTPUT, INPUT_PULLUP
 
 
-class GlobalsTestCase(unittest2.TestCase):
+class GlobalsTestCase(unittest.TestCase):
 
     def test_global_type(self):
         parameters = [HIGH, LOW, INPUT, OUTPUT, INPUT_PULLUP]

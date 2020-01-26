@@ -1,4 +1,4 @@
-from mock import Mock
+from unittest.mock import Mock
 
 from rapiduino.components.servo import Servo
 from rapiduino.pin import ComponentPin

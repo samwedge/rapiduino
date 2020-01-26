@@ -1,7 +1,6 @@
 import abc
-import six
-import unittest2
-from mock import Mock, call
+import unittest
+from unittest.mock import Mock, call
 
 from rapiduino.commands import (CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_DIGITALWRITE,
                                 CMD_ANALOGREAD, CMD_ANALOGWRITE)
@@ -28,8 +27,7 @@ class ExampleTestComponent(BaseComponent):
 
 class ArduinoCommon(object):
 
-    @six.add_metaclass(abc.ABCMeta)
-    class TestCase(unittest2.TestCase):
+    class TestCase(unittest.TestCase, metaclass=abc.ABCMeta):
 
         def setUp(self):
             self.device = self.device_class()
@@ -46,51 +44,63 @@ class ArduinoCommon(object):
             self.component = ExampleTestComponent()
             self.component._setup = Mock()
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def device_class(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def analog_alias(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def valid_pins(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def valid_analog_pins(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def valid_pwm_pins(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def tx_pin(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def rx_pin(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def valid_digital_pin(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def valid_analog_pin(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def valid_pwm_pin(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def invalid_analog_pin(self):
             pass
 
-        @abc.abstractproperty
+        @property
+        @abc.abstractmethod
         def invalid_pwm_pin(self):
             pass
 
@@ -227,7 +237,7 @@ class ArduinoCommon(object):
             self.assertEqual(self.mocked_send.call_count, 0)
 
         def test_analog_read_on_non_analog_pin_raises_error(self):
-            with six.assertRaisesRegex(self, NotAnalogPinError, 'pin {}'.format(self.invalid_analog_pin)):
+            with self.assertRaisesRegex(NotAnalogPinError, 'pin {}'.format(self.invalid_analog_pin)):
                 self.device.analog_read(self.invalid_analog_pin)
             self.assertEqual(self.mocked_send.call_count, 0)
 
@@ -266,7 +276,7 @@ class ArduinoCommon(object):
             self.assertEqual(self.mocked_send.call_count, 0)
 
         def test_analog_write_on_non_pwm_pin_raises_error(self):
-            with six.assertRaisesRegex(self, NotPwmPinError, 'pin {}'.format(self.invalid_pwm_pin)):
+            with self.assertRaisesRegex(NotPwmPinError, 'pin {}'.format(self.invalid_pwm_pin)):
                 self.device.analog_write(self.invalid_pwm_pin, self.invalid_pwm_pin)
             self.assertEqual(self.mocked_send.call_count, 0)
 

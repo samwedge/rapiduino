@@ -1,8 +1,7 @@
 .idea
 dist
 build
-py2env
-py3env
+env
 *.egg-info
 __pycache__
 *.pyc

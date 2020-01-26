@@ -1,11 +1,11 @@
-import unittest2
-from mock import Mock
+import unittest
+from unittest.mock import Mock
 
 from rapiduino.pin import Pin, ComponentPin, DevicePin
 from rapiduino.exceptions import PinError
 
 
-class TestPinMixin(object):
+class TestPinMixin:
 
     def setup_mixin(self):
         self.analog_pwm_pin = self.pin_class(0, pwm=True, analog=True)
@@ -71,7 +71,7 @@ class TestPinMixin(object):
         self.assertEqual(self.digital_pin.bound_instance, self.mock_instance)
 
 
-class TestDevicePin(unittest2.TestCase, TestPinMixin):
+class TestDevicePin(unittest.TestCase, TestPinMixin):
     def setUp(self):
         self.pin_class = DevicePin
         self.setup_mixin()
@@ -96,11 +96,7 @@ class TestDevicePin(unittest2.TestCase, TestPinMixin):
         self.assertFalse(self.digital_pin.is_protected)
 
 
-class TestComponentPin(unittest2.TestCase, TestPinMixin):
+class TestComponentPin(unittest.TestCase, TestPinMixin):
     def setUp(self):
         self.pin_class = ComponentPin
         self.setup_mixin()
-
-
-if __name__ == '__main__':
-    unittest2.main()

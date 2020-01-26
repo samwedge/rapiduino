@@ -1,15 +1,13 @@
 import abc
-import six
-import unittest2
+import unittest
 
 from rapiduino.pin import ComponentPin
 from rapiduino.components.base import BaseComponent
 
 
-class ComponentCommon(object):
+class ComponentCommon:
 
-    @six.add_metaclass(abc.ABCMeta)
-    class TestCase(unittest2.TestCase):
+    class TestCase(unittest.TestCase, metaclass=abc.ABCMeta):
 
         def test_subclass(self):
             self.assertTrue(isinstance(self.component, BaseComponent))

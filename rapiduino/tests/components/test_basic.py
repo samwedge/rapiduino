@@ -1,4 +1,4 @@
-from mock import Mock, call
+from unittest.mock import Mock, call
 
 from rapiduino.components.basic import LED, DimmableLED
 from rapiduino.exceptions import NoDeviceBoundError

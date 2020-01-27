@@ -290,7 +290,6 @@ class ArduinoTests:
             for device_pin_no, component_pin_no in pin_mappings:
                 self.assertTupleEqual(self.device.pins[device_pin_no].bound_to, (self.component, component_pin_no))
                 self.assertTupleEqual(self.component.pins[component_pin_no].bound_to, (self.device, device_pin_no))
-                self.assertTrue(self.device.pins[device_pin_no].is_protected)
                 self.assertEqual(self.component._setup.call_count, 1)
 
         def test_bind_component_with_incompatible_pins(self):
@@ -334,7 +333,6 @@ class ArduinoTests:
             for device_pin_no, component_pin_no in pin_mappings:
                 self.assertIsNone(self.device.pins[device_pin_no].bound_to)
                 self.assertIsNone(self.component.pins[component_pin_no].bound_to)
-                self.assertFalse(self.device.pins[device_pin_no].is_protected)
 
         def test_unbind_component(self):
             pin_mappings = (
@@ -349,7 +347,6 @@ class ArduinoTests:
             for device_pin_no, component_pin_no in pin_mappings:
                 self.assertIsNone(self.device.pins[device_pin_no].bound_to)
                 self.assertIsNone(self.component.pins[component_pin_no].bound_to)
-                self.assertFalse(self.device.pins[device_pin_no].is_protected)
 
         def test_analog_alias_globals(self):
             for analog_alias, pin_num in enumerate(self.valid_analog_pins):

@@ -3,6 +3,14 @@ from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.components.base import BaseComponent
 
 
+class TxRx(BaseComponent):
+    def __init__(self):
+        self._pins = (
+            Pin(0),
+            Pin(1),
+        )
+
+
 class LED(BaseComponent):
 
     def __init__(self):

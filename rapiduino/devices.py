@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+from rapiduino.components.basic import TxRx
 from rapiduino.commands import (CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_ANALOGREAD,
                                 CMD_DIGITALWRITE, CMD_ANALOGWRITE)
 from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
@@ -21,8 +22,8 @@ PinMapping = namedtuple('PinMapping', ['device_pin_no', 'component_pin_no'])
 
 def _get_uno_pins():
     return (
-        Pin(0, protected=True),
-        Pin(1, protected=True),
+        Pin(0),
+        Pin(1),
         Pin(2),
         Pin(3, pwm=True),
         Pin(4),
@@ -46,8 +47,8 @@ def _get_uno_pins():
 
 def _get_mega2560_pins():
     return (
-        Pin(0, protected=True),
-        Pin(1, protected=True),
+        Pin(0),
+        Pin(1),
         Pin(2, pwm=True),
         Pin(3, pwm=True),
         Pin(4, pwm=True),
@@ -121,17 +122,18 @@ def _get_mega2560_pins():
 
 class Arduino:
 
-    def __init__(self, pins, port):
+    def __init__(self, pins, port, tx_pin_num, rx_pin_num):
         self._pins = pins
         self.connection = SerialConnection.build(port)
+        self.bind_component(TxRx(), (PinMapping(rx_pin_num, 0), PinMapping(tx_pin_num, 1)))
 
     @classmethod
     def uno(cls, port=None):
-        return cls(_get_uno_pins(), port)
+        return cls(_get_uno_pins(), port, tx_pin_num=1, rx_pin_num=0)
 
     @classmethod
     def mega2560(cls, port=None):
-        return cls(_get_mega2560_pins(), port)
+        return cls(_get_mega2560_pins(), port, tx_pin_num=1, rx_pin_num=0)
 
     def poll(self):
         return self.connection.process_command(CMD_POLL)[0]
@@ -223,7 +225,7 @@ class Arduino:
             raise NotPwmPinError('cannot complete operation as pwm=False for pin {}'.format(pin_no))
 
     def _assert_pin_not_protected(self, pin_no):
-        if self.pins[pin_no].is_protected:
+        if self.pins[pin_no].is_bound():
             raise ProtectedPinError('cannot complete operation as pin {} is protected'.format(pin_no))
 
     @staticmethod

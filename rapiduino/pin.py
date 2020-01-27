@@ -4,14 +4,13 @@ from rapiduino.globals.common import INPUT, LOW
 
 class Pin:
 
-    def __init__(self, pin_id, pwm=False, analog=False, protected=False):
+    def __init__(self, pin_id, pwm=False, analog=False):
         self._pin_mode = INPUT
         self._pwm = pwm
         self._analog = analog
         self._pin_state = LOW
         self._pin_id = pin_id
         self._bound_to = None
-        self._protected = protected
 
     @property
     def pin_id(self):
@@ -41,12 +40,9 @@ class Pin:
         if self._bound_to is not None:
             raise AlreadyBoundPinError('Cannot bind pin - already bound')
         self._bound_to = (instance, pin_no)
-        self._protected = True
 
     def unbind(self):
         self._bound_to = None
-        self._protected = False
 
-    @property
-    def is_protected(self):
-        return self._protected
+    def is_bound(self):
+        return self.bound_to is not None

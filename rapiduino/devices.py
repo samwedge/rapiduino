@@ -1,8 +1,8 @@
 from collections import namedtuple
 
-from rapiduino.commands import CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_ANALOGREAD, \
-    CMD_DIGITALWRITE, CMD_ANALOGWRITE
-from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError, UnknownBoardError
+from rapiduino.commands import (CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_ANALOGREAD,
+                                CMD_DIGITALWRITE, CMD_ANALOGWRITE)
+from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
 from rapiduino.pin import Pin
 from rapiduino.communication import SerialConnection
 from rapiduino.globals.common import GlobalParameter, INPUT, OUTPUT, INPUT_PULLUP, LOW, HIGH
@@ -17,9 +17,6 @@ def enable_pin_protection(func):
 
 
 PinMapping = namedtuple('PinMapping', ['device_pin_no', 'component_pin_no'])
-
-UNO = 'UNO'
-MEGA2560 = 'MEGA2560'
 
 
 def _get_uno_pins():
@@ -124,14 +121,17 @@ def _get_mega2560_pins():
 
 class Arduino:
 
-    def __init__(self, board_type, port=None):
-        if board_type == UNO:
-            self._pins = _get_uno_pins()
-        elif board_type == MEGA2560:
-            self._pins = _get_mega2560_pins()
-        else:
-            raise UnknownBoardError('Unknown `board_type` of "{}" specified'.format(board_type))
+    def __init__(self, pins, port):
+        self._pins = pins
         self.connection = SerialConnection.build(port)
+
+    @classmethod
+    def uno(cls, port=None):
+        return cls(_get_uno_pins(), port)
+
+    @classmethod
+    def mega2560(cls, port=None):
+        return cls(_get_mega2560_pins(), port)
 
     def poll(self):
         return self.connection.process_command(CMD_POLL)[0]

@@ -8,9 +8,8 @@ from rapiduino.globals.common import INPUT, OUTPUT, HIGH
 from rapiduino.pin import Pin
 from rapiduino.communication import (SerialConnection)
 from rapiduino.components.base import BaseComponent
-from rapiduino.devices import Arduino, UNO, MEGA2560, PinMapping
-from rapiduino.exceptions import NotPwmPinError, NotAnalogPinError, ProtectedPinError, AlreadyBoundPinError, \
-    UnknownBoardError
+from rapiduino.devices import Arduino, PinMapping
+from rapiduino.exceptions import NotPwmPinError, NotAnalogPinError, ProtectedPinError, AlreadyBoundPinError
 import rapiduino.globals.arduino_uno as arduino_uno_globals
 import rapiduino.globals.arduino_mega_2560 as arduino_mega_2560_globals
 
@@ -26,19 +25,12 @@ class ExampleTestComponent(BaseComponent):
         )
 
 
-class ArduinoTestCase(unittest.TestCase):
-
-    def test_with_unknown_board_type(self):
-        with self.assertRaises(UnknownBoardError):
-            Arduino(board_type='foo')
-
-
 class ArduinoTests:
 
     class TestCase(unittest.TestCase, metaclass=abc.ABCMeta):
 
         def setUp(self):
-            self.device = Arduino(self.board_type)
+            self.device = self.get_device()
 
             self.num_pins = len(self.valid_pins)
             self.out_of_range_pin = self.num_pins
@@ -52,9 +44,8 @@ class ArduinoTests:
             self.component = ExampleTestComponent()
             self.component._setup = Mock()
 
-        @property
         @abc.abstractmethod
-        def board_type(self):
+        def get_device(self):
             pass
 
         @property
@@ -367,9 +358,8 @@ class ArduinoTests:
 
 class TestArduinoUno(ArduinoTests.TestCase):
 
-    @property
-    def board_type(self):
-        return UNO
+    def get_device(self):
+        return Arduino.uno()
 
     @property
     def analog_alias(self):
@@ -418,9 +408,8 @@ class TestArduinoUno(ArduinoTests.TestCase):
 
 class TestArduinoMega2560(ArduinoTests.TestCase):
 
-    @property
-    def board_type(self):
-        return MEGA2560
+    def get_device(self):
+        return Arduino.mega2560()
 
     @property
     def analog_alias(self):

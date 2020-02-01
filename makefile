@@ -30,4 +30,5 @@ test-no-build:
 
 travis:
 	python -m flake8 rapiduino
+	python -m mypy rapiduino
 	python -m coverage run --source=rapiduino -m unittest discover && python -m coveralls

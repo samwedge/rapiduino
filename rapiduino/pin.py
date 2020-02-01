@@ -1,48 +1,59 @@
+from typing import Tuple, Optional, TYPE_CHECKING
+
 from rapiduino.exceptions import AlreadyBoundPinError
 from rapiduino.globals.common import INPUT, LOW
+
+if TYPE_CHECKING:
+    from rapiduino.devices import Arduino
 
 
 class Pin:
 
-    def __init__(self, pin_id, pwm=False, analog=False):
+    def __init__(self, pin_id: int, pwm: bool = False, analog: bool = False) -> None:
         self._pin_mode = INPUT
         self._pwm = pwm
         self._analog = analog
         self._pin_state = LOW
         self._pin_id = pin_id
-        self._bound_to = None
+        self._bound_to = None  # type: Optional[Tuple[Arduino, int]]
 
     @property
-    def pin_id(self):
+    def pin_id(self) -> int:
         return self._pin_id
 
     @property
-    def is_pwm(self):
+    def is_pwm(self) -> int:
         return self._pwm
 
     @property
-    def is_analog(self):
+    def is_analog(self) -> bool:
         return self._analog
 
     @property
-    def bound_to(self):
+    def bound_to(self) -> Optional[Tuple['Arduino', int]]:
         return self._bound_to
 
     @property
-    def bound_instance(self):
-        return self._bound_to[0]
+    def bound_instance(self) -> Optional['Arduino']:
+        if self._bound_to is None:
+            return None
+        else:
+            return self._bound_to[0]
 
     @property
-    def bound_pin_num(self):
-        return self._bound_to[1]
+    def bound_pin_num(self) -> Optional[int]:
+        if self._bound_to is None:
+            return None
+        else:
+            return self._bound_to[1]
 
-    def bind(self, instance, pin_no):
+    def bind(self, instance: 'Arduino', pin_no: int) -> None:
         if self._bound_to is not None:
             raise AlreadyBoundPinError('Cannot bind pin - already bound')
         self._bound_to = (instance, pin_no)
 
-    def unbind(self):
+    def unbind(self) -> None:
         self._bound_to = None
 
-    def is_bound(self):
+    def is_bound(self) -> bool:
         return self.bound_to is not None

@@ -1,28 +1,33 @@
 build-dev: clean
-	virtualenv -p python3 env;
-	env/bin/pip install -e .[dev];
+	virtualenv -p python3 env
+	env/bin/pip install -e .[dev]
 
 build-package: clean
-	virtualenv -p python3 env;
-	env/bin/pip install -e .[package];
+	virtualenv -p python3 env
+	env/bin/pip install -e .[package]
 
 clean:
-	rm -rf env;
-	rm -rf build;
-	rm -rf dist;
-	rm -rf rapiduino.egg-info;
+	rm -rf env
+	rm -rf build
+	rm -rf dist
+	rm -rf rapiduino.egg-info
+	rm -rf .mypy_cache
+	rm -rf .coverage
 
 package: build-package
-	env/bin/python setup.py sdist;
-	env/bin/python setup.py bdist_wheel;
+	env/bin/python setup.py sdist
+	env/bin/python setup.py bdist_wheel
 
 publish: package
-	env/bin/twine upload dist/*;
+	env/bin/twine upload dist/*
 
-test: build-dev
-	env/bin/python -m flake8 rapiduino;
-	env/bin/python -m unittest discover;
+test: build-dev test-no-build
+
+test-no-build:
+	env/bin/python -m flake8 rapiduino
+	env/bin/python -m mypy rapiduino
+	env/bin/python -m unittest discover
 
 travis:
-	python -m flake8 rapiduino;
-	python -m coverage run --source=rapiduino -m unittest discover && python -m coveralls;
+	python -m flake8 rapiduino
+	python -m coverage run --source=rapiduino -m unittest discover && python -m coveralls

@@ -1,16 +1,19 @@
 from collections import namedtuple
+from typing import Tuple, Optional, Union, Callable, Any
 
+from rapiduino.components.base import BaseComponent
 from rapiduino.components.basic import TxRx
 from rapiduino.commands import (CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_ANALOGREAD,
                                 CMD_DIGITALWRITE, CMD_ANALOGWRITE)
 from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
 from rapiduino.pin import Pin
 from rapiduino.communication import SerialConnection
-from rapiduino.globals.common import GlobalParameter, INPUT, OUTPUT, INPUT_PULLUP, LOW, HIGH
+from rapiduino.globals.common import INPUT, OUTPUT, INPUT_PULLUP, LOW, HIGH
+from rapiduino import GlobalParameter
 
 
-def enable_pin_protection(func):
-    def return_function(self, pin_no, *args, **kwargs):
+def enable_pin_protection(func: Callable) -> Callable:
+    def return_function(self: 'Arduino', pin_no: int, *args: int, **kwargs: bool) -> Any:
         if not kwargs.get('force', False):
             self._assert_pin_not_protected(pin_no)
         return func(self, pin_no, *args)
@@ -20,7 +23,7 @@ def enable_pin_protection(func):
 PinMapping = namedtuple('PinMapping', ['device_pin_no', 'component_pin_no'])
 
 
-def _get_uno_pins():
+def _get_uno_pins() -> Tuple[Pin, ...]:
     return (
         Pin(0),
         Pin(1),
@@ -45,7 +48,7 @@ def _get_uno_pins():
     )
 
 
-def _get_mega2560_pins():
+def _get_mega2560_pins() -> Tuple[Pin, ...]:
     return (
         Pin(0),
         Pin(1),
@@ -122,36 +125,36 @@ def _get_mega2560_pins():
 
 class Arduino:
 
-    def __init__(self, pins, port, tx_pin_num, rx_pin_num):
+    def __init__(self, pins: Tuple[Pin, ...], port: Optional[str], tx_pin_num: int, rx_pin_num: int) -> None:
         self._pins = pins
         self.connection = SerialConnection.build(port)
         self.bind_component(TxRx(), (PinMapping(rx_pin_num, 0), PinMapping(tx_pin_num, 1)))
 
     @classmethod
-    def uno(cls, port=None):
+    def uno(cls, port: Optional[str] = None) -> 'Arduino':
         return cls(_get_uno_pins(), port, tx_pin_num=1, rx_pin_num=0)
 
     @classmethod
-    def mega2560(cls, port=None):
+    def mega2560(cls, port: Optional[str] = None) -> 'Arduino':
         return cls(_get_mega2560_pins(), port, tx_pin_num=1, rx_pin_num=0)
 
-    def poll(self):
+    def poll(self) -> int:
         return self.connection.process_command(CMD_POLL)[0]
 
-    def parrot(self, value):
+    def parrot(self, value: int) -> Optional[Union[int, Tuple[int, ...]]]:
         return self.connection.process_command(CMD_PARROT, value)[0]
 
-    def version(self):
+    def version(self) -> Tuple[int, ...]:
         return self.connection.process_command(CMD_VERSION)
 
     @enable_pin_protection
-    def pin_mode(self, pin_no, mode):
+    def pin_mode(self, pin_no: int, mode: GlobalParameter) -> None:
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_mode(mode)
         self.connection.process_command(CMD_PINMODE, pin_no, mode.value)
 
     @enable_pin_protection
-    def digital_read(self, pin_no):
+    def digital_read(self, pin_no: int) -> GlobalParameter:
         self._assert_valid_pin_number(pin_no)
         state = self.connection.process_command(CMD_DIGITALREAD, pin_no)
         if state[0] == 1:
@@ -160,25 +163,25 @@ class Arduino:
             return LOW
 
     @enable_pin_protection
-    def digital_write(self, pin_no, state):
+    def digital_write(self, pin_no: int, state: GlobalParameter) -> None:
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_state(state)
         self.connection.process_command(CMD_DIGITALWRITE, pin_no, state.value)
 
     @enable_pin_protection
-    def analog_read(self, pin_no):
+    def analog_read(self, pin_no: int) -> int:
         self._assert_valid_pin_number(pin_no)
         self._assert_analog_pin(pin_no)
         return self.connection.process_command(CMD_ANALOGREAD, pin_no)[0]
 
     @enable_pin_protection
-    def analog_write(self, pin_no, value):
+    def analog_write(self, pin_no: int, value: int) -> None:
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_analog_write_range(value)
         self._assert_pwm_pin(pin_no)
         self.connection.process_command(CMD_ANALOGWRITE, pin_no, value)
 
-    def bind_component(self, component, pin_mappings):
+    def bind_component(self, component: BaseComponent, pin_mappings: Tuple[PinMapping, ...]) -> None:
         try:
             for device_pin_no, component_pin_no in pin_mappings:
                 device_pin = self.pins[device_pin_no]
@@ -191,13 +194,13 @@ class Arduino:
             self._undo_bind_component(component, pin_mappings)
             raise
 
-    def unbind_component(self, component):
+    def unbind_component(self, component: BaseComponent) -> None:
         for component_pin in component.pins:
-            self.pins[component_pin.bound_pin_num].unbind()
+            self.pins[component_pin.bound_pin_num].unbind()  # type: ignore
             component_pin.unbind()
         component.unbind_to_device()
 
-    def _undo_bind_component(self, component, pin_mappings):
+    def _undo_bind_component(self, component: BaseComponent, pin_mappings: Tuple[PinMapping, ...]) -> None:
         for device_pin_no, component_pin_no in pin_mappings:
             device_pin = self.pins[device_pin_no]
             component_pin = component.pins[component_pin_no]
@@ -206,37 +209,37 @@ class Arduino:
         component.unbind_to_device()
 
     @staticmethod
-    def _assert_pins_compatible(device_pin, component_pin):
+    def _assert_pins_compatible(device_pin: Pin, component_pin: Pin) -> None:
         if component_pin.is_analog and not device_pin.is_analog:
             raise NotAnalogPinError('Component pin requires a Device pin with analog attribute')
         if component_pin.is_pwm and not device_pin.is_pwm:
             raise NotPwmPinError('Component pin requires a Device pin with pwm attribute')
 
-    def _assert_valid_pin_number(self, pin_no):
+    def _assert_valid_pin_number(self, pin_no: int) -> None:
         if (pin_no >= len(self.pins)) or (pin_no < 0):
             raise IndexError('Specified pin number {} is outside pin range of {}'.format(pin_no, len(self.pins)))
 
-    def _assert_analog_pin(self, pin_no):
+    def _assert_analog_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_analog:
             raise NotAnalogPinError('cannot complete operation as analog=False for pin {}'.format(pin_no))
 
-    def _assert_pwm_pin(self, pin_no):
+    def _assert_pwm_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_pwm:
             raise NotPwmPinError('cannot complete operation as pwm=False for pin {}'.format(pin_no))
 
-    def _assert_pin_not_protected(self, pin_no):
+    def _assert_pin_not_protected(self, pin_no: int) -> None:
         if self.pins[pin_no].is_bound():
             raise ProtectedPinError('cannot complete operation as pin {} is protected'.format(pin_no))
 
     @staticmethod
-    def _assert_valid_analog_write_range(value):
+    def _assert_valid_analog_write_range(value: int) -> None:
         if not isinstance(value, int):
             raise TypeError('Expected analog value type to be int, but found {}'.format(type(value)))
         if (value < 0) or (value > 255):
             raise ValueError('Specified analog value {} is outside valid range 0 to 255'.format(value))
 
     @staticmethod
-    def _assert_valid_pin_mode(mode):
+    def _assert_valid_pin_mode(mode: GlobalParameter) -> None:
         if not isinstance(mode, GlobalParameter):
             raise TypeError('Expected GlobalParameter but received type {}'.format(type(mode)))
         if mode not in [INPUT, OUTPUT, INPUT_PULLUP]:
@@ -245,7 +248,7 @@ class Arduino:
             )
 
     @staticmethod
-    def _assert_valid_pin_state(state):
+    def _assert_valid_pin_state(state: GlobalParameter) -> None:
         if not isinstance(state, GlobalParameter):
             raise TypeError('Expected GlobalParameter but received type {}'.format(type(state)))
         if state not in [HIGH, LOW]:
@@ -254,5 +257,5 @@ class Arduino:
             )
 
     @property
-    def pins(self):
+    def pins(self) -> Tuple[Pin, ...]:
         return self._pins

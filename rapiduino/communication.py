@@ -1,29 +1,31 @@
 import struct
+from typing import Tuple, Optional
 
 from serial import Serial, SerialException
 
+from rapiduino import CommandSpec
 from rapiduino.exceptions import (NotConnectedSerialConnectionError, SerialConnectionSendDataError,
                                   ReceiveDataSerialConnectionError)
 
 
 class SerialConnection:
 
-    def __init__(self, conn):
+    def __init__(self, conn: Serial) -> None:
         self.conn = conn
 
     @classmethod
-    def build(cls, port, baudrate=115200, timeout=1):
+    def build(cls, port: Optional[str], baudrate: int = 115200, timeout: int = 1) -> 'SerialConnection':
         try:
             conn = Serial(port, baudrate=baudrate, timeout=timeout)
         except SerialException:
             raise NotConnectedSerialConnectionError()
         return cls(conn)
 
-    def close(self):
+    def close(self) -> None:
         self.conn.close()
         self.conn = None
 
-    def process_command(self, command, *args):
+    def process_command(self, command: CommandSpec, *args: int) -> Tuple[int, ...]:
         for arg in args:
             if type(arg) != int:
                 raise TypeError('Expected args to be int, but received {}'.format(type(arg)))
@@ -38,7 +40,7 @@ class SerialConnection:
 
         return self._recv(command)
 
-    def _send(self, cmd_spec, data):
+    def _send(self, cmd_spec: CommandSpec, data: Tuple[int, ...]) -> None:
         if self.conn:
             bytes_to_send = struct.pack('B{}{}'.format(cmd_spec.tx_len, cmd_spec.tx_type), cmd_spec.cmd, *data)
             n_bytes_written = self.conn.write(bytes_to_send)
@@ -47,7 +49,7 @@ class SerialConnection:
         else:
             raise NotConnectedSerialConnectionError()
 
-    def _recv(self, cmd_spec):
+    def _recv(self, cmd_spec: CommandSpec) -> Tuple[int, ...]:
         if cmd_spec.rx_len == 0:
             return ()
         if self.conn:

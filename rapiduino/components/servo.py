@@ -4,7 +4,7 @@ from rapiduino.components.base import BaseComponent
 
 class Servo(BaseComponent):
 
-    def __init__(self, angle_min=0, angle_max=180, pwm_min=0, pwm_max=1023):
+    def __init__(self, angle_min: int = 0, angle_max: int = 180, pwm_min: int = 0, pwm_max: int = 1023) -> None:
         self._pins = (
             Pin(0, pwm=True),
         )
@@ -24,11 +24,11 @@ class Servo(BaseComponent):
         self.pwm_max = pwm_max
 
     @property
-    def angle_min(self):
+    def angle_min(self) -> int:
         return self._angle_min
 
     @angle_min.setter
-    def angle_min(self, value):
+    def angle_min(self, value: int) -> None:
         if value < self._min_allowed_angle:
             raise ValueError('Minimum value allowed is {}'.format(self._min_allowed_angle))
         if value >= self._angle_max:
@@ -36,11 +36,11 @@ class Servo(BaseComponent):
         self._angle_min = value
 
     @property
-    def angle_max(self):
+    def angle_max(self) -> int:
         return self._angle_max
 
     @angle_max.setter
-    def angle_max(self, value):
+    def angle_max(self, value: int) -> None:
         if value > self._max_allowed_angle:
             raise ValueError('Maximium value allowed is {}'.format(self._max_allowed_angle))
         if value <= self._angle_min:
@@ -48,11 +48,11 @@ class Servo(BaseComponent):
         self._angle_max = value
 
     @property
-    def pwm_min(self):
+    def pwm_min(self) -> int:
         return self._pwm_min
 
     @pwm_min.setter
-    def pwm_min(self, value):
+    def pwm_min(self, value: int) -> None:
         if value < self._min_allowed_pwm:
             raise ValueError('Minimum value allowed is {}'.format(self._min_allowed_pwm))
         if value >= self._pwm_max:
@@ -60,11 +60,11 @@ class Servo(BaseComponent):
         self._pwm_min = value
 
     @property
-    def pwm_max(self):
+    def pwm_max(self) -> int:
         return self._pwm_max
 
     @pwm_max.setter
-    def pwm_max(self, value):
+    def pwm_max(self, value: int) -> None:
         if value > self._max_allowed_pwm:
             raise ValueError('Maximium value allowed is {}'.format(self._max_allowed_pwm))
         if value <= self._pwm_min:

@@ -1,8 +1,7 @@
-from collections import namedtuple
 
 __all__ = ['LOW', 'HIGH', 'INPUT', 'OUTPUT', 'INPUT_PULLUP']
 
-GlobalParameter = namedtuple('GlobalParameter', ['name', 'value'])
+from rapiduino import GlobalParameter
 
 LOW = GlobalParameter('LOW', 0)
 HIGH = GlobalParameter('HIGH', 1)

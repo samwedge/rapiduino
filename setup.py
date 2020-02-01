@@ -9,6 +9,7 @@ extras_require = {
     'dev': [
         'flake8==3.7.9',
         'wheel==0.33.6',
+        'mypy==0.761',
     ],
     'publish': [
         'setuptools==45.1.0',
@@ -40,7 +41,6 @@ setup(
         'Topic :: Software Development :: Build Tools',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

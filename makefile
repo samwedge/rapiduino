@@ -27,8 +27,3 @@ test-no-build:
 	env/bin/python -m flake8 rapiduino
 	env/bin/python -m mypy rapiduino
 	env/bin/python -m unittest discover
-
-travis:
-	python -m flake8 rapiduino
-	python -m mypy rapiduino
-	python -m coverage run --source=rapiduino -m unittest discover && python -m coveralls

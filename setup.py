@@ -9,7 +9,7 @@ extras_require = {
     'dev': [
         'flake8==3.7.9',
         'wheel==0.33.6',
-        'mypy==0.761',
+        'mypy==0.790',
     ],
     'publish': [
         'setuptools==45.1.0',
@@ -45,7 +45,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
     ],
     keywords='arduino python rapid development serial communication',
     packages=find_packages(exclude=['tests.*', 'tests']),

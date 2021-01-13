@@ -93,12 +93,34 @@ The benefit of this is that you can use methods with familiar names such as:
     led.turn_on()
     led.turn_off()
     
-You don't need to think of pin numbers, pin states or pin modes beyone the initial set-up.
+You don't need to think of pin numbers, pin states or pin modes beyond the initial set-up.
 
 
 ## Contribution
 
-Yes please! Code and/or suggestions are very welcome!
+Yes please! Code and/or suggestions are very welcome! Feel free to raise an issue or raise a pull request from a fork.
+
+
+## Developing
+
+Rapiduino uses [poetry](https://python-poetry.org/docs/) to handle the installation.
+
+
+To install Rapiuino for development:
+
+`poetry install`
+
+To run tests:
+
+`poetry run python -m unittest discover`
+
+Type checking:
+
+`poetry run python -m mypy rapiduino`
+
+Linting:
+
+`poetry run python -m flake8 rapiduino`
 
 
 ## Licence

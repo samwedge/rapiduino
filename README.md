@@ -112,15 +112,15 @@ To install Rapiuino for development:
 
 To run tests:
 
-`poetry run python -m unittest discover`
+`poetry run pytest tests`
 
 Type checking:
 
-`poetry run python -m mypy rapiduino`
+`poetry run mypy rapiduino`
 
 Linting:
 
-`poetry run python -m flake8 rapiduino`
+`poetry run flake8 rapiduino`
 
 
 ## Licence

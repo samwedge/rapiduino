@@ -24,7 +24,6 @@ jobs:
       run: poetry run coverage run --source=rapiduino -m pytest tests
     - name: Submit test coverage report
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         COVERALLS_SERVICE_NAME: github
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: poetry run coveralls

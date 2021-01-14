@@ -1,10 +1,11 @@
-from typing import Tuple, Optional, TYPE_CHECKING
+from typing import Tuple, Optional, TYPE_CHECKING, Union
 
 from rapiduino.exceptions import AlreadyBoundPinError
 from rapiduino.globals.common import INPUT, LOW
 
 if TYPE_CHECKING:
     from rapiduino.devices import Arduino
+    from rapiduino.components.base import BaseComponent
 
 
 class Pin:
@@ -15,7 +16,7 @@ class Pin:
         self._analog = analog
         self._pin_state = LOW
         self._pin_id = pin_id
-        self._bound_to = None  # type: Optional[Tuple[Arduino, int]]
+        self._bound_to = None  # type: Optional[Tuple[Union['Arduino', 'BaseComponent'], int]]
 
     @property
     def pin_id(self) -> int:
@@ -30,11 +31,11 @@ class Pin:
         return self._analog
 
     @property
-    def bound_to(self) -> Optional[Tuple['Arduino', int]]:
+    def bound_to(self) -> Optional[Tuple[Union['Arduino', 'BaseComponent'], int]]:
         return self._bound_to
 
     @property
-    def bound_instance(self) -> Optional['Arduino']:
+    def bound_instance(self) -> Optional[Union['Arduino', 'BaseComponent']]:
         if self._bound_to is None:
             return None
         else:
@@ -47,7 +48,7 @@ class Pin:
         else:
             return self._bound_to[1]
 
-    def bind(self, instance: 'Arduino', pin_no: int) -> None:
+    def bind(self, instance: Union['Arduino', 'BaseComponent'], pin_no: int) -> None:
         if self._bound_to is not None:
             raise AlreadyBoundPinError('Cannot bind pin - already bound')
         self._bound_to = (instance, pin_no)

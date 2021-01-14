@@ -1,4 +1,4 @@
-from collections import namedtuple
+from dataclasses import dataclass
 from typing import Tuple, Optional, Union, Callable, Any
 
 from rapiduino.components.base import BaseComponent
@@ -20,7 +20,10 @@ def enable_pin_protection(func: Callable) -> Callable:
     return return_function
 
 
-PinMapping = namedtuple('PinMapping', ['device_pin_no', 'component_pin_no'])
+@dataclass
+class PinMapping:
+    device_pin_no: int
+    component_pin_no: int
 
 
 def _get_uno_pins() -> Tuple[Pin, ...]:
@@ -183,7 +186,9 @@ class Arduino:
 
     def bind_component(self, component: BaseComponent, pin_mappings: Tuple[PinMapping, ...]) -> None:
         try:
-            for device_pin_no, component_pin_no in pin_mappings:
+            for pin_mapping in pin_mappings:
+                device_pin_no = pin_mapping.device_pin_no
+                component_pin_no = pin_mapping.component_pin_no
                 device_pin = self.pins[device_pin_no]
                 component_pin = component.pins[component_pin_no]
                 self._assert_pins_compatible(device_pin, component_pin)
@@ -201,7 +206,9 @@ class Arduino:
         component.unbind_to_device()
 
     def _undo_bind_component(self, component: BaseComponent, pin_mappings: Tuple[PinMapping, ...]) -> None:
-        for device_pin_no, component_pin_no in pin_mappings:
+        for pin_mapping in pin_mappings:
+            device_pin_no = pin_mapping.device_pin_no
+            component_pin_no = pin_mapping.component_pin_no
             device_pin = self.pins[device_pin_no]
             component_pin = component.pins[component_pin_no]
             device_pin.unbind()

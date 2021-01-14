@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.6"
 pyserial = "^3.5"
+dataclasses = {version = "^0.8", python = "~3.6"}
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"

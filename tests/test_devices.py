@@ -287,7 +287,9 @@ class ArduinoTests:
             )
             self.device.bind_component(self.component, pin_mappings)
             self.assertIsInstance(self.component.bound_device, Arduino)
-            for device_pin_no, component_pin_no in pin_mappings:
+            for pin_mapping in pin_mappings:
+                device_pin_no = pin_mapping.device_pin_no
+                component_pin_no = pin_mapping.component_pin_no
                 self.assertTupleEqual(self.device.pins[device_pin_no].bound_to, (self.component, component_pin_no))
                 self.assertTupleEqual(self.component.pins[component_pin_no].bound_to, (self.device, device_pin_no))
                 self.assertEqual(self.component._setup.call_count, 1)
@@ -301,7 +303,9 @@ class ArduinoTests:
             with self.assertRaises(NotPwmPinError):
                 self.device.bind_component(self.component, pin_mappings)
             self.assertIsNone(self.component.bound_device)
-            for device_pin_no, component_pin_no in pin_mappings:
+            for pin_mapping in pin_mappings:
+                device_pin_no = pin_mapping.device_pin_no
+                component_pin_no = pin_mapping.component_pin_no
                 self.assertIsNone(self.device.pins[device_pin_no].bound_to)
                 self.assertIsNone(self.component.pins[component_pin_no].bound_to)
                 self.assertEqual(self.component._setup.call_count, 0)
@@ -315,7 +319,9 @@ class ArduinoTests:
             with self.assertRaises(AlreadyBoundPinError):
                 self.device.bind_component(self.component, pin_mappings)
             self.assertIsNone(self.component.bound_device)
-            for device_pin_no, component_pin_no in pin_mappings:
+            for pin_mapping in pin_mappings:
+                device_pin_no = pin_mapping.device_pin_no
+                component_pin_no = pin_mapping.component_pin_no
                 self.assertIsNone(self.device.pins[device_pin_no].bound_to)
                 self.assertIsNone(self.component.pins[component_pin_no].bound_to)
                 self.assertEqual(self.component._setup.call_count, 0)
@@ -330,7 +336,9 @@ class ArduinoTests:
                 self.device.bind_component(self.component, pin_mappings)
 
             self.assertIsNone(self.component.bound_device)
-            for device_pin_no, component_pin_no in pin_mappings:
+            for pin_mapping in pin_mappings:
+                device_pin_no = pin_mapping.device_pin_no
+                component_pin_no = pin_mapping.component_pin_no
                 self.assertIsNone(self.device.pins[device_pin_no].bound_to)
                 self.assertIsNone(self.component.pins[component_pin_no].bound_to)
 
@@ -344,7 +352,9 @@ class ArduinoTests:
             self.device.unbind_component(self.component)
 
             self.assertIsNone(self.component.bound_device)
-            for device_pin_no, component_pin_no in pin_mappings:
+            for pin_mapping in pin_mappings:
+                device_pin_no = pin_mapping.device_pin_no
+                component_pin_no = pin_mapping.component_pin_no
                 self.assertIsNone(self.device.pins[device_pin_no].bound_to)
                 self.assertIsNone(self.component.pins[component_pin_no].bound_to)
 

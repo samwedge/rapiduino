@@ -1,7 +1,7 @@
 [![Build and Test](https://github.com/samwedge/rapiduino/workflows/Build%20and%20Test/badge.svg)](https://github.com/samwedge/rapiduino/actions?query=workflow%3A%22Build+and+Test%22)
 [![Coverage Status](https://coveralls.io/repos/github/samwedge/rapiduino/badge.svg?branch=master)](https://coveralls.io/github/samwedge/rapiduino?branch=master)
 ![Python Supported Versions](https://img.shields.io/pypi/pyversions/rapiduino)
-[![Python Supported Versions](https://img.shields.io/pypi/l/rapiduino)](https://github.com/samwedge/rapiduino/blob/master/LICENSE)
+[![GitHub - License](https://img.shields.io/github/license/samwedge/rapiduino)](https://github.com/samwedge/rapiduino/blob/master/LICENSE)
 [![Latest Version](https://img.shields.io/pypi/v/rapiduino)](https://pypi.org/project/rapiduino/)
 
 # Rapiduino
@@ -15,7 +15,7 @@ By sending these commands from Python and not writing them directly on the Ardui
 
 ## Why use Rapiduino?
 
-* Rapidly develop using everyone's favourite language
+* Rapidly develop using everyone's favourite language 😉
 * Easily integrate an Arduino with Python's libraries to provide a real-time clock, web access, data visualisation, number crunching etc...
 * Allow hot-swappable parts. Change pin mode, pin state etc. whenever you like from your Python code!
 * Easily obtain data from your Arduino without setting up any custom communication
@@ -125,4 +125,6 @@ Linting:
 
 ## Licence
 
-[Rapiduino is released under the MIT licence](https://github.com/samwedge/rapiduino/blob/master/LICENSE)
+[Rapiduino is released under the Apache-2.0 licence](https://github.com/samwedge/rapiduino/blob/master/LICENSE).
+
+If you contribute code to this repository, you agree that your code will also be released under this licence.

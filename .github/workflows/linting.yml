@@ -27,4 +27,4 @@ jobs:
     - name: Run linting using Flake8
       run: poetry run flake8 rapiduino
     - name: Check code formatting using Black
-      run: poetry run black --diff --color rapiduino
+      run: poetry run black --check --diff --color rapiduino

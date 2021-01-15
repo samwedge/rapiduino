@@ -33,13 +33,11 @@ class SerialConnection:
         for arg in args:
             if type(arg) != int:
                 raise TypeError(
-                    "Expected args to be int, but received {}".format(type(arg))
+                    f"Expected args to be int, but received {type(arg)}"
                 )
         if len(args) != command.tx_len:
             raise ValueError(
-                "Expected args to be length {}, but received length {}".format(
-                    command.tx_len, len(args)
-                )
+                f"Expected args to be length {command.tx_len}, but received length {len(args)}"
             )
 
         self._send(command, args)
@@ -49,7 +47,9 @@ class SerialConnection:
     def _send(self, cmd_spec: CommandSpec, data: Tuple[int, ...]) -> None:
         if self.conn:
             bytes_to_send = struct.pack(
-                "B{}{}".format(cmd_spec.tx_len, cmd_spec.tx_type), cmd_spec.cmd, *data
+                f"B{cmd_spec.tx_len}{cmd_spec.tx_type}",
+                cmd_spec.cmd,
+                *data
             )
             n_bytes_written = self.conn.write(bytes_to_send)
             if n_bytes_written != (len(data) + 1):

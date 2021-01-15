@@ -34,7 +34,7 @@ class Servo(BaseComponent):
     def angle_min(self, value: int) -> None:
         if value < self._min_allowed_angle:
             raise ValueError(
-                "Minimum value allowed is {}".format(self._min_allowed_angle)
+                f"Minimum value allowed is {self._min_allowed_angle}"
             )
         if value >= self._angle_max:
             raise ValueError("Minimum cannot be >= to the maximum")
@@ -48,7 +48,7 @@ class Servo(BaseComponent):
     def angle_max(self, value: int) -> None:
         if value > self._max_allowed_angle:
             raise ValueError(
-                "Maximium value allowed is {}".format(self._max_allowed_angle)
+                f"Maximium value allowed is {self._max_allowed_angle}"
             )
         if value <= self._angle_min:
             raise ValueError("Maximum cannot be <= to the minimum")

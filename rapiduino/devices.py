@@ -264,26 +264,26 @@ class Arduino:
     def _assert_analog_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_analog:
             raise NotAnalogPinError(
-                "cannot complete operation as analog=False for pin {}".format(pin_no)
+                f"cannot complete operation as analog=False for pin {pin_no}"
             )
 
     def _assert_pwm_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_pwm:
             raise NotPwmPinError(
-                "cannot complete operation as pwm=False for pin {}".format(pin_no)
+                f"cannot complete operation as pwm=False for pin {pin_no}"
             )
 
     def _assert_pin_not_protected(self, pin_no: int) -> None:
         if self.pins[pin_no].is_bound():
             raise ProtectedPinError(
-                "cannot complete operation as pin {} is protected".format(pin_no)
+                f"cannot complete operation as pin {pin_no} is protected"
             )
 
     @staticmethod
     def _assert_valid_analog_write_range(value: int) -> None:
         if not isinstance(value, int):
             raise TypeError(
-                "Expected analog value type to be int, but found {}".format(type(value))
+                f"Expected analog value type to be int, but found {type(value)}"
             )
         if (value < 0) or (value > 255):
             raise ValueError(

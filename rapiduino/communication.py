@@ -4,9 +4,11 @@ from typing import Optional, Tuple
 from serial import Serial, SerialException
 
 from rapiduino import CommandSpec
-from rapiduino.exceptions import (NotConnectedSerialConnectionError,
-                                  ReceiveDataSerialConnectionError,
-                                  SerialConnectionSendDataError)
+from rapiduino.exceptions import (
+    NotConnectedSerialConnectionError,
+    ReceiveDataSerialConnectionError,
+    SerialConnectionSendDataError,
+)
 
 
 class SerialConnection:

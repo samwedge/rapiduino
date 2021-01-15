@@ -2,14 +2,25 @@ from dataclasses import dataclass
 from typing import Any, Callable, Optional, Tuple, Union
 
 from rapiduino import GlobalParameter
-from rapiduino.commands import (CMD_ANALOGREAD, CMD_ANALOGWRITE,
-                                CMD_DIGITALREAD, CMD_DIGITALWRITE, CMD_PARROT,
-                                CMD_PINMODE, CMD_POLL, CMD_VERSION)
+from rapiduino.commands import (
+    CMD_ANALOGREAD,
+    CMD_ANALOGWRITE,
+    CMD_DIGITALREAD,
+    CMD_DIGITALWRITE,
+    CMD_PARROT,
+    CMD_PINMODE,
+    CMD_POLL,
+    CMD_VERSION,
+)
 from rapiduino.communication import SerialConnection
 from rapiduino.components.base import BaseComponent
 from rapiduino.components.basic import TxRx
-from rapiduino.exceptions import (NotAnalogPinError, NotPwmPinError, PinError,
-                                  ProtectedPinError)
+from rapiduino.exceptions import (
+    NotAnalogPinError,
+    NotPwmPinError,
+    PinError,
+    ProtectedPinError,
+)
 from rapiduino.globals.common import HIGH, INPUT, INPUT_PULLUP, LOW, OUTPUT
 from rapiduino.pin import Pin
 

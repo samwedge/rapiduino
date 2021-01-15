@@ -23,7 +23,7 @@ jobs:
     - name: Generate test coverage report
       run: poetry run coverage run --source=rapiduino -m pytest tests
     - name: List dir contents for debug)
-      run: ls
+      run: ls -a
     - name: Submit test coverage report
       env:
         COVERALLS_SERVICE_NAME: github

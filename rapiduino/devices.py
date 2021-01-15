@@ -256,64 +256,54 @@ class Arduino:
     def _assert_valid_pin_number(self, pin_no: int) -> None:
         if (pin_no >= len(self.pins)) or (pin_no < 0):
             raise IndexError(
-                "Specified pin number {} is outside pin range of {}".format(
-                    pin_no, len(self.pins)
-                )
+                f"Specified pin number {pin_no} is outside pin range of {len(self.pins)}"
             )
 
     def _assert_analog_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_analog:
             raise NotAnalogPinError(
-                "cannot complete operation as analog=False for pin {}".format(pin_no)
+                f"cannot complete operation as analog=False for pin {pin_no}"
             )
 
     def _assert_pwm_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_pwm:
             raise NotPwmPinError(
-                "cannot complete operation as pwm=False for pin {}".format(pin_no)
+                f"cannot complete operation as pwm=False for pin {pin_no}"
             )
 
     def _assert_pin_not_protected(self, pin_no: int) -> None:
         if self.pins[pin_no].is_bound():
             raise ProtectedPinError(
-                "cannot complete operation as pin {} is protected".format(pin_no)
+                f"cannot complete operation as pin {pin_no} is protected"
             )
 
     @staticmethod
     def _assert_valid_analog_write_range(value: int) -> None:
         if not isinstance(value, int):
             raise TypeError(
-                "Expected analog value type to be int, but found {}".format(type(value))
+                f"Expected analog value type to be int, but found {type(value)}"
             )
         if (value < 0) or (value > 255):
             raise ValueError(
-                "Specified analog value {} is outside valid range 0 to 255".format(
-                    value
-                )
+                f"Specified analog value {value} is outside valid range 0 to 255"
             )
 
     @staticmethod
     def _assert_valid_pin_mode(mode: GlobalParameter) -> None:
         if not isinstance(mode, GlobalParameter):
-            raise TypeError(
-                "Expected GlobalParameter but received type {}".format(type(mode))
-            )
+            raise TypeError(f"Expected GlobalParameter but received type {type(mode)}")
         if mode not in [INPUT, OUTPUT, INPUT_PULLUP]:
             raise ValueError(
-                "pin_mode must be INPUT, OUTPUT or INPUT_PULLUP but {} was found".format(
-                    mode.name
-                )
+                f"pin_mode must be INPUT, OUTPUT or INPUT_PULLUP but {mode.name} was found"
             )
 
     @staticmethod
     def _assert_valid_pin_state(state: GlobalParameter) -> None:
         if not isinstance(state, GlobalParameter):
-            raise TypeError(
-                "Expected GlobalParameter but received type {}".format(type(state))
-            )
+            raise TypeError(f"Expected GlobalParameter but received type {type(state)}")
         if state not in [HIGH, LOW]:
             raise ValueError(
-                "pin_state must be HIGH or LOW but {} was found".format(state.name)
+                f"pin_state must be HIGH or LOW but {state.name} was found"
             )
 
     @property

@@ -33,9 +33,7 @@ class Servo(BaseComponent):
     @angle_min.setter
     def angle_min(self, value: int) -> None:
         if value < self._min_allowed_angle:
-            raise ValueError(
-                "Minimum value allowed is {}".format(self._min_allowed_angle)
-            )
+            raise ValueError(f"Minimum value allowed is {self._min_allowed_angle}")
         if value >= self._angle_max:
             raise ValueError("Minimum cannot be >= to the maximum")
         self._angle_min = value
@@ -47,9 +45,7 @@ class Servo(BaseComponent):
     @angle_max.setter
     def angle_max(self, value: int) -> None:
         if value > self._max_allowed_angle:
-            raise ValueError(
-                "Maximium value allowed is {}".format(self._max_allowed_angle)
-            )
+            raise ValueError(f"Maximium value allowed is {self._max_allowed_angle}")
         if value <= self._angle_min:
             raise ValueError("Maximum cannot be <= to the minimum")
         self._angle_max = value
@@ -61,9 +57,7 @@ class Servo(BaseComponent):
     @pwm_min.setter
     def pwm_min(self, value: int) -> None:
         if value < self._min_allowed_pwm:
-            raise ValueError(
-                "Minimum value allowed is {}".format(self._min_allowed_pwm)
-            )
+            raise ValueError(f"Minimum value allowed is {self._min_allowed_pwm}")
         if value >= self._pwm_max:
             raise ValueError("Minimum cannot be >= to the maximum")
         self._pwm_min = value
@@ -75,9 +69,7 @@ class Servo(BaseComponent):
     @pwm_max.setter
     def pwm_max(self, value: int) -> None:
         if value > self._max_allowed_pwm:
-            raise ValueError(
-                "Maximium value allowed is {}".format(self._max_allowed_pwm)
-            )
+            raise ValueError(f"Maximium value allowed is {self._max_allowed_pwm}")
         if value <= self._pwm_min:
             raise ValueError("Maximum cannot be <= to the minimum")
         self._pwm_max = value

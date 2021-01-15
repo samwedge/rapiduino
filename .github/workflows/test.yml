@@ -33,7 +33,3 @@ jobs:
     - name: Submit test coverage report
       if: matrix.python-version == '3.9'
       uses: AndreMiras/coveralls-python-action@develop
-    - name: Run type checking
-      run: poetry run mypy rapiduino
-    - name: Run linting
-      run: poetry run flake8 rapiduino

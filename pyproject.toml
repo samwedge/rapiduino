@@ -10,7 +10,6 @@ readme = "README.md"
 python = "^3.6"
 pyserial = "^3.5"
 dataclasses = {version = "^0.8", python = "~3.6"}
-isort = {version = "^5.7.0", extras = ["colors"]}
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
@@ -19,6 +18,8 @@ pytest = "^6.2.1"
 coveralls = "^3.0.0"
 flake8-bugbear = "^20.11.1"
 black = "^20.8b1"
+isort = {version = "^5.7.0", extras = ["colors"]}
+flake8-use-fstring = "^1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -12,6 +12,7 @@ pyserial = "^3.5"
 dataclasses = {version = "^0.8", python = "~3.6"}
 pytest = "^6.2.1"
 coveralls = "^3.0.0"
+flake8-bugbear = "^20.11.1"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"

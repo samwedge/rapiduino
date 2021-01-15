@@ -1,5 +1,5 @@
-from rapiduino.pin import Pin
 from rapiduino.components.base import BaseComponent
+from rapiduino.pin import Pin
 
 
 class Servo(BaseComponent):

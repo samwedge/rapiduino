@@ -1,11 +1,11 @@
-from typing import Tuple, Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Tuple, Union
 
 from rapiduino.exceptions import AlreadyBoundPinError
 from rapiduino.globals.common import INPUT, LOW
 
 if TYPE_CHECKING:
-    from rapiduino.devices import Arduino
     from rapiduino.components.base import BaseComponent
+    from rapiduino.devices import Arduino
 
 
 class Pin:

@@ -1,28 +1,17 @@
 from dataclasses import dataclass
-from typing import Tuple, Optional, Union, Callable, Any
+from typing import Any, Callable, Optional, Tuple, Union
 
+from rapiduino import GlobalParameter
+from rapiduino.commands import (CMD_ANALOGREAD, CMD_ANALOGWRITE,
+                                CMD_DIGITALREAD, CMD_DIGITALWRITE, CMD_PARROT,
+                                CMD_PINMODE, CMD_POLL, CMD_VERSION)
+from rapiduino.communication import SerialConnection
 from rapiduino.components.base import BaseComponent
 from rapiduino.components.basic import TxRx
-from rapiduino.commands import (
-    CMD_POLL,
-    CMD_PARROT,
-    CMD_VERSION,
-    CMD_PINMODE,
-    CMD_DIGITALREAD,
-    CMD_ANALOGREAD,
-    CMD_DIGITALWRITE,
-    CMD_ANALOGWRITE,
-)
-from rapiduino.exceptions import (
-    NotAnalogPinError,
-    NotPwmPinError,
-    ProtectedPinError,
-    PinError,
-)
+from rapiduino.exceptions import (NotAnalogPinError, NotPwmPinError, PinError,
+                                  ProtectedPinError)
+from rapiduino.globals.common import HIGH, INPUT, INPUT_PULLUP, LOW, OUTPUT
 from rapiduino.pin import Pin
-from rapiduino.communication import SerialConnection
-from rapiduino.globals.common import INPUT, OUTPUT, INPUT_PULLUP, LOW, HIGH
-from rapiduino import GlobalParameter
 
 
 def enable_pin_protection(func: Callable) -> Callable:

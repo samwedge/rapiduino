@@ -1,5 +1,5 @@
 import abc
-from typing import Tuple, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Tuple
 
 from rapiduino import GlobalParameter
 from rapiduino.exceptions import NoDeviceBoundError

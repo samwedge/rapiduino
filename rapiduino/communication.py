@@ -1,14 +1,12 @@
 import struct
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 from serial import Serial, SerialException
 
 from rapiduino import CommandSpec
-from rapiduino.exceptions import (
-    NotConnectedSerialConnectionError,
-    SerialConnectionSendDataError,
-    ReceiveDataSerialConnectionError,
-)
+from rapiduino.exceptions import (NotConnectedSerialConnectionError,
+                                  ReceiveDataSerialConnectionError,
+                                  SerialConnectionSendDataError)
 
 
 class SerialConnection:

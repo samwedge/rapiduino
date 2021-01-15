@@ -1,6 +1,6 @@
-from rapiduino.pin import Pin
-from rapiduino.globals.common import HIGH, LOW, OUTPUT
 from rapiduino.components.base import BaseComponent
+from rapiduino.globals.common import HIGH, LOW, OUTPUT
+from rapiduino.pin import Pin
 
 
 class TxRx(BaseComponent):

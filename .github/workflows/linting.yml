@@ -28,3 +28,5 @@ jobs:
       run: poetry run flake8 rapiduino
     - name: Check code formatting using Black
       run: poetry run black --check --diff --color rapiduino
+    - name: Check code formatting using isort
+      run: poetry run isort --check --diff --color rapiduino

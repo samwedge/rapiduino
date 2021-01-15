@@ -20,8 +20,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install
-#    - name: Generate test coverage report
-#      run: poetry run coverage run --source=rapiduino -m pytest tests
+    - name: Generate test coverage report
+      run: poetry run coverage run --source=rapiduino -m pytest tests
+    - name: List dir contents for debug)
+      run: ls
     - name: Submit test coverage report
       env:
         COVERALLS_SERVICE_NAME: github

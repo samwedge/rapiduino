@@ -1,4 +1,4 @@
-name: Build and Test
+name: Test
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
 
 jobs:
 
-  build-and-test:
-    name: Test and lint
+  test:
+    name: Test against Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -26,29 +26,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install poetry
         poetry install
-    - name: Run tests
+    - name: Generate test coverage report
+      run: poetry run coverage run --source=rapiduino -m pytest tests
+    - name: Run tests and publish coverage
       run: poetry run pytest tests
+    - name: Submit test coverage report
+      if: matrix.python-version == '3.9'
+      uses: AndreMiras/coveralls-python-action@develop
     - name: Run type checking
       run: poetry run mypy rapiduino
     - name: Run linting
       run: poetry run flake8 rapiduino
-
-  submit-coverage:
-    name: Submit test coverage
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install
-      - name: Generate test coverage report
-        run: poetry run coverage run --source=rapiduino -m pytest tests
-      - name: Submit test coverage report
-        uses: AndreMiras/coveralls-python-action@develop

@@ -24,8 +24,29 @@ jobs:
       run: poetry run coverage run --source=rapiduino -m pytest tests
     - name: List dir contents for debug)
       run: ls -a
+#    - name: Submit test coverage report
+#      env:
+#        COVERALLS_SERVICE_NAME: github
+#        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+#      run: poetry run coveralls
     - name: Submit test coverage report
-      env:
-        COVERALLS_SERVICE_NAME: github
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: poetry run coveralls
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        # The `GITHUB_TOKEN` or `COVERALLS_REPO_TOKEN`.
+        # Default: ${{ github.token }}
+#        github-token: ''
+        # Set to `true` if you are using parallel jobs, then use `parallel-finished: true` for the last action.
+        # Default: false
+#        parallel: ''
+        # Set to `true` for the last action when using `parallel: true`.
+        # Default: false
+#        parallel-finished: ''
+        # A name to identify the current job. This is useful in combination with `parallel: true`.
+        # Default: null
+#        flag-name: ''
+        # A sub-directory in which coverage was executed.
+        # Default: '.'
+#        base-path: ''
+        # Set to true to increase logger verbosity.
+        # Default: false
+        debug: true

@@ -32,9 +32,7 @@ class SerialConnection:
     def process_command(self, command: CommandSpec, *args: int) -> Tuple[int, ...]:
         for arg in args:
             if type(arg) != int:
-                raise TypeError(
-                    f"Expected args to be int, but received {type(arg)}"
-                )
+                raise TypeError(f"Expected args to be int, but received {type(arg)}")
         if len(args) != command.tx_len:
             raise ValueError(
                 f"Expected args to be length {command.tx_len}, but received length {len(args)}"
@@ -47,9 +45,7 @@ class SerialConnection:
     def _send(self, cmd_spec: CommandSpec, data: Tuple[int, ...]) -> None:
         if self.conn:
             bytes_to_send = struct.pack(
-                f"B{cmd_spec.tx_len}{cmd_spec.tx_type}",
-                cmd_spec.cmd,
-                *data
+                f"B{cmd_spec.tx_len}{cmd_spec.tx_type}", cmd_spec.cmd, *data
             )
             n_bytes_written = self.conn.write(bytes_to_send)
             if n_bytes_written != (len(data) + 1):
@@ -64,8 +60,6 @@ class SerialConnection:
             bytes_read = self.conn.read(cmd_spec.rx_len)
             if len(bytes_read) != cmd_spec.rx_len:
                 raise ReceiveDataSerialConnectionError()
-            return struct.unpack(
-                "{}{}".format(cmd_spec.rx_len, cmd_spec.rx_type), bytes_read
-            )
+            return struct.unpack(f"{cmd_spec.rx_len}{cmd_spec.rx_type}", bytes_read)
         else:
             raise NotConnectedSerialConnectionError()

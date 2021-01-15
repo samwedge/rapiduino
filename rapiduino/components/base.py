@@ -18,14 +18,14 @@ class BaseComponent(metaclass=abc.ABCMeta):
         pass
 
     @property
-    def pins(self) -> Tuple['Pin', ...]:
+    def pins(self) -> Tuple["Pin", ...]:
         return self._pins
 
     @property
-    def bound_device(self) -> Optional['Arduino']:
+    def bound_device(self) -> Optional["Arduino"]:
         return self._bound_device
 
-    def bind_to_device(self, device: 'Arduino') -> None:
+    def bind_to_device(self, device: "Arduino") -> None:
         self._bound_device = device
         self._setup()
 

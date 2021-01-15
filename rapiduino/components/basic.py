@@ -12,11 +12,8 @@ class TxRx(BaseComponent):
 
 
 class LED(BaseComponent):
-
     def __init__(self) -> None:
-        self._pins = (
-            Pin(0),
-        )
+        self._pins = (Pin(0),)
 
     def _setup(self) -> None:
         self._pin_mode(self.pins[0].bound_pin_num, OUTPUT)  # type: ignore
@@ -40,9 +37,7 @@ class DimmableLED(LED):
     def __init__(self) -> None:
         super(DimmableLED, self).__init__()
 
-        self._pins = (
-            Pin(0, pwm=True),
-        )
+        self._pins = (Pin(0, pwm=True),)
 
     def set_brightness(self, brightness: int) -> None:
         self._analog_write(self.pins[0].bound_pin_num, brightness)  # type: ignore

@@ -3,9 +3,22 @@ from typing import Tuple, Optional, Union, Callable, Any
 
 from rapiduino.components.base import BaseComponent
 from rapiduino.components.basic import TxRx
-from rapiduino.commands import (CMD_POLL, CMD_PARROT, CMD_VERSION, CMD_PINMODE, CMD_DIGITALREAD, CMD_ANALOGREAD,
-                                CMD_DIGITALWRITE, CMD_ANALOGWRITE)
-from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError, ProtectedPinError, PinError
+from rapiduino.commands import (
+    CMD_POLL,
+    CMD_PARROT,
+    CMD_VERSION,
+    CMD_PINMODE,
+    CMD_DIGITALREAD,
+    CMD_ANALOGREAD,
+    CMD_DIGITALWRITE,
+    CMD_ANALOGWRITE,
+)
+from rapiduino.exceptions import (
+    NotAnalogPinError,
+    NotPwmPinError,
+    ProtectedPinError,
+    PinError,
+)
 from rapiduino.pin import Pin
 from rapiduino.communication import SerialConnection
 from rapiduino.globals.common import INPUT, OUTPUT, INPUT_PULLUP, LOW, HIGH
@@ -13,10 +26,13 @@ from rapiduino import GlobalParameter
 
 
 def enable_pin_protection(func: Callable) -> Callable:
-    def return_function(self: 'Arduino', pin_no: int, *args: int, **kwargs: bool) -> Any:
-        if not kwargs.get('force', False):
+    def return_function(
+        self: "Arduino", pin_no: int, *args: int, **kwargs: bool
+    ) -> Any:
+        if not kwargs.get("force", False):
             self._assert_pin_not_protected(pin_no)
         return func(self, pin_no, *args)
+
     return return_function
 
 
@@ -127,18 +143,25 @@ def _get_mega2560_pins() -> Tuple[Pin, ...]:
 
 
 class Arduino:
-
-    def __init__(self, pins: Tuple[Pin, ...], port: Optional[str], tx_pin_num: int, rx_pin_num: int) -> None:
+    def __init__(
+        self,
+        pins: Tuple[Pin, ...],
+        port: Optional[str],
+        tx_pin_num: int,
+        rx_pin_num: int,
+    ) -> None:
         self._pins = pins
         self.connection = SerialConnection.build(port)
-        self.bind_component(TxRx(), (PinMapping(rx_pin_num, 0), PinMapping(tx_pin_num, 1)))
+        self.bind_component(
+            TxRx(), (PinMapping(rx_pin_num, 0), PinMapping(tx_pin_num, 1))
+        )
 
     @classmethod
-    def uno(cls, port: Optional[str] = None) -> 'Arduino':
+    def uno(cls, port: Optional[str] = None) -> "Arduino":
         return cls(_get_uno_pins(), port, tx_pin_num=1, rx_pin_num=0)
 
     @classmethod
-    def mega2560(cls, port: Optional[str] = None) -> 'Arduino':
+    def mega2560(cls, port: Optional[str] = None) -> "Arduino":
         return cls(_get_mega2560_pins(), port, tx_pin_num=1, rx_pin_num=0)
 
     def poll(self) -> int:
@@ -184,7 +207,9 @@ class Arduino:
         self._assert_pwm_pin(pin_no)
         self.connection.process_command(CMD_ANALOGWRITE, pin_no, value)
 
-    def bind_component(self, component: BaseComponent, pin_mappings: Tuple[PinMapping, ...]) -> None:
+    def bind_component(
+        self, component: BaseComponent, pin_mappings: Tuple[PinMapping, ...]
+    ) -> None:
         try:
             for pin_mapping in pin_mappings:
                 device_pin_no = pin_mapping.device_pin_no
@@ -205,7 +230,9 @@ class Arduino:
             component_pin.unbind()
         component.unbind_to_device()
 
-    def _undo_bind_component(self, component: BaseComponent, pin_mappings: Tuple[PinMapping, ...]) -> None:
+    def _undo_bind_component(
+        self, component: BaseComponent, pin_mappings: Tuple[PinMapping, ...]
+    ) -> None:
         for pin_mapping in pin_mappings:
             device_pin_no = pin_mapping.device_pin_no
             component_pin_no = pin_mapping.component_pin_no
@@ -218,49 +245,75 @@ class Arduino:
     @staticmethod
     def _assert_pins_compatible(device_pin: Pin, component_pin: Pin) -> None:
         if component_pin.is_analog and not device_pin.is_analog:
-            raise NotAnalogPinError('Component pin requires a Device pin with analog attribute')
+            raise NotAnalogPinError(
+                "Component pin requires a Device pin with analog attribute"
+            )
         if component_pin.is_pwm and not device_pin.is_pwm:
-            raise NotPwmPinError('Component pin requires a Device pin with pwm attribute')
+            raise NotPwmPinError(
+                "Component pin requires a Device pin with pwm attribute"
+            )
 
     def _assert_valid_pin_number(self, pin_no: int) -> None:
         if (pin_no >= len(self.pins)) or (pin_no < 0):
-            raise IndexError('Specified pin number {} is outside pin range of {}'.format(pin_no, len(self.pins)))
+            raise IndexError(
+                "Specified pin number {} is outside pin range of {}".format(
+                    pin_no, len(self.pins)
+                )
+            )
 
     def _assert_analog_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_analog:
-            raise NotAnalogPinError('cannot complete operation as analog=False for pin {}'.format(pin_no))
+            raise NotAnalogPinError(
+                "cannot complete operation as analog=False for pin {}".format(pin_no)
+            )
 
     def _assert_pwm_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_pwm:
-            raise NotPwmPinError('cannot complete operation as pwm=False for pin {}'.format(pin_no))
+            raise NotPwmPinError(
+                "cannot complete operation as pwm=False for pin {}".format(pin_no)
+            )
 
     def _assert_pin_not_protected(self, pin_no: int) -> None:
         if self.pins[pin_no].is_bound():
-            raise ProtectedPinError('cannot complete operation as pin {} is protected'.format(pin_no))
+            raise ProtectedPinError(
+                "cannot complete operation as pin {} is protected".format(pin_no)
+            )
 
     @staticmethod
     def _assert_valid_analog_write_range(value: int) -> None:
         if not isinstance(value, int):
-            raise TypeError('Expected analog value type to be int, but found {}'.format(type(value)))
+            raise TypeError(
+                "Expected analog value type to be int, but found {}".format(type(value))
+            )
         if (value < 0) or (value > 255):
-            raise ValueError('Specified analog value {} is outside valid range 0 to 255'.format(value))
+            raise ValueError(
+                "Specified analog value {} is outside valid range 0 to 255".format(
+                    value
+                )
+            )
 
     @staticmethod
     def _assert_valid_pin_mode(mode: GlobalParameter) -> None:
         if not isinstance(mode, GlobalParameter):
-            raise TypeError('Expected GlobalParameter but received type {}'.format(type(mode)))
+            raise TypeError(
+                "Expected GlobalParameter but received type {}".format(type(mode))
+            )
         if mode not in [INPUT, OUTPUT, INPUT_PULLUP]:
             raise ValueError(
-                'pin_mode must be INPUT, OUTPUT or INPUT_PULLUP but {} was found'.format(mode.name)
+                "pin_mode must be INPUT, OUTPUT or INPUT_PULLUP but {} was found".format(
+                    mode.name
+                )
             )
 
     @staticmethod
     def _assert_valid_pin_state(state: GlobalParameter) -> None:
         if not isinstance(state, GlobalParameter):
-            raise TypeError('Expected GlobalParameter but received type {}'.format(type(state)))
+            raise TypeError(
+                "Expected GlobalParameter but received type {}".format(type(state))
+            )
         if state not in [HIGH, LOW]:
             raise ValueError(
-                'pin_state must be HIGH or LOW but {} was found'.format(state.name)
+                "pin_state must be HIGH or LOW but {} was found".format(state.name)
             )
 
     @property

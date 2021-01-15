@@ -35,7 +35,8 @@ class SerialConnection:
                 raise TypeError(f"Expected args to be int, but received {type(arg)}")
         if len(args) != command.tx_len:
             raise ValueError(
-                f"Expected args to be length {command.tx_len}, but received length {len(args)}"
+                f"Expected args to be length {command.tx_len},"
+                f"but received length {len(args)}"
             )
 
         self._send(command, args)

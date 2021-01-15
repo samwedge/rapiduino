@@ -256,7 +256,8 @@ class Arduino:
     def _assert_valid_pin_number(self, pin_no: int) -> None:
         if (pin_no >= len(self.pins)) or (pin_no < 0):
             raise IndexError(
-                f"Specified pin number {pin_no} is outside pin range of {len(self.pins)}"
+                f"Specified pin number {pin_no} is outside"
+                f"pin range of {len(self.pins)}"
             )
 
     def _assert_analog_pin(self, pin_no: int) -> None:
@@ -294,7 +295,8 @@ class Arduino:
             raise TypeError(f"Expected GlobalParameter but received type {type(mode)}")
         if mode not in [INPUT, OUTPUT, INPUT_PULLUP]:
             raise ValueError(
-                f"pin_mode must be INPUT, OUTPUT or INPUT_PULLUP but {mode.name} was found"
+                f"pin_mode must be INPUT, OUTPUT orINPUT_PULLUP"
+                f"but {mode.name} was found"
             )
 
     @staticmethod

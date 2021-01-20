@@ -77,7 +77,7 @@ def test_pin_mode_with_pin_no_out_of_range(test_arduino: Arduino) -> None:
 
 def test_pin_mode_with_incorrect_mode(test_arduino: Arduino) -> None:
     with pytest.raises(ValueError):
-        test_arduino.pin_mode(0, HIGH)
+        test_arduino.pin_mode(0, HIGH)  # type: ignore
 
 
 def test_digital_read_with_valid_args_high(test_arduino: Arduino) -> None:
@@ -101,7 +101,7 @@ def test_digital_write_with_valid_args(test_arduino: Arduino) -> None:
 
 def test_digital_write_with_incorrect_state(test_arduino: Arduino) -> None:
     with pytest.raises(ValueError):
-        test_arduino.digital_write(0, INPUT)
+        test_arduino.digital_write(0, INPUT)  # type: ignore
 
 
 def test_digital_write_with_pin_no_out_of_range(test_arduino: Arduino) -> None:

@@ -1,6 +1,5 @@
 from typing import Optional, Tuple, Type
 
-from rapiduino import GlobalParameter
 from rapiduino.boards.pins import Pin, get_mega2560_pins, get_uno_pins
 from rapiduino.communication.command_spec import (
     CMD_ANALOGREAD,
@@ -14,7 +13,15 @@ from rapiduino.communication.command_spec import (
 )
 from rapiduino.communication.serial import SerialConnection
 from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError
-from rapiduino.globals.common import HIGH, INPUT, INPUT_PULLUP, LOW, OUTPUT
+from rapiduino.globals.common import (
+    HIGH,
+    INPUT,
+    INPUT_PULLUP,
+    LOW,
+    OUTPUT,
+    PinMode,
+    PinState,
+)
 
 
 class Arduino:
@@ -52,12 +59,12 @@ class Arduino:
     def version(self) -> Tuple[int, ...]:
         return self.connection.process_command(CMD_VERSION)
 
-    def pin_mode(self, pin_no: int, mode: GlobalParameter) -> None:
+    def pin_mode(self, pin_no: int, mode: PinMode) -> None:
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_mode(mode)
         self.connection.process_command(CMD_PINMODE, pin_no, mode.value)
 
-    def digital_read(self, pin_no: int) -> GlobalParameter:
+    def digital_read(self, pin_no: int) -> PinState:
         self._assert_valid_pin_number(pin_no)
         state = self.connection.process_command(CMD_DIGITALREAD, pin_no)
         if state[0] == 1:
@@ -65,7 +72,7 @@ class Arduino:
         else:
             return LOW
 
-    def digital_write(self, pin_no: int, state: GlobalParameter) -> None:
+    def digital_write(self, pin_no: int, state: PinState) -> None:
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_state(state)
         self.connection.process_command(CMD_DIGITALWRITE, pin_no, state.value)
@@ -108,7 +115,7 @@ class Arduino:
             )
 
     @staticmethod
-    def _assert_valid_pin_mode(mode: GlobalParameter) -> None:
+    def _assert_valid_pin_mode(mode: PinMode) -> None:
         if mode not in [INPUT, OUTPUT, INPUT_PULLUP]:
             raise ValueError(
                 f"pin_mode must be INPUT, OUTPUT or INPUT_PULLUP"
@@ -116,7 +123,7 @@ class Arduino:
             )
 
     @staticmethod
-    def _assert_valid_pin_state(state: GlobalParameter) -> None:
+    def _assert_valid_pin_state(state: PinState) -> None:
         if state not in [HIGH, LOW]:
             raise ValueError(
                 f"pin_state must be HIGH or LOW but {state.name} was found"

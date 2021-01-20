@@ -28,3 +28,15 @@ class NotAnalogPinError(PinError):
 
 class NotPwmPinError(PinError):
     pass
+
+
+class PinAlreadyRegisteredError(RapiduinoError):
+    pass
+
+
+class ComponentAlreadyRegisteredError(RapiduinoError):
+    pass
+
+
+class PinDoesNotExistError(RapiduinoError):
+    pass

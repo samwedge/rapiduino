@@ -19,7 +19,14 @@ from rapiduino.communication.command_spec import (
     CommandSpec,
 )
 from rapiduino.communication.serial import SerialConnection
-from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError
+from rapiduino.components import BaseComponent
+from rapiduino.exceptions import (
+    ComponentAlreadyRegisteredError,
+    NotAnalogPinError,
+    NotPwmPinError,
+    PinAlreadyRegisteredError,
+    PinDoesNotExistError,
+)
 from rapiduino.globals.common import HIGH, INPUT, LOW, OUTPUT
 
 
@@ -47,10 +54,18 @@ def test_arduino() -> Arduino:
             raise ValueError(f"Mock Arduino does not know how to process {CommandSpec}")
         return data
 
-    pins = (Pin(0), Pin(1, is_analog=True), Pin(2, is_pwm=True))
+    pins = (Pin(0), Pin(1, is_analog=True), Pin(2, is_pwm=True), Pin(3))
     conn_class = Mock(spec=SerialConnection)
     conn_class.build.return_value.process_command.side_effect = dummy_process_command
     return Arduino(pins=pins, port=None, conn_class=conn_class)
+
+
+@pytest.fixture
+def test_component() -> BaseComponent:
+    class TestComponent(BaseComponent):
+        pass
+
+    return TestComponent()
 
 
 def test_poll(test_arduino: Arduino) -> None:
@@ -194,3 +209,26 @@ def test_all_analog_pins_have_an_alias_for_mega() -> None:
     analog_pins = [pin for pin in get_mega2560_pins() if pin.is_analog]
     for analog_alias_num, pin in enumerate(analog_pins):
         assert getattr(mega_analog_alias, f"A{analog_alias_num}") == pin.pin_id
+
+
+def test_pins_cannot_be_reused(
+    test_arduino: Arduino, test_component: BaseComponent
+) -> None:
+    test_arduino.register_component(test_component, pins=(0, 1))
+    with pytest.raises(PinAlreadyRegisteredError):
+        test_arduino.register_component(test_component, pins=(1, 2))
+
+
+def test_component_can_only_be_registered_once(
+    test_arduino: Arduino, test_component: BaseComponent
+) -> None:
+    test_arduino.register_component(test_component, pins=(0, 1))
+    with pytest.raises(ComponentAlreadyRegisteredError):
+        test_arduino.register_component(test_component, pins=(2, 3))
+
+
+def test_pins_must_exist_for_component_to_exist(
+    test_arduino: Arduino, test_component: BaseComponent
+) -> None:
+    with pytest.raises(PinDoesNotExistError):
+        test_arduino.register_component(test_component, pins=(4,))

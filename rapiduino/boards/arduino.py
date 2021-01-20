@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Type
+from typing import Dict, Optional, Tuple, Type
 
 from rapiduino.boards.pins import Pin, get_mega2560_pins, get_uno_pins
 from rapiduino.communication.command_spec import (
@@ -12,7 +12,14 @@ from rapiduino.communication.command_spec import (
     CMD_VERSION,
 )
 from rapiduino.communication.serial import SerialConnection
-from rapiduino.exceptions import NotAnalogPinError, NotPwmPinError
+from rapiduino.components import BaseComponent
+from rapiduino.exceptions import (
+    ComponentAlreadyRegisteredError,
+    NotAnalogPinError,
+    NotPwmPinError,
+    PinAlreadyRegisteredError,
+    PinDoesNotExistError,
+)
 from rapiduino.globals.common import (
     HIGH,
     INPUT,
@@ -33,6 +40,7 @@ class Arduino:
     ) -> None:
         self._pins = pins
         self.connection = conn_class.build(port)
+        self.pin_register: Dict[int, BaseComponent] = {}
 
     @classmethod
     def uno(
@@ -49,6 +57,10 @@ class Arduino:
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> "Arduino":
         return cls(get_mega2560_pins(), port, conn_class)
+
+    @property
+    def pins(self) -> Tuple[Pin, ...]:
+        return self._pins
 
     def poll(self) -> int:
         return self.connection.process_command(CMD_POLL)[0]
@@ -87,6 +99,21 @@ class Arduino:
         self._assert_valid_analog_write_range(value)
         self._assert_pwm_pin(pin_no)
         self.connection.process_command(CMD_ANALOGWRITE, pin_no, value)
+
+    def register_component(
+        self, component: BaseComponent, pins: Tuple[int, ...]
+    ) -> None:
+        for pin in pins:
+            if pin in self.pin_register:
+                raise PinAlreadyRegisteredError(
+                    f"Pin {pin} is already registered on this board"
+                )
+            if pin >= len(self._pins):
+                raise PinDoesNotExistError(f"Pin {pin} does not exist on this board")
+        if component in self.pin_register.values():
+            raise ComponentAlreadyRegisteredError
+        for pin in pins:
+            self.pin_register[pin] = component
 
     def _assert_valid_pin_number(self, pin_no: int) -> None:
         if (pin_no >= len(self.pins)) or (pin_no < 0):
@@ -128,7 +155,3 @@ class Arduino:
             raise ValueError(
                 f"pin_state must be HIGH or LOW but {state.name} was found"
             )
-
-    @property
-    def pins(self) -> Tuple[Pin, ...]:
-        return self._pins

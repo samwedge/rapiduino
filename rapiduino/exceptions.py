@@ -28,15 +28,3 @@ class NotAnalogPinError(PinError):
 
 class NotPwmPinError(PinError):
     pass
-
-
-class ProtectedPinError(PinError):
-    pass
-
-
-class AlreadyBoundPinError(PinError):
-    pass
-
-
-class NoDeviceBoundError(RapiduinoError):
-    pass

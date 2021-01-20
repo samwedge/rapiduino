@@ -112,15 +112,9 @@ To install Rapiuino for development:
 
 To run tests:
 
-`poetry run pytest tests`
+`make test` will run all testing, linting, type checking and coverage reporting
 
-Type checking:
-
-`poetry run mypy rapiduino`
-
-Linting:
-
-`poetry run flake8 rapiduino`
+`make fix` will auto-fix any issues found by `isort` and `mypy`
 
 
 ## Licence

@@ -1,15 +1,14 @@
-__all__ = [
-    "CMD_POLL",
-    "CMD_PARROT",
-    "CMD_VERSION",
-    "CMD_PINMODE",
-    "CMD_DIGITALREAD",
-    "CMD_DIGITALWRITE",
-    "CMD_ANALOGREAD",
-    "CMD_ANALOGWRITE",
-]
+from dataclasses import dataclass
 
-from rapiduino import CommandSpec
+
+@dataclass
+class CommandSpec:
+    cmd: int
+    tx_len: int
+    tx_type: str
+    rx_len: int
+    rx_type: str
+
 
 CMD_POLL = CommandSpec(cmd=0, tx_len=0, tx_type="B", rx_len=1, rx_type="B")
 CMD_PARROT = CommandSpec(cmd=1, tx_len=1, tx_type="B", rx_len=1, rx_type="B")

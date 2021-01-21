@@ -6,4 +6,6 @@ env
 __pycache__
 *.pyc
 .coverage
+htmlcov
 .mypy_cache
+.DS_Store

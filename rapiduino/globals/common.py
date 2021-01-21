@@ -1,10 +1,23 @@
 __all__ = ["LOW", "HIGH", "INPUT", "OUTPUT", "INPUT_PULLUP"]
 
-from rapiduino import GlobalParameter
+from dataclasses import dataclass
 
-LOW = GlobalParameter("LOW", 0)
-HIGH = GlobalParameter("HIGH", 1)
 
-INPUT = GlobalParameter("INPUT", 0)
-OUTPUT = GlobalParameter("OUTPUT", 1)
-INPUT_PULLUP = GlobalParameter("INPUT_PULLUP", 2)
+@dataclass(frozen=True)
+class PinMode:
+    name: str
+    value: int
+
+
+@dataclass(frozen=True)
+class PinState:
+    name: str
+    value: int
+
+
+LOW = PinState("LOW", 0)
+HIGH = PinState("HIGH", 1)
+
+INPUT = PinMode("INPUT", 0)
+OUTPUT = PinMode("OUTPUT", 1)
+INPUT_PULLUP = PinMode("INPUT_PULLUP", 2)

@@ -6,27 +6,15 @@ class SerialConnectionSendDataError(RapiduinoError):
     pass
 
 
-class SerialConnectionError(RapiduinoError):
+class ReceiveDataSerialConnectionError(RapiduinoError):
     pass
 
 
-class ReceiveDataSerialConnectionError(SerialConnectionError):
+class NotAnalogPinError(RapiduinoError):
     pass
 
 
-class NotConnectedSerialConnectionError(SerialConnectionError):
-    pass
-
-
-class PinError(RapiduinoError):
-    pass
-
-
-class NotAnalogPinError(PinError):
-    pass
-
-
-class NotPwmPinError(PinError):
+class NotPwmPinError(RapiduinoError):
     pass
 
 
@@ -39,4 +27,8 @@ class ComponentAlreadyRegisteredError(RapiduinoError):
 
 
 class PinDoesNotExistError(RapiduinoError):
+    pass
+
+
+class ProtectedPinError(RapiduinoError):
     pass

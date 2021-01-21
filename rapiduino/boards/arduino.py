@@ -12,13 +12,13 @@ from rapiduino.communication.command_spec import (
     CMD_VERSION,
 )
 from rapiduino.communication.serial import SerialConnection
-from rapiduino.components import BaseComponent
 from rapiduino.exceptions import (
     ComponentAlreadyRegisteredError,
     NotAnalogPinError,
     NotPwmPinError,
     PinAlreadyRegisteredError,
     PinDoesNotExistError,
+    ProtectedPinError,
 )
 from rapiduino.globals.common import (
     HIGH,
@@ -40,7 +40,7 @@ class Arduino:
     ) -> None:
         self._pins = pins
         self.connection = conn_class.build(port)
-        self.pin_register: Dict[int, BaseComponent] = {}
+        self.pin_register: Dict[int, str] = {}
 
     @classmethod
     def uno(
@@ -71,49 +71,69 @@ class Arduino:
     def version(self) -> Tuple[int, ...]:
         return self.connection.process_command(CMD_VERSION)
 
-    def pin_mode(self, pin_no: int, mode: PinMode) -> None:
+    def pin_mode(self, pin_no: int, mode: PinMode, token: Optional[str] = None) -> None:
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_mode(mode)
+        self._assert_pin_not_protected(pin_no, token)
         self.connection.process_command(CMD_PINMODE, pin_no, mode.value)
 
-    def digital_read(self, pin_no: int) -> PinState:
+    def digital_read(self, pin_no: int, token: Optional[str] = None) -> PinState:
         self._assert_valid_pin_number(pin_no)
+        self._assert_pin_not_protected(pin_no, token)
         state = self.connection.process_command(CMD_DIGITALREAD, pin_no)
         if state[0] == 1:
             return HIGH
         else:
             return LOW
 
-    def digital_write(self, pin_no: int, state: PinState) -> None:
+    def digital_write(
+        self, pin_no: int, state: PinState, token: Optional[str] = None
+    ) -> None:
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_pin_state(state)
+        self._assert_pin_not_protected(pin_no, token)
         self.connection.process_command(CMD_DIGITALWRITE, pin_no, state.value)
 
-    def analog_read(self, pin_no: int) -> int:
+    def analog_read(self, pin_no: int, token: Optional[str] = None) -> int:
         self._assert_valid_pin_number(pin_no)
         self._assert_analog_pin(pin_no)
+        self._assert_pin_not_protected(pin_no, token)
         return self.connection.process_command(CMD_ANALOGREAD, pin_no)[0]
 
-    def analog_write(self, pin_no: int, value: int) -> None:
+    def analog_write(
+        self, pin_no: int, value: int, token: Optional[str] = None
+    ) -> None:
         self._assert_valid_pin_number(pin_no)
         self._assert_valid_analog_write_range(value)
         self._assert_pwm_pin(pin_no)
+        self._assert_pin_not_protected(pin_no, token)
         self.connection.process_command(CMD_ANALOGWRITE, pin_no, value)
 
-    def register_component(
-        self, component: BaseComponent, pins: Tuple[int, ...]
+    def register_component(self, component_token: str, pins: Tuple[Pin, ...]) -> None:
+        self._assert_requested_pins_are_valid(component_token, pins)
+        for pin in pins:
+            self.pin_register[pin.pin_id] = component_token
+
+    def _assert_requested_pins_are_valid(
+        self, component_token: str, pins: Tuple[Pin, ...]
     ) -> None:
         for pin in pins:
-            if pin in self.pin_register:
+            if pin.pin_id in self.pin_register:
                 raise PinAlreadyRegisteredError(
-                    f"Pin {pin} is already registered on this board"
+                    f"Pin {pin.pin_id} is already registered on this board"
                 )
-            if pin >= len(self._pins):
-                raise PinDoesNotExistError(f"Pin {pin} does not exist on this board")
-        if component in self.pin_register.values():
+            if pin.pin_id >= len(self._pins):
+                raise PinDoesNotExistError(
+                    f"Pin {pin.pin_id} does not exist on this board"
+                )
+            if pin.is_analog and not self._pins[pin.pin_id].is_analog:
+                raise NotAnalogPinError(
+                    f"Component requires Pin {pin.pin_id} to be analog"
+                )
+            if pin.is_pwm and not self._pins[pin.pin_id].is_pwm:
+                raise NotPwmPinError(f"Component requires Pin {pin.pin_id} to be pwm")
+        if component_token in self.pin_register.values():
             raise ComponentAlreadyRegisteredError
-        for pin in pins:
-            self.pin_register[pin] = component
 
     def _assert_valid_pin_number(self, pin_no: int) -> None:
         if (pin_no >= len(self.pins)) or (pin_no < 0):
@@ -133,6 +153,19 @@ class Arduino:
             raise NotPwmPinError(
                 f"cannot complete operation as pwm=False for pin {pin_no}"
             )
+
+    def _assert_pin_not_protected(self, pin_no: int, token: Optional[str]) -> None:
+        if pin_no in self.pin_register and self.pin_register[pin_no] != token:
+            if token is None:
+                raise ProtectedPinError(
+                    "Cannot perform this operation because "
+                    "the pin is registered to a component"
+                )
+            else:
+                raise ProtectedPinError(
+                    "Cannot perform this operation because "
+                    "the pin is registered to a different component"
+                )
 
     @staticmethod
     def _assert_valid_analog_write_range(value: int) -> None:

@@ -26,14 +26,15 @@ By sending these commands from Python and not writing them directly on the Ardui
 
 Of course. Don't use this library if:
 * You are not able to run a computer alongside an Arduino (not even a Raspberry Pi) because of issues such as size, battery, operating conditions etc.
-* You need timing accuracy that Rapiduino does not yet support; For example, for an ultrasonic sensor where the connection lag could cause innacuracy
+* You need timing accuracy that Rapiduino does not yet support; For example, for an ultrasonic sensor where the connection
+  lag could cause inaccuracy (although there are workarounds for this for specific components)
 * Probably many others personal to your project...
 
 
 ## Status
 
 Rapiduino is in active development.
-It is ready to be used in simple projects, but there may be some major breaking changes and restructuring until it settles down
+It is ready to be used in simple projects, but there may be some breaking changes and restructuring until it settles down
 
 
 ## Installation
@@ -43,14 +44,16 @@ It is ready to be used in simple projects, but there may be some major breaking 
 
 ## Usage
 
-To use with an ArduinoUno, simply import the class and globals as follows
+To use with an ArduinoUno, simply import the class and globals as follows. Importing globals give you access to the same
+INPUT, OUTPUT, HIGH, LOW, A0, A1 etc. as when developing an Arduino sketch
 
-    from rapiduino.devices import ArduinoUno
     from rapiduino.globals.arduino_uno import *
+    from rapiduino.globals.common import *
+    from rapiduino.boards.arduino import Arduino
 
 Set up the class and serial connection with the following. The port to be passed in can be identified using the Arduino software
 
-    arduino = ArduinoUno('/dev/ttyACM0')
+    arduino = Arduino.uno('port_identifier')
     
 Then start using it! Here is a blinking LED example:
     
@@ -61,28 +64,18 @@ Then start using it! Here is a blinking LED example:
         arduino.digital_write(13, LOW)
         time.sleep(1)
         
-You can also use classes for components (such as LEDs, Servos etc.) which make using the Arduino easier and less error-prone.
-The components are "bound" to the Arduino along with a pin-mapping which tells the Arduino object which pin is connected
-to which component pin. As an example, the LED class has one pin which can be initialised and connected to the arduino
-as follows:
+You can also use classes for components (such as LEDs) which make using the Arduino easier and less error-prone.
+The components are "registered" to the Arduino along with a pin-mapping which tells the Arduino object which pins are connected
+to the component. Let's look at an example with an LED:
 
-    from rapiduino.components.basic import LED
-    from rapiduino.devices import PinMapping
-    led = LED()
-    bindings = [PinMapping(device_pin_no=13, component_pin_no=0)]
-    arduino.bind_component(led, bindings)
+    from rapiduino.components.led import LED
+    led = LED(arduino, 13)
     
-This creates an led object and binds it to the arduino. Binding it allows you to communicate with the led object, and let
-the led object talk to the arduino object. To bind an object, you need to specify bindings. This is basically a sequence of
-PinMappings to tell the arduino which pin is to be connected to each part of the component. In the case of the LED, there is
-only one pin to connect (Pin 0) which is connected to the arduino (Pin 13). Hence, the binding looks like:
+This creates an LED object and registers it to the arduino against pin 13. When binding, the code automatically
+takes care of checking compatibility, raising an error if there is a problem. For example, if you are trying to connect 
+a component that requires a PWM pin to a non-PWM pin, you will get a helpful message.
 
-    [PinMapping(device_pin_no=13, component_pin_no=0)]
-    
-When binding, the code automatically takes care of checking compatibility, raising an error if there is a problem. For
-example, if you are trying to connect a component that requires a PWM pin to a non-PWM pin, you will get a helpful message.
-
-Once the LED has been bound to the Arduino, you can re-write the blink example as:
+You can re-write the blink example as:
 
     while True:
         led.toggle()
@@ -92,8 +85,10 @@ The benefit of this is that you can use methods with familiar names such as:
 
     led.turn_on()
     led.turn_off()
+    led.toggle()
     
-You don't need to think of pin numbers, pin states or pin modes beyond the initial set-up.
+You don't need to think of pin states or pin modes when interacting with your components, and you don't need to keep
+track of which pin is connected to which component - rapiduino will do that for you.
 
 
 ## Contribution
@@ -104,7 +99,6 @@ Yes please! Code and/or suggestions are very welcome! Feel free to raise an issu
 ## Developing
 
 Rapiduino uses [poetry](https://python-poetry.org/docs/) to handle the installation.
-
 
 To install Rapiuino for development:
 

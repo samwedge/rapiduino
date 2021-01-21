@@ -19,13 +19,13 @@ from rapiduino.communication.command_spec import (
     CommandSpec,
 )
 from rapiduino.communication.serial import SerialConnection
-from rapiduino.components import BaseComponent
 from rapiduino.exceptions import (
     ComponentAlreadyRegisteredError,
     NotAnalogPinError,
     NotPwmPinError,
     PinAlreadyRegisteredError,
     PinDoesNotExistError,
+    ProtectedPinError,
 )
 from rapiduino.globals.common import HIGH, INPUT, LOW, OUTPUT
 
@@ -58,14 +58,6 @@ def test_arduino() -> Arduino:
     conn_class = Mock(spec=SerialConnection)
     conn_class.build.return_value.process_command.side_effect = dummy_process_command
     return Arduino(pins=pins, port=None, conn_class=conn_class)
-
-
-@pytest.fixture
-def test_component() -> BaseComponent:
-    class TestComponent(BaseComponent):
-        pass
-
-    return TestComponent()
 
 
 def test_poll(test_arduino: Arduino) -> None:
@@ -211,24 +203,104 @@ def test_all_analog_pins_have_an_alias_for_mega() -> None:
         assert getattr(mega_analog_alias, f"A{analog_alias_num}") == pin.pin_id
 
 
-def test_pins_cannot_be_reused(
-    test_arduino: Arduino, test_component: BaseComponent
-) -> None:
-    test_arduino.register_component(test_component, pins=(0, 1))
+def test_pins_cannot_be_reused(test_arduino: Arduino) -> None:
+    test_arduino.register_component("component_id_1", pins=(Pin(0), Pin(1)))
     with pytest.raises(PinAlreadyRegisteredError):
-        test_arduino.register_component(test_component, pins=(1, 2))
+        test_arduino.register_component("component_id_2", pins=(Pin(1), Pin(2)))
 
 
-def test_component_can_only_be_registered_once(
-    test_arduino: Arduino, test_component: BaseComponent
-) -> None:
-    test_arduino.register_component(test_component, pins=(0, 1))
+def test_component_can_only_be_registered_once(test_arduino: Arduino) -> None:
+    test_arduino.register_component("component_id_1", pins=(Pin(0), Pin(1)))
     with pytest.raises(ComponentAlreadyRegisteredError):
-        test_arduino.register_component(test_component, pins=(2, 3))
+        test_arduino.register_component("component_id_1", pins=(Pin(2), Pin(3)))
 
 
-def test_pins_must_exist_for_component_to_exist(
-    test_arduino: Arduino, test_component: BaseComponent
-) -> None:
+def test_pins_must_exist_for_component_to_exist(test_arduino: Arduino) -> None:
     with pytest.raises(PinDoesNotExistError):
-        test_arduino.register_component(test_component, pins=(4,))
+        test_arduino.register_component("component_id_1", pins=(Pin(4),))
+
+
+def test_pins_must_be_compatible_when_registering_a_pwm_pin(
+    test_arduino: Arduino,
+) -> None:
+    with pytest.raises(NotPwmPinError):
+        test_arduino.register_component("component_id_1", pins=(Pin(0, is_pwm=True),))
+
+
+def test_pins_must_be_compatible_when_registering_an_analog_pin(
+    test_arduino: Arduino,
+) -> None:
+    with pytest.raises(NotAnalogPinError):
+        test_arduino.register_component(
+            "component_id_1", pins=(Pin(0, is_analog=True),)
+        )
+
+
+def test_pin_mode_can_only_be_done_by_registered_component(
+    test_arduino: Arduino,
+) -> None:
+    test_arduino.pin_mode(0, INPUT)
+
+    test_arduino.register_component("component_id_1", pins=(Pin(0),))
+
+    test_arduino.pin_mode(0, INPUT, token="component_id_1")
+    with pytest.raises(ProtectedPinError):
+        test_arduino.pin_mode(0, INPUT)
+    with pytest.raises(ProtectedPinError):
+        test_arduino.pin_mode(0, INPUT, token="component_id_2")
+
+
+def test_digital_read_can_only_be_done_by_registered_component(
+    test_arduino: Arduino,
+) -> None:
+    test_arduino.digital_read(0)
+
+    test_arduino.register_component("component_id_1", pins=(Pin(0),))
+
+    test_arduino.digital_read(0, token="component_id_1")
+    with pytest.raises(ProtectedPinError):
+        test_arduino.digital_read(0)
+    with pytest.raises(ProtectedPinError):
+        test_arduino.digital_read(0, token="component_id_2")
+
+
+def test_digital_write_can_only_be_done_by_registered_component(
+    test_arduino: Arduino,
+) -> None:
+    test_arduino.digital_write(0, HIGH)
+
+    test_arduino.register_component("component_id_1", pins=(Pin(0),))
+
+    test_arduino.digital_write(0, HIGH, token="component_id_1")
+    with pytest.raises(ProtectedPinError):
+        test_arduino.digital_write(0, HIGH)
+    with pytest.raises(ProtectedPinError):
+        test_arduino.digital_write(0, HIGH, token="component_id_2")
+
+
+def test_analog_read_can_only_be_done_by_registered_component(
+    test_arduino: Arduino,
+) -> None:
+    test_arduino.analog_read(1)
+
+    test_arduino.register_component("component_id_1", pins=(Pin(1),))
+
+    test_arduino.analog_read(1, token="component_id_1")
+    with pytest.raises(ProtectedPinError):
+        test_arduino.analog_read(1)
+    with pytest.raises(ProtectedPinError):
+        test_arduino.analog_read(1, token="component_id_2")
+
+
+def test_analog_write_can_only_be_done_by_registered_component(
+    test_arduino: Arduino,
+) -> None:
+    test_arduino.analog_write(2, 0)
+
+    test_arduino.register_component("component_id_1", pins=(Pin(2),))
+
+    test_arduino.analog_write(2, 1, token="component_id_1")
+    with pytest.raises(ProtectedPinError):
+        test_arduino.analog_write(2, 1)
+    with pytest.raises(ProtectedPinError):
+        test_arduino.analog_write(2, 1, token="component_id_2")

@@ -1,0 +1,14 @@
+site_name: Rapiduino
+theme:
+  name: 'material'
+  logo: images/r-logo.png
+  favicon: images/r-logo.png
+pages:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Supported boards: suppoted_boards.md
+repo_name: 'rapiduino'
+repo_url: 'https://github.com/samwedge/rapiduino'
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences

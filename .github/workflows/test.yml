@@ -7,7 +7,6 @@ on:
     branches: [ master ]
 
 jobs:
-
   test:
     name: Test against Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
@@ -16,26 +15,26 @@ jobs:
       matrix:
         python-version: [ 3.6, 3.7, 3.8, 3.9 ]
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry install
-    - name: Run tests and generate test coverage report
-      run: poetry run coverage run --source=rapiduino -m pytest tests
-    - name: Submit test coverage report
-      if: matrix.python-version == '3.9'
-      uses: AndreMiras/coveralls-python-action@develop
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - name: Run tests and generate test coverage report
+        run: poetry run coverage run --source=rapiduino -m pytest tests
+      - name: Submit test coverage report
+        if: matrix.python-version == '3.9'
+        uses: AndreMiras/coveralls-python-action@develop
 
   lint:
-      name: Linting
-      runs-on: ubuntu-latest
-      steps:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2

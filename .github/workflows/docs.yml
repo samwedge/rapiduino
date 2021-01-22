@@ -1,0 +1,17 @@
+name: Docs
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  docs:
+    name: "Deploy docs"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Deploy docs to gh-pages branch"
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          CONFIG_FILE: mkdocs.yml
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

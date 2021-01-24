@@ -108,7 +108,7 @@ To run tests:
 
 `make test` will run all testing, linting, type checking and coverage reporting
 
-`make fix` will auto-fix any issues found by `isort` and `mypy`
+`make fix` will auto-fix any issues found by `isort` and `black`
 
 
 ## Licence

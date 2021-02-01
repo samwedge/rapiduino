@@ -19,7 +19,8 @@ class NotPwmPinError(RapiduinoError):
 
 
 class PinAlreadyRegisteredError(RapiduinoError):
-    """The specified pin cannot be registered because it has been registered to a different component"""
+    """The specified pin cannot be registered because it has been registered to a
+    different component"""
 
 
 class ComponentAlreadyRegisteredError(RapiduinoError):
@@ -31,4 +32,5 @@ class PinDoesNotExistError(RapiduinoError):
 
 
 class ProtectedPinError(RapiduinoError):
-    """The action cannot be completed because the specified pin is registered to a component"""
+    """The action cannot be completed because the specified pin is registered to a
+    component"""

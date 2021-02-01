@@ -46,8 +46,7 @@ jobs:
           pip install poetry
           poetry install
       - name: Run type checking using Mypy
-        # mypy 0.790 bug means it isn't recursive if dir isn't a python package
-        run: poetry run mypy rapiduino tests/test_boards tests/test_communication tests/test_components
+        run: poetry run mypy rapiduino tests
       - name: Run linting using Flake8
         run: poetry run flake8 rapiduino tests
       - name: Check code formatting using Black

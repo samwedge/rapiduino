@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from rapiduino.boards.arduino import Arduino
 from rapiduino.boards.pins import Pin
 from rapiduino.components import BaseComponent
@@ -5,22 +7,24 @@ from rapiduino.globals.common import HIGH, LOW, OUTPUT
 
 
 class LED(BaseComponent):
-    def __init__(self, board: Arduino, anode_pin_no: int) -> None:
-        self.board = board
-        self.pin_no = anode_pin_no
-        self._register_component(board, (Pin(anode_pin_no),))
-        board.pin_mode(self.pin_no, OUTPUT)
+    @classmethod
+    def create(cls, board: Arduino, anode_pin_no: int) -> LED:
+        pins = (Pin(anode_pin_no),)
+        return cls(board, pins)
+
+    def _setup(self) -> None:
+        self._pin_mode(self._pins[0].pin_id, OUTPUT)
         self.turn_off()
 
     def is_on(self) -> bool:
-        state = self.board.digital_read(self.pin_no)
+        state = self._digital_read(self._pins[0].pin_id)
         return state == HIGH
 
     def turn_on(self) -> None:
-        self.board.digital_write(self.pin_no, HIGH)
+        self._digital_write(self._pins[0].pin_id, HIGH)
 
     def turn_off(self) -> None:
-        self.board.digital_write(self.pin_no, LOW)
+        self._digital_write(self._pins[0].pin_id, LOW)
 
     def toggle(self) -> None:
         self.turn_off() if self.is_on() else self.turn_on()

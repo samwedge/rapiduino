@@ -18,7 +18,7 @@ def arduino() -> Mock:
 
 @pytest.fixture
 def led(arduino: Arduino) -> LED:
-    return LED(arduino, PIN_NUM)
+    return LED.create(arduino, PIN_NUM)
 
 
 def test_setup(arduino: Mock, led: LED) -> None:

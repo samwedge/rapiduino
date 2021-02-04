@@ -1,6 +1,6 @@
 from rapiduino.boards.arduino import Arduino
 from rapiduino.boards.pins import Pin
-from rapiduino.components import BaseComponent
+from rapiduino.components.base import BaseComponent
 from rapiduino.globals.common import HIGH, LOW, OUTPUT
 
 

@@ -304,3 +304,11 @@ def test_analog_write_can_only_be_done_by_registered_component(
         test_arduino.analog_write(2, 1)
     with pytest.raises(ProtectedPinError):
         test_arduino.analog_write(2, 1, token="component_id_2")
+
+
+def test_component_can_be_re_registered_after_being_deregistered(
+    test_arduino: Arduino,
+) -> None:
+    test_arduino.register_component("component_id_1", pins=(Pin(0), Pin(1)))
+    test_arduino.deregister_component("component_id_1")
+    test_arduino.register_component("component_id_1", pins=(Pin(2), Pin(3)))

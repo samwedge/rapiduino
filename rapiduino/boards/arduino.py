@@ -114,6 +114,13 @@ class Arduino:
         for pin in pins:
             self.pin_register[pin.pin_id] = component_token
 
+    def deregister_component(self, component_token: str) -> None:
+        keys_to_delete = [
+            k for k, v in self.pin_register.items() if v == component_token
+        ]
+        for key in keys_to_delete:
+            del self.pin_register[key]
+
     def _assert_requested_pins_are_valid(
         self, component_token: str, pins: Tuple[Pin, ...]
     ) -> None:

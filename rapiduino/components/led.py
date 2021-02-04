@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from rapiduino.boards.arduino import Arduino
 from rapiduino.boards.pins import Pin
 from rapiduino.components import BaseComponent
@@ -8,9 +6,11 @@ from rapiduino.globals.common import HIGH, LOW, OUTPUT
 
 class LED(BaseComponent):
     @classmethod
-    def create(cls, board: Arduino, anode_pin_no: int) -> LED:
+    def create(cls, board: Arduino, anode_pin_no: int) -> "LED":
         pins = (Pin(anode_pin_no),)
-        return cls(board, pins)
+        led = cls(board, pins)
+        led.connect()
+        return led
 
     def _setup(self) -> None:
         self._pin_mode(self._pins[0].pin_id, OUTPUT)

@@ -50,7 +50,10 @@ def dummy_component(arduino: Arduino) -> DummyComponent:
     )
 
 
-def test_component_runs_setup(serial: Mock, dummy_component: DummyComponent) -> None:
+def test_component_connect_runs_setup(
+    serial: Mock, dummy_component: DummyComponent
+) -> None:
+    dummy_component.connect()
     calls = serial.build.return_value.process_command.call_args_list
     expected_calls = [
         call(CMD_PINMODE, DIGITAL_PIN_NUM, INPUT.value),
@@ -60,3 +63,20 @@ def test_component_runs_setup(serial: Mock, dummy_component: DummyComponent) -> 
         call(CMD_ANALOGWRITE, PWM_PIN_NUM, ANALOG_WRITE_VALUE),
     ]
     assert calls == expected_calls
+
+
+def test_component_connect_registers_component(
+    dummy_component: DummyComponent, arduino: Arduino
+) -> None:
+    dummy_component.connect()
+
+    assert len(set(arduino.pin_register.values())) == 1
+
+
+def test_component_disconnect_deregisters_component(
+    serial: Mock, dummy_component: DummyComponent, arduino: Arduino
+) -> None:
+    dummy_component.connect()
+    dummy_component.disconnect()
+
+    assert len(arduino.pin_register.values()) == 0

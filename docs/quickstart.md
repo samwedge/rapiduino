@@ -40,7 +40,7 @@ to the component. Let's look at an example with an LED:
 
 ```python
 from rapiduino.components.led import LED
-led = LED(arduino, 13)
+led = LED.create(arduino, 13)
 ```
 
 This creates an LED object and registers it to the arduino against pin 13. When binding, the code automatically
@@ -65,4 +65,3 @@ led.toggle()
     
 You don't need to think of pin states or pin modes when interacting with your components, and you don't need to keep
 track of which pin is connected to which component - rapiduino will do that for you.
-

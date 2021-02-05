@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rapiduino"
-version = "1.1.0"
+version = "1.2.0"
 description = "Rapidly develop code to control an Arduino using Python"
 authors = ["Sam Wedge <sam.wedge@gmail.com>"]
 license = "Apache-2.0"

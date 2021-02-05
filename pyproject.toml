@@ -7,7 +7,7 @@ license = "Apache-2.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.6"
 pyserial = "^3.5"
 dataclasses = {version = "^0.8", python = "~3.6"}
 

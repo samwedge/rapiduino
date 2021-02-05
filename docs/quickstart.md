@@ -40,7 +40,7 @@ to the component. Let's look at an example with an LED:
 
 ```python
 from rapiduino.components.led import LED
-led = LED.create(arduino, 13)
+led = LED(arduino, 13)
 ```
 
 This creates an LED object and registers it to the arduino against pin 13. When binding, the code automatically

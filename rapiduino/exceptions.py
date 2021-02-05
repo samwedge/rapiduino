@@ -34,3 +34,13 @@ class PinDoesNotExistError(RapiduinoError):
 class ProtectedPinError(RapiduinoError):
     """The action cannot be completed because the specified pin is registered to a
     component"""
+
+
+class ComponentNotRegisteredWithArduinoError(RapiduinoError):
+    """Action cannot be performed because the component is not registered to an
+    Arduino"""
+
+
+class ComponentAlreadyRegisteredWithArduinoError(RapiduinoError):
+    """Action cannot be performed because the component is already registered
+    to an Arduino"""

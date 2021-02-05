@@ -5,12 +5,10 @@ from rapiduino.globals.common import HIGH, LOW, OUTPUT
 
 
 class LED(BaseComponent):
-    @classmethod
-    def create(cls, board: Arduino, anode_pin_no: int) -> "LED":
-        pins = (Pin(anode_pin_no),)
-        led = cls(board, pins)
-        led.connect()
-        return led
+    def __init__(self, board: Arduino, anode_pin_no: int) -> None:
+        self.set_pins(Pin(pin_id=anode_pin_no))
+        self.set_board(board)
+        self.connect()
 
     def _setup(self) -> None:
         self._pin_mode(self._pins[0].pin_id, OUTPUT)

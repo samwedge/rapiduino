@@ -31,6 +31,10 @@ class PinDoesNotExistError(RapiduinoError):
     """You have specified a pin that does not exist on this board"""
 
 
+class PinIsReservedForSerialCommsError(RapiduinoError):
+    """This pin is reserved for serial comms and cannot be used for any other purpose"""
+
+
 class ProtectedPinError(RapiduinoError):
     """The action cannot be completed because the specified pin is registered to a
     component"""

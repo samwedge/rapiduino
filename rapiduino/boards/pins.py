@@ -7,12 +7,13 @@ class Pin:
     pin_id: int
     is_pwm: int = False
     is_analog: bool = False
+    is_reserved: bool = False
 
 
 def get_uno_pins() -> Tuple[Pin, ...]:
     return (
-        Pin(0),
-        Pin(1),
+        Pin(0, is_reserved=True),
+        Pin(1, is_reserved=True),
         Pin(2),
         Pin(3, is_pwm=True),
         Pin(4),
@@ -36,8 +37,8 @@ def get_uno_pins() -> Tuple[Pin, ...]:
 
 def get_mega2560_pins() -> Tuple[Pin, ...]:
     return (
-        Pin(0),
-        Pin(1),
+        Pin(0, is_reserved=True),
+        Pin(1, is_reserved=True),
         Pin(2, is_pwm=True),
         Pin(3, is_pwm=True),
         Pin(4, is_pwm=True),

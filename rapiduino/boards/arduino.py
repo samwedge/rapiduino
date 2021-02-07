@@ -18,6 +18,7 @@ from rapiduino.exceptions import (
     NotPwmPinError,
     PinAlreadyRegisteredError,
     PinDoesNotExistError,
+    PinIsReservedForSerialCommsError,
     ProtectedPinError,
 )
 from rapiduino.globals.common import (
@@ -73,12 +74,14 @@ class Arduino:
 
     def pin_mode(self, pin_no: int, mode: PinMode, token: Optional[str] = None) -> None:
         self._assert_valid_pin_number(pin_no)
+        self._assert_pin_not_reserved(pin_no)
         self._assert_valid_pin_mode(mode)
         self._assert_pin_not_protected(pin_no, token)
         self.connection.process_command(CMD_PINMODE, pin_no, mode.value)
 
     def digital_read(self, pin_no: int, token: Optional[str] = None) -> PinState:
         self._assert_valid_pin_number(pin_no)
+        self._assert_pin_not_reserved(pin_no)
         self._assert_pin_not_protected(pin_no, token)
         state = self.connection.process_command(CMD_DIGITALREAD, pin_no)
         if state[0] == 1:
@@ -90,12 +93,14 @@ class Arduino:
         self, pin_no: int, state: PinState, token: Optional[str] = None
     ) -> None:
         self._assert_valid_pin_number(pin_no)
+        self._assert_pin_not_reserved(pin_no)
         self._assert_valid_pin_state(state)
         self._assert_pin_not_protected(pin_no, token)
         self.connection.process_command(CMD_DIGITALWRITE, pin_no, state.value)
 
     def analog_read(self, pin_no: int, token: Optional[str] = None) -> int:
         self._assert_valid_pin_number(pin_no)
+        self._assert_pin_not_reserved(pin_no)
         self._assert_analog_pin(pin_no)
         self._assert_pin_not_protected(pin_no, token)
         return self.connection.process_command(CMD_ANALOGREAD, pin_no)[0]
@@ -104,6 +109,7 @@ class Arduino:
         self, pin_no: int, value: int, token: Optional[str] = None
     ) -> None:
         self._assert_valid_pin_number(pin_no)
+        self._assert_pin_not_reserved(pin_no)
         self._assert_valid_analog_write_range(value)
         self._assert_pwm_pin(pin_no)
         self._assert_pin_not_protected(pin_no, token)
@@ -139,12 +145,13 @@ class Arduino:
                 )
             if pin.is_pwm and not self._pins[pin.pin_id].is_pwm:
                 raise NotPwmPinError(f"Component requires Pin {pin.pin_id} to be pwm")
+            self._assert_pin_not_reserved(pin.pin_id)
         if component_token in self.pin_register.values():
             raise ComponentAlreadyRegisteredError
 
     def _assert_valid_pin_number(self, pin_no: int) -> None:
         if (pin_no >= len(self.pins)) or (pin_no < 0):
-            raise IndexError(
+            raise PinDoesNotExistError(
                 f"Specified pin number {pin_no} is outside"
                 f"pin range of {len(self.pins)}"
             )
@@ -159,6 +166,12 @@ class Arduino:
         if not self.pins[pin_no].is_pwm:
             raise NotPwmPinError(
                 f"cannot complete operation as pwm=False for pin {pin_no}"
+            )
+
+    def _assert_pin_not_reserved(self, pin_no: int) -> None:
+        if self.pins[pin_no].is_reserved:
+            raise PinIsReservedForSerialCommsError(
+                f"Pin {pin_no} is reserved for serial comms"
             )
 
     def _assert_pin_not_protected(self, pin_no: int, token: Optional[str]) -> None:

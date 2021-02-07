@@ -4,22 +4,24 @@ from rapiduino.boards.pins import Pin
 
 
 @pytest.fixture
-def digital_pin() -> Pin:
+def default_pin() -> Pin:
     return Pin(0)
 
 
 @pytest.fixture
-def analog_pwm_pin() -> Pin:
-    return Pin(0, is_pwm=True, is_analog=True)
+def non_default_pin() -> Pin:
+    return Pin(0, is_pwm=True, is_analog=True, is_reserved=True)
 
 
-def test_defaults(digital_pin: Pin) -> None:
-    assert digital_pin.pin_id == 0
-    assert digital_pin.is_pwm is False
-    assert digital_pin.is_analog is False
+def test_defaults(default_pin: Pin) -> None:
+    assert default_pin.pin_id == 0
+    assert default_pin.is_pwm is False
+    assert default_pin.is_analog is False
+    assert default_pin.is_reserved is False
 
 
-def test_pin_default_overrides(analog_pwm_pin: Pin) -> None:
-    assert analog_pwm_pin.pin_id == 0
-    assert analog_pwm_pin.is_pwm is True
-    assert analog_pwm_pin.is_analog is True
+def test_pin_default_overrides(non_default_pin: Pin) -> None:
+    assert non_default_pin.pin_id == 0
+    assert non_default_pin.is_pwm is True
+    assert non_default_pin.is_analog is True
+    assert non_default_pin.is_reserved is True

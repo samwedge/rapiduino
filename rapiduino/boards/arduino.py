@@ -37,11 +37,14 @@ class Arduino:
         self,
         pins: Tuple[Pin, ...],
         port: str,
+        rx_pin: int = 0,
+        tx_pin: int = 1,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> None:
         self._pins = pins
         self.connection = conn_class.build(port)
         self.pin_register: Dict[int, str] = {}
+        self.reserved_pin_nums = (rx_pin, tx_pin)
 
     @classmethod
     def uno(
@@ -49,7 +52,7 @@ class Arduino:
         port: str,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> "Arduino":
-        return cls(get_uno_pins(), port, conn_class)
+        return cls(get_uno_pins(), port, conn_class=conn_class)
 
     @classmethod
     def nano(
@@ -57,7 +60,7 @@ class Arduino:
         port: str,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> "Arduino":
-        return cls(get_nano_pins(), port, conn_class)
+        return cls(get_nano_pins(), port, conn_class=conn_class)
 
     @classmethod
     def mega(
@@ -65,7 +68,7 @@ class Arduino:
         port: str,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> "Arduino":
-        return cls(get_mega_pins(), port, conn_class)
+        return cls(get_mega_pins(), port, conn_class=conn_class)
 
     @property
     def pins(self) -> Tuple[Pin, ...]:
@@ -164,7 +167,7 @@ class Arduino:
             raise NotPwmPinError(pin_no)
 
     def _assert_pin_not_reserved(self, pin_no: int) -> None:
-        if self.pins[pin_no].is_reserved:
+        if pin_no in self.reserved_pin_nums:
             raise PinIsReservedForSerialCommsError(pin_no)
 
     def _assert_pin_not_protected(self, pin_no: int, token: Optional[str]) -> None:

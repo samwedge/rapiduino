@@ -61,11 +61,12 @@ def test_arduino() -> Arduino:
         Pin(1, is_analog=True),
         Pin(2, is_pwm=True),
         Pin(3),
-        Pin(4, is_reserved=True),
+        Pin(4),
+        Pin(5),
     )
     conn_class = Mock(spec=SerialConnection)
     conn_class.build.return_value.process_command.side_effect = dummy_process_command
-    return Arduino(pins=pins, port="", conn_class=conn_class)
+    return Arduino(pins=pins, port="", conn_class=conn_class, rx_pin=4, tx_pin=5)
 
 
 def test_poll(test_arduino: Arduino) -> None:
@@ -87,7 +88,7 @@ def test_pin_mode_with_valid_args(test_arduino: Arduino) -> None:
 
 def test_pin_mode_with_pin_no_out_of_range(test_arduino: Arduino) -> None:
     with pytest.raises(PinDoesNotExistError):
-        test_arduino.pin_mode(5, OUTPUT)
+        test_arduino.pin_mode(6, OUTPUT)
 
 
 def test_pin_mode_with_incorrect_mode(test_arduino: Arduino) -> None:
@@ -112,7 +113,7 @@ def test_digital_read_with_valid_args_low(test_arduino: Arduino) -> None:
 
 def test_digital_read_with_pin_no_out_of_range(test_arduino: Arduino) -> None:
     with pytest.raises(PinDoesNotExistError):
-        test_arduino.digital_read(5)
+        test_arduino.digital_read(6)
 
 
 def test_digital_read_with_reserved_pin(test_arduino: Arduino) -> None:
@@ -131,7 +132,7 @@ def test_digital_write_with_incorrect_state(test_arduino: Arduino) -> None:
 
 def test_digital_write_with_pin_no_out_of_range(test_arduino: Arduino) -> None:
     with pytest.raises(PinDoesNotExistError):
-        test_arduino.digital_write(5, HIGH)
+        test_arduino.digital_write(6, HIGH)
 
 
 def test_digital_write_with_reserved_pin(test_arduino: Arduino) -> None:
@@ -151,7 +152,7 @@ def test_analog_read_with_non_analog_pin(test_arduino: Arduino) -> None:
 
 def test_analog_read_with_pin_no_out_of_range(test_arduino: Arduino) -> None:
     with pytest.raises(PinDoesNotExistError):
-        test_arduino.analog_read(5)
+        test_arduino.analog_read(6)
 
 
 def test_analog_read_with_reserved_pin(test_arduino: Arduino) -> None:
@@ -170,7 +171,7 @@ def test_analog_write_with_non_pwm_pin(test_arduino: Arduino) -> None:
 
 def test_analog_write_with_pin_no_out_of_range(test_arduino: Arduino) -> None:
     with pytest.raises(PinDoesNotExistError):
-        test_arduino.analog_write(5, 0)
+        test_arduino.analog_write(6, 0)
 
 
 def test_analog_write_with_value_too_high(test_arduino: Arduino) -> None:
@@ -249,6 +250,21 @@ def test_all_analog_pins_have_an_alias(
         assert getattr(analog_alias, f"A{analog_alias_num}") == pin.pin_id
 
 
+@pytest.mark.parametrize(
+    "arduino",
+    [
+        pytest.param(Arduino.uno(port="", conn_class=Mock())),
+        pytest.param(Arduino.nano(port="", conn_class=Mock())),
+        pytest.param(Arduino.mega(port="", conn_class=Mock())),
+    ],
+)
+def test_serial_comms_pins_cannot_be_used(arduino: Arduino) -> None:
+    with pytest.raises(PinIsReservedForSerialCommsError):
+        arduino.digital_write(0, HIGH)
+    with pytest.raises(PinIsReservedForSerialCommsError):
+        arduino.digital_write(1, HIGH)
+
+
 def test_pins_cannot_be_reused(test_arduino: Arduino) -> None:
     test_arduino.register_component("component_id_1", pins=(Pin(0), Pin(1)))
     with pytest.raises(PinAlreadyRegisteredError):
@@ -268,7 +284,7 @@ def test_component_can_only_be_registered_once(test_arduino: Arduino) -> None:
 
 def test_pins_must_exist_for_component_to_exist(test_arduino: Arduino) -> None:
     with pytest.raises(PinDoesNotExistError):
-        test_arduino.register_component("component_id_1", pins=(Pin(5),))
+        test_arduino.register_component("component_id_1", pins=(Pin(6),))
 
 
 def test_pins_must_be_compatible_when_registering_a_pwm_pin(

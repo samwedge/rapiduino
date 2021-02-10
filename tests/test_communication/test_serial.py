@@ -7,7 +7,7 @@ from serial import Serial
 from rapiduino.communication.command_spec import CMD_DIGITALWRITE, CMD_VERSION
 from rapiduino.communication.serial import SerialConnection
 from rapiduino.exceptions import (
-    ReceiveDataSerialConnectionError,
+    SerialConnectionReceiveDataError,
     SerialConnectionSendDataError,
 )
 
@@ -71,5 +71,5 @@ def test_process_command_with_invalid_number_of_bytes_return_from_recv() -> None
 
     serial_connection = SerialConnection(mock_serial)
 
-    with pytest.raises(ReceiveDataSerialConnectionError):
+    with pytest.raises(SerialConnectionReceiveDataError):
         serial_connection.process_command(CMD_VERSION)

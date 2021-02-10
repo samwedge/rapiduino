@@ -20,9 +20,7 @@ class BaseComponent(ABC):
 
     def connect(self) -> None:
         if self.__board is not None and self.__pins is not None:
-            raise ComponentAlreadyRegisteredWithArduinoError(
-                "Device is already registered to an Arduino"
-            )
+            raise ComponentAlreadyRegisteredWithArduinoError
         self.__token = uuid.uuid4().hex
         self.__board = self._board
         self.__pins = self._pins
@@ -31,9 +29,7 @@ class BaseComponent(ABC):
 
     def disconnect(self) -> None:
         if self.__token is None:
-            raise ComponentNotRegisteredWithArduinoError(
-                "Device must be registered to an Arduino"
-            )
+            raise ComponentNotRegisteredWithArduinoError
         self._board.deregister_component(self.__token)
         self.__token = None
 
@@ -45,37 +41,27 @@ class BaseComponent(ABC):
 
     def _pin_mode(self, pin_no: int, mode: PinMode) -> None:
         if self.__board is None or self.__pins is None:
-            raise ComponentNotRegisteredWithArduinoError(
-                "Device must be registered to an Arduino"
-            )
+            raise ComponentNotRegisteredWithArduinoError
         self.__board.pin_mode(pin_no, mode, self.__token)
 
     def _digital_read(self, pin_no: int) -> PinState:
         if self.__board is None or self.__pins is None:
-            raise ComponentNotRegisteredWithArduinoError(
-                "Device must be registered to an Arduino"
-            )
+            raise ComponentNotRegisteredWithArduinoError
         return self.__board.digital_read(pin_no, self.__token)
 
     def _digital_write(self, pin_no: int, state: PinState) -> None:
         if self.__board is None or self.__pins is None:
-            raise ComponentNotRegisteredWithArduinoError(
-                "Device must be registered to an Arduino"
-            )
+            raise ComponentNotRegisteredWithArduinoError
         self.__board.digital_write(pin_no, state, self.__token)
 
     def _analog_read(self, pin_no: int) -> int:
         if self.__board is None or self.__pins is None:
-            raise ComponentNotRegisteredWithArduinoError(
-                "Device must be registered to an Arduino"
-            )
+            raise ComponentNotRegisteredWithArduinoError
         return self.__board.analog_read(pin_no, self.__token)
 
     def _analog_write(self, pin_no: int, value: int) -> None:
         if self.__board is None or self.__pins is None:
-            raise ComponentNotRegisteredWithArduinoError(
-                "Device must be registered to an Arduino"
-            )
+            raise ComponentNotRegisteredWithArduinoError
         self.__board.analog_write(pin_no, value, self.__token)
 
     @abstractmethod

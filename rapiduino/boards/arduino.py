@@ -132,60 +132,36 @@ class Arduino:
     ) -> None:
         for pin in pins:
             if pin.pin_id in self.pin_register:
-                raise PinAlreadyRegisteredError(
-                    f"Pin {pin.pin_id} is already registered on this board"
-                )
+                raise PinAlreadyRegisteredError(pin.pin_id)
             if pin.pin_id >= len(self._pins):
-                raise PinDoesNotExistError(
-                    f"Pin {pin.pin_id} does not exist on this board"
-                )
+                self._assert_valid_pin_number(pin.pin_id)
             if pin.is_analog and not self._pins[pin.pin_id].is_analog:
-                raise NotAnalogPinError(
-                    f"Component requires Pin {pin.pin_id} to be analog"
-                )
+                raise NotAnalogPinError(pin.pin_id)
             if pin.is_pwm and not self._pins[pin.pin_id].is_pwm:
-                raise NotPwmPinError(f"Component requires Pin {pin.pin_id} to be pwm")
+                raise NotPwmPinError(pin.pin_id)
             self._assert_pin_not_reserved(pin.pin_id)
         if component_token in self.pin_register.values():
             raise ComponentAlreadyRegisteredError
 
     def _assert_valid_pin_number(self, pin_no: int) -> None:
         if (pin_no >= len(self.pins)) or (pin_no < 0):
-            raise PinDoesNotExistError(
-                f"Specified pin number {pin_no} is outside"
-                f"pin range of {len(self.pins)}"
-            )
+            raise PinDoesNotExistError(pin_no)
 
     def _assert_analog_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_analog:
-            raise NotAnalogPinError(
-                f"cannot complete operation as analog=False for pin {pin_no}"
-            )
+            raise NotAnalogPinError(pin_no)
 
     def _assert_pwm_pin(self, pin_no: int) -> None:
         if not self.pins[pin_no].is_pwm:
-            raise NotPwmPinError(
-                f"cannot complete operation as pwm=False for pin {pin_no}"
-            )
+            raise NotPwmPinError(pin_no)
 
     def _assert_pin_not_reserved(self, pin_no: int) -> None:
         if self.pins[pin_no].is_reserved:
-            raise PinIsReservedForSerialCommsError(
-                f"Pin {pin_no} is reserved for serial comms"
-            )
+            raise PinIsReservedForSerialCommsError(pin_no)
 
     def _assert_pin_not_protected(self, pin_no: int, token: Optional[str]) -> None:
         if pin_no in self.pin_register and self.pin_register[pin_no] != token:
-            if token is None:
-                raise ProtectedPinError(
-                    "Cannot perform this operation because "
-                    "the pin is registered to a component"
-                )
-            else:
-                raise ProtectedPinError(
-                    "Cannot perform this operation because "
-                    "the pin is registered to a different component"
-                )
+            raise ProtectedPinError(token)
 
     @staticmethod
     def _assert_valid_analog_write_range(value: int) -> None:

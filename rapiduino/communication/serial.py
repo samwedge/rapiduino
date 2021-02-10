@@ -5,7 +5,7 @@ from serial import Serial
 
 from rapiduino.communication.command_spec import CommandSpec
 from rapiduino.exceptions import (
-    ReceiveDataSerialConnectionError,
+    SerialConnectionReceiveDataError,
     SerialConnectionSendDataError,
 )
 
@@ -37,10 +37,9 @@ class SerialConnection:
             f"B{cmd_spec.tx_len}{cmd_spec.tx_type}", cmd_spec.cmd, *data
         )
         n_bytes_written = self.conn.write(bytes_to_send)
-        if n_bytes_written != (len(data) + 1):
+        if n_bytes_written != len(bytes_to_send):
             raise SerialConnectionSendDataError(
-                f"Transmitted {len(data) + 1} bytes "
-                f"but Serial reported {n_bytes_written} bytes received"
+                n_bytes_intended=len(bytes_to_send), n_bytes_actual=n_bytes_written
             )
 
     def _recv(self, cmd_spec: CommandSpec) -> Tuple[int, ...]:
@@ -48,5 +47,8 @@ class SerialConnection:
             return ()
         bytes_read = self.conn.read(cmd_spec.rx_len)
         if len(bytes_read) != cmd_spec.rx_len:
-            raise ReceiveDataSerialConnectionError()
+            raise SerialConnectionReceiveDataError(
+                n_bytes_intended=cmd_spec.rx_len,
+                n_bytes_actual=len(bytes_read),
+            )
         return struct.unpack(f"{cmd_spec.rx_len}{cmd_spec.rx_type}", bytes_read)

@@ -12,3 +12,6 @@ fix:
 	poetry run black tests
 	poetry run isort rapiduino
 	poetry run isort tests
+
+find-port:
+	ls -d /dev/* | grep 'cu.usbserial\|cu.usbmodem\|ttyUSB\|ttyACM' || echo "No port found"

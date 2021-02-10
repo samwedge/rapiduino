@@ -65,7 +65,7 @@ def test_arduino() -> Arduino:
     )
     conn_class = Mock(spec=SerialConnection)
     conn_class.build.return_value.process_command.side_effect = dummy_process_command
-    return Arduino(pins=pins, port=None, conn_class=conn_class)
+    return Arduino(pins=pins, port="", conn_class=conn_class)
 
 
 def test_poll(test_arduino: Arduino) -> None:
@@ -206,9 +206,9 @@ def test_mega_pin_ids_are_sequential() -> None:
 @pytest.mark.parametrize(
     "arduino,expected_pins",
     [
-        pytest.param(Arduino.uno(), get_uno_pins()),
-        pytest.param(Arduino.nano(), get_nano_pins()),
-        pytest.param(Arduino.mega(), get_mega_pins()),
+        pytest.param(Arduino.uno(port="", conn_class=Mock()), get_uno_pins()),
+        pytest.param(Arduino.nano(port="", conn_class=Mock()), get_nano_pins()),
+        pytest.param(Arduino.mega(port="", conn_class=Mock()), get_mega_pins()),
     ],
 )
 def test_classmethods_set_correct_pins(

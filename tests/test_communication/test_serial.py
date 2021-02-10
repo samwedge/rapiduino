@@ -1,5 +1,5 @@
 import struct
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 from serial import Serial
@@ -26,9 +26,16 @@ CMD_VERSION_RX_DATA = (1, 2, 3)
 CMD_VERSION_RX_BYTES = struct.pack("BBB", *CMD_VERSION_RX_DATA)
 
 
-# def test_close_when_connection_open(serial_connection: SerialConnection) -> None:
-#     serial_connection.close()
-#     serial_connection.close.assert_called_once_with()
+@patch("rapiduino.communication.serial.Serial")
+def test_builder_sets_defaults(mock_serial: Mock) -> None:
+    SerialConnection.build("port")
+    mock_serial.assert_called_once_with("port", baudrate=115200, timeout=1)
+
+
+@patch("rapiduino.communication.serial.Serial")
+def test_builder_sets_overridden_values(mock_serial: Mock) -> None:
+    SerialConnection.build("port", baudrate=123, timeout=321)
+    mock_serial.assert_called_once_with("port", baudrate=123, timeout=321)
 
 
 def test_process_command_with_valid_command_returning_bytes() -> None:

@@ -1,5 +1,5 @@
 import struct
-from typing import Optional, Tuple
+from typing import Tuple
 
 from serial import Serial
 
@@ -16,7 +16,7 @@ class SerialConnection:
 
     @classmethod
     def build(
-        cls, port: Optional[str], baudrate: int = 115200, timeout: int = 1
+        cls, port: str, baudrate: int = 115200, timeout: int = 1
     ) -> "SerialConnection":
         conn = Serial(port, baudrate=baudrate, timeout=timeout)
         return cls(conn)

@@ -36,7 +36,7 @@ class Arduino:
     def __init__(
         self,
         pins: Tuple[Pin, ...],
-        port: Optional[str],
+        port: str,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> None:
         self._pins = pins
@@ -46,7 +46,7 @@ class Arduino:
     @classmethod
     def uno(
         cls,
-        port: Optional[str] = None,
+        port: str,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> "Arduino":
         return cls(get_uno_pins(), port, conn_class)
@@ -54,7 +54,7 @@ class Arduino:
     @classmethod
     def nano(
         cls,
-        port: Optional[str] = None,
+        port: str,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> "Arduino":
         return cls(get_nano_pins(), port, conn_class)
@@ -62,7 +62,7 @@ class Arduino:
     @classmethod
     def mega(
         cls,
-        port: Optional[str] = None,
+        port: str,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> "Arduino":
         return cls(get_mega_pins(), port, conn_class)

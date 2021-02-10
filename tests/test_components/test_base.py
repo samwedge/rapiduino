@@ -12,7 +12,7 @@ from rapiduino.communication.command_spec import (
     CMD_PINMODE,
 )
 from rapiduino.communication.serial import SerialConnection
-from rapiduino.components.base import BaseComponent
+from rapiduino.components.base_component import BaseComponent
 from rapiduino.exceptions import (
     ComponentAlreadyRegisteredWithArduinoError,
     ComponentNotRegisteredWithArduinoError,

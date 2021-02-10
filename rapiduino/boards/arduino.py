@@ -1,6 +1,6 @@
 from typing import Dict, Optional, Tuple, Type
 
-from rapiduino.boards.pins import Pin, get_mega2560_pins, get_uno_pins
+from rapiduino.boards.pins import Pin, get_mega_pins, get_nano_pins, get_uno_pins
 from rapiduino.communication.command_spec import (
     CMD_ANALOGREAD,
     CMD_ANALOGWRITE,
@@ -52,12 +52,20 @@ class Arduino:
         return cls(get_uno_pins(), port, conn_class)
 
     @classmethod
-    def mega2560(
+    def nano(
         cls,
         port: Optional[str] = None,
         conn_class: Type[SerialConnection] = SerialConnection,
     ) -> "Arduino":
-        return cls(get_mega2560_pins(), port, conn_class)
+        return cls(get_nano_pins(), port, conn_class)
+
+    @classmethod
+    def mega(
+        cls,
+        port: Optional[str] = None,
+        conn_class: Type[SerialConnection] = SerialConnection,
+    ) -> "Arduino":
+        return cls(get_mega_pins(), port, conn_class)
 
     @property
     def pins(self) -> Tuple[Pin, ...]:

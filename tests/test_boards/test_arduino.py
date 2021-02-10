@@ -1,12 +1,13 @@
-from typing import Tuple
+from typing import Any, Tuple
 from unittest.mock import Mock
 
 import pytest
 
-import rapiduino.globals.arduino_mega_2560 as mega_analog_alias
+import rapiduino.globals.arduino_mega as mega_analog_alias
+import rapiduino.globals.arduino_nano as nano_analog_alias
 import rapiduino.globals.arduino_uno as uno_analog_alias
 from rapiduino.boards.arduino import Arduino
-from rapiduino.boards.pins import Pin, get_mega2560_pins, get_uno_pins
+from rapiduino.boards.pins import Pin, get_mega_pins, get_nano_pins, get_uno_pins
 from rapiduino.communication.command_spec import (
     CMD_ANALOGREAD,
     CMD_ANALOGWRITE,
@@ -187,52 +188,65 @@ def test_analog_write_with_reserved_pin(test_arduino: Arduino) -> None:
         test_arduino.analog_write(4, 100)
 
 
+def test_nano_pin_ids_are_sequential() -> None:
+    for pin_no, pin in enumerate(get_nano_pins()):
+        assert pin_no == pin.pin_id
+
+
 def test_uno_pin_ids_are_sequential() -> None:
     for pin_no, pin in enumerate(get_uno_pins()):
         assert pin_no == pin.pin_id
 
 
 def test_mega_pin_ids_are_sequential() -> None:
-    for pin_no, pin in enumerate(get_mega2560_pins()):
+    for pin_no, pin in enumerate(get_mega_pins()):
         assert pin_no == pin.pin_id
 
 
-def test_uno_classmethod_sets_correct_pins() -> None:
-    arduino = Arduino.uno()
-    assert arduino.pins == get_uno_pins()
+@pytest.mark.parametrize(
+    "arduino,expected_pins",
+    [
+        pytest.param(Arduino.uno(), get_uno_pins()),
+        pytest.param(Arduino.nano(), get_nano_pins()),
+        pytest.param(Arduino.mega(), get_mega_pins()),
+    ],
+)
+def test_classmethods_set_correct_pins(
+    arduino: Arduino, expected_pins: Tuple[Pin, ...]
+) -> None:
+    assert arduino.pins == expected_pins
 
 
-def test_mega_classmethod_sets_correct_pins() -> None:
-    arduino = Arduino.mega2560()
-    assert arduino.pins == get_mega2560_pins()
-
-
-def test_analog_alias_globals_refer_to_analog_pins_for_uno() -> None:
-    analog_pins = [v for k, v in uno_analog_alias.__dict__.items() if k.startswith("A")]
-    pins = get_uno_pins()
+@pytest.mark.parametrize(
+    "analog_alias,pins",
+    [
+        pytest.param(uno_analog_alias, get_uno_pins()),
+        pytest.param(nano_analog_alias, get_nano_pins()),
+        pytest.param(mega_analog_alias, get_mega_pins()),
+    ],
+)
+def test_analog_alias_globals_refer_to_analog_pins(
+    analog_alias: Any, pins: Tuple[Pin, ...]
+) -> None:
+    analog_pins = [v for k, v in analog_alias.__dict__.items() if k.startswith("A")]
     for pin_alias in analog_pins:
         assert pins[pin_alias].is_analog
 
 
-def test_all_analog_pins_have_an_alias_for_uno() -> None:
-    analog_pins = [pin for pin in get_uno_pins() if pin.is_analog]
+@pytest.mark.parametrize(
+    "analog_alias,pins",
+    [
+        pytest.param(uno_analog_alias, get_uno_pins()),
+        pytest.param(nano_analog_alias, get_nano_pins()),
+        pytest.param(mega_analog_alias, get_mega_pins()),
+    ],
+)
+def test_all_analog_pins_have_an_alias(
+    analog_alias: Any, pins: Tuple[Pin, ...]
+) -> None:
+    analog_pins = [pin for pin in pins if pin.is_analog]
     for analog_alias_num, pin in enumerate(analog_pins):
-        assert getattr(uno_analog_alias, f"A{analog_alias_num}") == pin.pin_id
-
-
-def test_analog_alias_globals_refer_to_analog_pins_for_mega() -> None:
-    analog_pins = [
-        v for k, v in mega_analog_alias.__dict__.items() if k.startswith("A")
-    ]
-    pins = get_mega2560_pins()
-    for pin_alias in analog_pins:
-        assert pins[pin_alias].is_analog, f"Pin {pin_alias} should be an analog pin"
-
-
-def test_all_analog_pins_have_an_alias_for_mega() -> None:
-    analog_pins = [pin for pin in get_mega2560_pins() if pin.is_analog]
-    for analog_alias_num, pin in enumerate(analog_pins):
-        assert getattr(mega_analog_alias, f"A{analog_alias_num}") == pin.pin_id
+        assert getattr(analog_alias, f"A{analog_alias_num}") == pin.pin_id
 
 
 def test_pins_cannot_be_reused(test_arduino: Arduino) -> None:

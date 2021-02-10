@@ -35,7 +35,34 @@ def get_uno_pins() -> Tuple[Pin, ...]:
     )
 
 
-def get_mega2560_pins() -> Tuple[Pin, ...]:
+def get_nano_pins() -> Tuple[Pin, ...]:
+    return (
+        Pin(0, is_reserved=True),
+        Pin(1, is_reserved=True),
+        Pin(2),
+        Pin(3, is_pwm=True),
+        Pin(4),
+        Pin(5, is_pwm=True),
+        Pin(6, is_pwm=True),
+        Pin(7),
+        Pin(8),
+        Pin(9, is_pwm=True),
+        Pin(10, is_pwm=True),
+        Pin(11, is_pwm=True),
+        Pin(12),
+        Pin(13),
+        Pin(14, is_analog=True),
+        Pin(15, is_analog=True),
+        Pin(16, is_analog=True),
+        Pin(17, is_analog=True),
+        Pin(18, is_analog=True),
+        Pin(19, is_analog=True),
+        Pin(20, is_analog=True),
+        Pin(21, is_analog=True),
+    )
+
+
+def get_mega_pins() -> Tuple[Pin, ...]:
     return (
         Pin(0, is_reserved=True),
         Pin(1, is_reserved=True),

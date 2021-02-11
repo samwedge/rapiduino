@@ -3,7 +3,7 @@ from unittest.mock import ANY, Mock, call
 import pytest
 
 from rapiduino.boards.arduino import Arduino
-from rapiduino.components.led import LED
+from rapiduino.components.led.led import LED
 from rapiduino.globals.common import HIGH, LOW, OUTPUT
 
 PIN_NUM = 1

@@ -1,3 +1,4 @@
+from typing import Tuple
 from unittest.mock import Mock, call
 
 import pytest
@@ -10,6 +11,8 @@ from rapiduino.communication.command_spec import (
     CMD_DIGITALREAD,
     CMD_DIGITALWRITE,
     CMD_PINMODE,
+    CMD_VERSION,
+    CommandSpec,
 )
 from rapiduino.communication.serial import SerialConnection
 from rapiduino.components.base_component import BaseComponent
@@ -27,8 +30,14 @@ ANALOG_WRITE_VALUE = 100
 
 @pytest.fixture
 def serial() -> Mock:
+    def mock_process_command(command: CommandSpec, *args: int) -> Tuple[int, ...]:
+        if command == CMD_VERSION:
+            return Arduino.min_version
+        else:
+            return tuple([1])
+
     mock = Mock(spec=SerialConnection)
-    mock.build.return_value.process_command.return_value = (1,)
+    mock.build.return_value.process_command.side_effect = mock_process_command
     return mock
 
 
@@ -84,6 +93,7 @@ def test_component_connect_runs_setup(
 
     calls = serial.build.return_value.process_command.call_args_list
     expected_calls = [
+        call(CMD_VERSION),
         call(CMD_PINMODE, DIGITAL_PIN_NUM, INPUT.value),
         call(CMD_DIGITALREAD, DIGITAL_PIN_NUM),
         call(CMD_DIGITALWRITE, DIGITAL_PIN_NUM, HIGH.value),
@@ -133,6 +143,7 @@ def test_pin_mode_if_connected(
 
     calls = serial.build.return_value.process_command.call_args_list
     expected_calls = [
+        call(CMD_VERSION),
         call(CMD_PINMODE, DIGITAL_PIN_NUM, INPUT.value),
         call(CMD_DIGITALREAD, DIGITAL_PIN_NUM),
         call(CMD_DIGITALWRITE, DIGITAL_PIN_NUM, HIGH.value),
@@ -151,6 +162,7 @@ def test_digital_read_if_connected(
 
     calls = serial.build.return_value.process_command.call_args_list
     expected_calls = [
+        call(CMD_VERSION),
         call(CMD_PINMODE, DIGITAL_PIN_NUM, INPUT.value),
         call(CMD_DIGITALREAD, DIGITAL_PIN_NUM),
         call(CMD_DIGITALWRITE, DIGITAL_PIN_NUM, HIGH.value),
@@ -169,6 +181,7 @@ def test_digital_write_if_connected(
 
     calls = serial.build.return_value.process_command.call_args_list
     expected_calls = [
+        call(CMD_VERSION),
         call(CMD_PINMODE, DIGITAL_PIN_NUM, INPUT.value),
         call(CMD_DIGITALREAD, DIGITAL_PIN_NUM),
         call(CMD_DIGITALWRITE, DIGITAL_PIN_NUM, HIGH.value),
@@ -187,6 +200,7 @@ def test_analog_read_if_connected(
 
     calls = serial.build.return_value.process_command.call_args_list
     expected_calls = [
+        call(CMD_VERSION),
         call(CMD_PINMODE, DIGITAL_PIN_NUM, INPUT.value),
         call(CMD_DIGITALREAD, DIGITAL_PIN_NUM),
         call(CMD_DIGITALWRITE, DIGITAL_PIN_NUM, HIGH.value),
@@ -205,6 +219,7 @@ def test_analog_write_if_connected(
 
     calls = serial.build.return_value.process_command.call_args_list
     expected_calls = [
+        call(CMD_VERSION),
         call(CMD_PINMODE, DIGITAL_PIN_NUM, INPUT.value),
         call(CMD_DIGITALREAD, DIGITAL_PIN_NUM),
         call(CMD_DIGITALWRITE, DIGITAL_PIN_NUM, HIGH.value),

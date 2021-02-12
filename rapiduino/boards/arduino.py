@@ -13,6 +13,7 @@ from rapiduino.communication.command_spec import (
 )
 from rapiduino.communication.serial import SerialConnection
 from rapiduino.exceptions import (
+    ArduinoSketchVersionIncompatibleError,
     ComponentAlreadyRegisteredError,
     NotAnalogPinError,
     NotPwmPinError,
@@ -33,6 +34,9 @@ from rapiduino.globals.common import (
 
 
 class Arduino:
+
+    min_version = (0, 1, 0)
+
     def __init__(
         self,
         pins: Tuple[Pin, ...],
@@ -45,6 +49,7 @@ class Arduino:
         self.connection = conn_class.build(port)
         self.pin_register: Dict[int, str] = {}
         self.reserved_pin_nums = (rx_pin, tx_pin)
+        self._assert_compatible_sketch_version()
 
     @classmethod
     def uno(
@@ -137,6 +142,18 @@ class Arduino:
         ]
         for key in keys_to_delete:
             del self.pin_register[key]
+
+    def _assert_compatible_sketch_version(self) -> None:
+        version = self.version()
+        if any(
+            (
+                version[0] > self.min_version[0],
+                version[0] < self.min_version[0],
+                version[1] < self.min_version[1],
+                version[2] < self.min_version[2],
+            )
+        ):
+            raise ArduinoSketchVersionIncompatibleError(version, self.min_version)
 
     def _assert_requested_pins_are_valid(
         self, component_token: str, pins: Tuple[Pin, ...]

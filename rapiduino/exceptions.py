@@ -1,4 +1,6 @@
-from typing import Optional
+from typing import Optional, Tuple
+
+import rapiduino
 
 
 class SerialConnectionSendDataError(Exception):
@@ -80,4 +82,23 @@ class ComponentNotRegisteredWithArduinoError(Exception):
 class ComponentAlreadyRegisteredWithArduinoError(Exception):
     def __init__(self) -> None:
         message = "Device is already registered to an Arduino"
+        super().__init__(message)
+
+
+class ArduinoSketchVersionIncompatibleError(Exception):
+    def __init__(
+        self, sketch_version: Tuple[int, ...], min_version: Tuple[int, int, int]
+    ) -> None:
+        sketch_version_str = (
+            f"{sketch_version[0]}.{sketch_version[1]}.{sketch_version[2]}"
+        )
+        min_version_str = f"{min_version[0]}.{min_version[1]}.{min_version[2]}"
+        max_version_str = f"{min_version[0] + 1}.0.0"
+
+        message = (
+            f"Arduino sketch version {sketch_version_str} is incompatible with"
+            f" Rapiduino version {rapiduino.__version__}.\n"
+            "Please upload a compatible sketch version:"
+            f" Greater or equal to {min_version_str}, less than {max_version_str}"
+        )
         super().__init__(message)

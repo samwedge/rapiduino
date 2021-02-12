@@ -21,6 +21,7 @@ from rapiduino.communication.command_spec import (
 )
 from rapiduino.communication.serial import SerialConnection
 from rapiduino.exceptions import (
+    ArduinoSketchVersionIncompatibleError,
     ComponentAlreadyRegisteredError,
     NotAnalogPinError,
     NotPwmPinError,
@@ -32,8 +33,7 @@ from rapiduino.exceptions import (
 from rapiduino.globals.common import HIGH, INPUT, LOW, OUTPUT
 
 
-@pytest.fixture
-def test_arduino() -> Arduino:
+def get_mock_conn_class() -> Mock:
     def dummy_process_command(command: CommandSpec, *args: int) -> Tuple[int, ...]:
         data: Tuple[int, ...]
         if command == CMD_POLL:
@@ -41,7 +41,7 @@ def test_arduino() -> Arduino:
         elif command == CMD_PARROT:
             data = (args[0],)
         elif command == CMD_VERSION:
-            data = (1, 2, 3)
+            data = Arduino.min_version
         elif command == CMD_PINMODE:
             data = ()
         elif command == CMD_DIGITALREAD:
@@ -56,6 +56,16 @@ def test_arduino() -> Arduino:
             raise ValueError(f"Mock Arduino does not know how to process {CommandSpec}")
         return data
 
+    mock_conn_class = Mock(spec=SerialConnection)
+    mock_conn_class.build.return_value.process_command.side_effect = (
+        dummy_process_command
+    )
+
+    return mock_conn_class
+
+
+@pytest.fixture
+def test_arduino() -> Arduino:
     pins = (
         Pin(0),
         Pin(1, is_analog=True),
@@ -64,9 +74,61 @@ def test_arduino() -> Arduino:
         Pin(4),
         Pin(5),
     )
+    return Arduino(
+        pins=pins, port="", conn_class=get_mock_conn_class(), rx_pin=4, tx_pin=5
+    )
+
+
+def test_if_sketch_version_is_major_change_below_minimum_required_version() -> None:
     conn_class = Mock(spec=SerialConnection)
-    conn_class.build.return_value.process_command.side_effect = dummy_process_command
-    return Arduino(pins=pins, port="", conn_class=conn_class, rx_pin=4, tx_pin=5)
+    v = Arduino.min_version
+    sketch_version = (v[0] - 1, v[1], v[2])
+    conn_class.build.return_value.process_command.return_value = sketch_version
+    with pytest.raises(ArduinoSketchVersionIncompatibleError):
+        Arduino(pins=(), port="", conn_class=conn_class)
+
+
+def test_if_sketch_version_is_minor_change_below_minimum_required_version() -> None:
+    conn_class = Mock(spec=SerialConnection)
+    v = Arduino.min_version
+    sketch_version = (v[0], v[1] - 1, v[2])
+    conn_class.build.return_value.process_command.return_value = sketch_version
+    with pytest.raises(ArduinoSketchVersionIncompatibleError):
+        Arduino(pins=(), port="", conn_class=conn_class)
+
+
+def test_if_sketch_version_is_micro_change_below_minimum_required_version() -> None:
+    conn_class = Mock(spec=SerialConnection)
+    v = Arduino.min_version
+    sketch_version = (v[0], v[1], v[2] - 1)
+    conn_class.build.return_value.process_command.return_value = sketch_version
+    with pytest.raises(ArduinoSketchVersionIncompatibleError):
+        Arduino(pins=(), port="", conn_class=conn_class)
+
+
+def test_if_sketch_version_is_a_major_change_above_required_version() -> None:
+    conn_class = Mock(spec=SerialConnection)
+    v = Arduino.min_version
+    sketch_version = (v[0] + 1, v[1], v[2])
+    conn_class.build.return_value.process_command.return_value = sketch_version
+    with pytest.raises(ArduinoSketchVersionIncompatibleError):
+        Arduino(pins=(), port="", conn_class=conn_class)
+
+
+def test_if_sketch_version_is_a_minor_change_above_required_version() -> None:
+    conn_class = Mock(spec=SerialConnection)
+    v = Arduino.min_version
+    sketch_version = (v[0], v[1] + 1, v[2])
+    conn_class.build.return_value.process_command.return_value = sketch_version
+    Arduino(pins=(), port="", conn_class=conn_class)
+
+
+def test_if_sketch_version_is_a_micro_change_above_required_version() -> None:
+    conn_class = Mock(spec=SerialConnection)
+    v = Arduino.min_version
+    sketch_version = (v[0], v[1], v[2] + 1)
+    conn_class.build.return_value.process_command.return_value = sketch_version
+    Arduino(pins=(), port="", conn_class=conn_class)
 
 
 def test_poll(test_arduino: Arduino) -> None:
@@ -79,7 +141,7 @@ def test_parrot(test_arduino: Arduino) -> None:
 
 
 def test_version(test_arduino: Arduino) -> None:
-    assert test_arduino.version() == (1, 2, 3)
+    assert test_arduino.version() == Arduino.min_version
 
 
 def test_pin_mode_with_valid_args(test_arduino: Arduino) -> None:
@@ -207,9 +269,15 @@ def test_mega_pin_ids_are_sequential() -> None:
 @pytest.mark.parametrize(
     "arduino,expected_pins",
     [
-        pytest.param(Arduino.uno(port="", conn_class=Mock()), get_uno_pins()),
-        pytest.param(Arduino.nano(port="", conn_class=Mock()), get_nano_pins()),
-        pytest.param(Arduino.mega(port="", conn_class=Mock()), get_mega_pins()),
+        pytest.param(
+            Arduino.uno(port="", conn_class=get_mock_conn_class()), get_uno_pins()
+        ),
+        pytest.param(
+            Arduino.nano(port="", conn_class=get_mock_conn_class()), get_nano_pins()
+        ),
+        pytest.param(
+            Arduino.mega(port="", conn_class=get_mock_conn_class()), get_mega_pins()
+        ),
     ],
 )
 def test_classmethods_set_correct_pins(
@@ -253,9 +321,9 @@ def test_all_analog_pins_have_an_alias(
 @pytest.mark.parametrize(
     "arduino",
     [
-        pytest.param(Arduino.uno(port="", conn_class=Mock())),
-        pytest.param(Arduino.nano(port="", conn_class=Mock())),
-        pytest.param(Arduino.mega(port="", conn_class=Mock())),
+        pytest.param(Arduino.uno(port="", conn_class=get_mock_conn_class())),
+        pytest.param(Arduino.nano(port="", conn_class=get_mock_conn_class())),
+        pytest.param(Arduino.mega(port="", conn_class=get_mock_conn_class())),
     ],
 )
 def test_serial_comms_pins_cannot_be_used(arduino: Arduino) -> None:
